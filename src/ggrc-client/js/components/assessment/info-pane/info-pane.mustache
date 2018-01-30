@@ -404,17 +404,8 @@
                 </div>
                 <div class="ggrc-form-item">
                     <div class="ggrc-form-item__multiple-row">
-                        <assessment-inline-item
-                            type="input"
-                            prop-name="slug"
-                            with-read-more="true"
-                            {set-in-progress}="@setInProgressState"
-                            {on-state-change-dfd}="onStateChangeDfd"
-                            {is-edit-icon-denied}="isEditDenied"
-                            {value}="instance.slug"
-                            {instance}="instance">
-                                <div class="ggrc-form__title">Code</div>
-                        </assessment-inline-item>
+                      <div class="info-pane__section-title">Code</div>
+                      <span>{{instance.slug}}</span>
                     </div>
                     <!-- TODO: Assessment object type -->
                 </div>

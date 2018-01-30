@@ -96,8 +96,7 @@
             title="The ZenGRC application will automatically provide codes for new objects. If you would like to override this feature you may manually enter a code of your choosing. You should have a specific reason for doing this."></i>
           <a href="javascript://" class="field-hide" tabindex="-1">hide</a>
         </label>
-        <input tabindex="7" class="input-block-level" name="slug"
-              placeholder="RISK-XXX" type="text" value="{{slug}}">
+        <input data-id="code_txtbx" {{^if new_object_form}} disabled {{/if}} tabindex="7" id="section-code" class="input-block-level" name="slug" placeholder="CLAUSE-XXX" type="text" value="{{slug}}">
       </div>
     {{/if}}
     <effective-dates instance="instance"/>

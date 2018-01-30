@@ -74,7 +74,7 @@
         <i class="fa fa-question-circle" rel="tooltip" title="The GGRC application will automatically provide codes for new objects.  If you would like to override this feature you may manually enter a code of your choosing.  You should have a specific reason for doing this."></i>
         <a data-id="hide_code_lk" href="javascript://" class="field-hide" tabindex="-1">hide</a>
       </label>
-      <input data-id="code_txtbx" tabindex="6" class="input-block-level" name="slug" placeholder="SYSTEM-XXX" type="text" value="{{slug}}">
+      <input {{^if new_object_form}} disabled {{/if}} data-id="code_txtbx" tabindex="6" class="input-block-level" name="slug" placeholder="SYSTEM-XXX" type="text" value="{{slug}}">
     </div>
     <div data-id="network_zone_hidden" class="span6 hidable">
       <label>
