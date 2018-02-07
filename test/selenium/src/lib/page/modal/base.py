@@ -13,32 +13,34 @@ class BaseModal(base.Modal):
   """Base class for creation and edition modals."""
   _locators = locator.BaseModalCreateNew
   _locator_ui_title = locator.ModalCreateNewObject.UI_TITLE
-  _locator_ui_code = locator.ModalCreateNewObject.UI_CODE
+  _locator_code = locator.ModalCreateNewObject.CODE
   _locator_button_save = locator.ModalCreateNewObject.BUTTON_SAVE_AND_CLOSE
 
   def __init__(self, driver):
     super(BaseModal, self).__init__(driver)
     self.modal_elem = selenium_utils.get_when_visible(
         self._driver, self._locators.MODAL_CSS)
-    self.button_save_and_close = base.Button(
-        self.modal_elem, self._locator_button_save)
     self.ui_title = base.TextInputField(
         self.modal_elem, self._locator_ui_title)
-    self.ui_code = base.TextInputField(
-        self.modal_elem, self._locator_ui_code)
+    self.modal_type_lbl = base.Label(
+        self.modal_elem, locator.ModalCommonConfirmAction.MODAL_TITLE)
+    self.button_save_and_close = base.Button(
+        self.modal_elem, self._locator_button_save)
+    self.is_create_modal = "New " in self.modal_type_lbl.text
+    self.code = (
+        base.TextInputField(self.modal_elem, self._locator_code) if
+        self.is_create_modal
+        else base.Label(self.modal_elem, self._locator_code))
 
   def enter_title(self, text):
     """Enter title to modal."""
     self.ui_title.enter_text(text)
 
-  def enter_code(self, code):
-    """Enter code to modal."""
-    self.ui_code.enter_text(code)
-
   def fill_minimal_data(self, title, code):
     """Enter common minimal data to modal."""
     self.enter_title(title)
-    self.enter_code(code)
+    if self.is_create_modal:
+      self.code.enter_text(code)
     return self.__class__(self._driver)
 
   def edit_minimal_data(self, title):
@@ -59,8 +61,6 @@ class ProgramsModal(BaseModal):
         self.modal_elem.parent, self._locators.UI_DESCRIPTION)
     self.ui_notes = base.Iframe(
         self.modal_elem.parent, self._locators.UI_NOTES)
-    self.ui_code = base.TextInputField(
-        self.modal_elem, self._locators.UI_CODE)
     self.ui_state = base.Dropdown(
         self.modal_elem, self._locators.UI_STATE)
     self.ui_show_optional_fields = base.Toggle(
@@ -86,12 +86,6 @@ class ProgramsModal(BaseModal):
     Args: notes basestring)
     """
     self.ui_notes.find_iframe_and_enter_data(notes)
-
-  def enter_code(self, code):
-    """Enter text into code element.
-    Args: code (basestring)
-    """
-    self.ui_code.enter_text(code)
 
   def select_state(self, state):
     """Selects state from dropdown."""
@@ -132,7 +126,6 @@ class ControlsModal(BaseModal):
     self.test_plan = base.Label(
         self.modal_elem, self._locators.TEST_PLAN)
     self.notes = base.Label(self.modal_elem, self._locators.NOTES)
-    self.code = base.Label(self.modal_elem, self._locators.CODE)
     self.kind_or_nature = base.Label(
         self.modal_elem, self._locators.KIND_OR_NATURE)
     self.fraud_related = base.Label(
@@ -155,8 +148,6 @@ class ControlsModal(BaseModal):
         self.modal_elem.parent, self._locators.UI_TEST_PLAN)
     self.ui_notes = base.Iframe(
         self.modal_elem.parent, self._locators.UI_NOTES)
-    self.ui_code = base.TextInputField(
-        self.modal_elem, self._locators.UI_CODE)
     # multi input fields
     self.ref_url = base.MultiInputField(
         self.modal_elem.parent, self._locators.REF_URL_CSS)
@@ -201,12 +192,6 @@ class ControlsModal(BaseModal):
     Args: text (basestring)
     """
     self.ui_notes.find_iframe_and_enter_data(text)
-
-  def enter_code(self, code):
-    """
-    Args: text (basestring)
-    """
-    self.ui_code.enter_text(code)
 
 
 class ObjectivesModal(BaseModal):
