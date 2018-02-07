@@ -321,7 +321,7 @@ class ModalCreateNewObject(BaseModalCreateNew):
   MODAL = Common.MODAL_CREATE
   # user input elements
   UI_TITLE = (By.CSS_SELECTOR, MODAL + ' [placeholder="Enter Title"]')
-  UI_CODE = (By.CSS_SELECTOR, MODAL + ' [name="slug"]')
+  CODE = (By.CSS_SELECTOR, MODAL + ' [name="slug"]')
   BUTTON_SAVE_AND_CLOSE = (By.CSS_SELECTOR,
                            MODAL + ' [data-toggle="modal-submit"]')
   BUTTON_SAVE_AND_ADD_ANOTHER = (
@@ -337,8 +337,6 @@ class ModalCreateNewProgram(BaseModalCreateNew):
   UI_NOTES = (By.CSS_SELECTOR,
               '[data-test-id="new_program_field_notes_75b8bc05"]'
               '>iframe.wysihtml5-sandbox')
-  UI_CODE = (By.CSS_SELECTOR,
-             '[data-test-id="new_program_field_code_334276e2"]')
   UI_STATE = (By.CSS_SELECTOR,
               '[data-test-id="new_program_dropdown_state_036a1fa6"]')
   BUTTON_HIDE_OPTIONAL_FIELDS = (By.ID, "formHide")
@@ -415,9 +413,6 @@ class ModalCreateNewControl(BaseModalCreateNew):
   UI_TEST_PLAN = (
       By.CSS_SELECTOR, '[data-test-id="control_test_plan_d8b5a2f4"] iframe')
   NOTES = (By.CSS_SELECTOR, '[data-id="note_hidden"] label')
-  CODE = (By.CSS_SELECTOR, '[data-test-id="control_code_f8abbcc9"] label')
-  UI_CODE = (
-      By.CSS_SELECTOR, '[data-test-id="control_code_f8abbcc9"] input')
   KIND_OR_NATURE = (
       By.CSS_SELECTOR, '[data-test-id="control_kind_nature_dadc232f"] label')
   DROPDOWN_KIND_OR_NATURE = (
@@ -789,6 +784,7 @@ class WidgetInfoAssessment(WidgetInfoPanel, CommonAssessment):
   # pylint: disable=invalid-name
   WIDGET = Common.INFO
   TOGGLE = ' [class*="fa-caret"]'
+  HEADERS_AND_VALUES = (By.CSS_SELECTOR, ".ggrc-form-item__multiple-row")
   # Base
   LCAS_HEADERS_AND_VALUES = (
       By.CSS_SELECTOR,
@@ -798,11 +794,6 @@ class WidgetInfoAssessment(WidgetInfoPanel, CommonAssessment):
       WIDGET + " assessment-custom-attributes inline-edit-control")
   CAS_CHECKBOXES = (By.CSS_SELECTOR, '[class*="wrapper"] [type="checkbox"]')
   # Assessment Attributes tab
-  # Code section
-  _CODE = "assessment-inline-item[prop-name='slug'] "
-  CODE_CSS = (By.CSS_SELECTOR, _CODE)
-  CODE_HEADER_CSS = (By.CSS_SELECTOR, _CODE + ".ggrc-form__title")
-  CODE_VALUE_CSS = (By.CSS_SELECTOR, _CODE + ".read-more__body")
   # comments section
   COMMENTS_CSS = (By.CSS_SELECTOR, ".assessment-comments")
   # asmt tab container
