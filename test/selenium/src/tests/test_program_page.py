@@ -62,7 +62,7 @@ class TestProgramPage(base.Test):
     modal, program_info_page = new_program_ui
     expected_list_texts = [
         test_utils.HtmlParser.parse_text(modal.ui_title.text),
-        modal.ui_description.text, modal.ui_notes.text, modal.ui_code.text,
+        modal.ui_description.text, modal.ui_notes.text, modal.code.text,
         modal.ref_url.values,
         modal.ui_effective_date.text
     ]
