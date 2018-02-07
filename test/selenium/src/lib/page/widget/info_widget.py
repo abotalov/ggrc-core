@@ -7,7 +7,7 @@ import re
 
 from lib import base
 from lib.constants import (
-    locator, objects, element, roles, regex, messages, cls_name)
+    locator, objects, element, roles, regex, messages)
 from lib.constants.locator import WidgetInfoAssessment
 from lib.element import widget_info, tab_containers
 from lib.page.modal import update_object
@@ -29,6 +29,8 @@ class InfoWidget(base.Widget):
   def __init__(self, driver):
     super(InfoWidget, self).__init__(driver)
     self.child_cls_name = self.__class__.__name__
+    self.is_asmts_info_widget = (
+        self.child_cls_name.lower() == objects.ASSESSMENTS)
     self.list_all_headers_txt = []
     self.list_all_values_txt = []
     self.info_widget_locator = (
@@ -77,13 +79,18 @@ class InfoWidget(base.Widget):
     if not self.is_snapshoted_panel:
       self.tab_container_elem = self.info_widget_elem.find_element(
           *self._locators.TAB_CONTAINER_CSS)
-      self.tab_container = self._get_tab_container()
+      self.tab_container = (
+          tab_containers.AssessmentsTabContainer(
+              self._driver, self.tab_container_elem) if
+          self.is_asmts_info_widget else tab_containers.TabContainer(
+              self._driver, self.tab_container_elem))
       self.tab_container.tab_controller.active_tab = (
           self.tab_container._elements.OBJ_TAB)
     # for overridable methods
-    self._extend_list_all_scopes_by_code()
-    self._extend_list_all_scopes_by_cas()
     self._extend_list_all_scopes_by_review_state()
+    if not self.is_asmts_info_widget:
+      self._extend_list_all_scopes_by_code()
+      self._extend_list_all_scopes_by_cas()
 
   def get_state_txt(self):
     """Get object's state text from Info Widget."""
@@ -269,12 +276,6 @@ class InfoWidget(base.Widget):
     self._extend_list_all_scopes(
         self.review_state_lbl.text, self.review_state_txt)
 
-  def _get_tab_container(self):
-    """Get Tab Controller and return it."""
-    return getattr(tab_containers,
-                   self.child_cls_name + cls_name.TAB_CONTAINER)(
-        self._driver, self.tab_container_elem)
-
 
 class InfoPanel(object):
   """Class for Info Panels."""
@@ -459,19 +460,6 @@ class Assessments(InfoWidget):
     self._extend_list_all_scopes_by_code()
     self._extend_list_all_scopes_by_cas()
     return dict(zip(self.list_all_headers_txt, self.list_all_values_txt))
-
-  def _extend_list_all_scopes_by_code(self):
-    """Extend attributes related to 'code' and extend 'list all scopes' if
-    'Other Attributes' tab opened.
-    """
-    if (self.tab_container.tab_controller.active_tab.text ==
-            element.AssessmentTabContainer.OTHER_ATTRS_TAB):
-      code_elem = base.Label(self.info_widget_elem, self._locators.CODE_CSS)
-      self.code_lbl_txt = code_elem.element.find_element(
-          *self._locators.CODE_HEADER_CSS).text
-      self.code_txt = code_elem.element.find_element(
-          *self._locators.CODE_VALUE_CSS).text
-      self._extend_list_all_scopes(self.code_lbl_txt, self.code_txt)
 
   def _extend_list_all_scopes_by_cas(self):
     """Extend attributes related to 'local and global custom attributes' and
