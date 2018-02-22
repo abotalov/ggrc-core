@@ -669,7 +669,6 @@ class CommonWidgetInfo(object):
   CAS_CHECKBOXES = (By.XPATH, _INFO_WIDGET_XPATH +
                     "//inline-edit-control//input[""@type='checkbox']")
   # labels
-  TITLE = (By.XPATH, _MAIN_HEADER_XPATH + "//h6")
   TITLE_ENTERED = (By.XPATH, _MAIN_HEADER_XPATH + "//h3")
   STATE = (By.XPATH, _MAIN_HEADER_XPATH +
            "//*[contains(normalize-space(./@class), 'state-value state')]")

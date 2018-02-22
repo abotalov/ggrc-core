@@ -37,13 +37,12 @@ class InfoWidget(base.Widget):
     self.info_widget_elem = selenium_utils.get_when_visible(
         self._driver, self.info_widget_locator)
     # common for all objects
-    self.title_lbl_txt = self.get_title_lbl_txt()
     self.title = base.Element(
         self.info_widget_elem, self._locators.TITLE_ENTERED)
     self.state_lbl_txt = self._elements.STATE.upper()
     self.state_txt = self.get_state_txt()
     self._extend_list_all_scopes(
-        [self.title_lbl_txt, self.state_lbl_txt],
+        ["TITLE", self.state_lbl_txt],
         [self.title.text, self.state_txt])
     self.info_3bbs_btn = selenium_utils.get_when_visible(
         self.info_widget_elem, self._locators.BUTTON_3BBS)
@@ -85,10 +84,6 @@ class InfoWidget(base.Widget):
     self._extend_list_all_scopes_by_code()
     self._extend_list_all_scopes_by_cas()
     self._extend_list_all_scopes_by_review_state()
-
-  def get_title_lbl_txt(self):
-    """Get title's label text from Info Widget."""
-    return base.Label(self.info_widget_elem, self._locators.TITLE).text
 
   def get_state_txt(self):
     """Get object's state text from Info Widget."""
@@ -410,7 +405,6 @@ class Assessments(InfoWidget):
 
   def __init__(self, driver):
     super(Assessments, self).__init__(driver)
-    self.title_lbl = self.get_title_lbl_txt()
     self.is_verified_lbl_txt = self._elements.VERIFIED.upper()
     self.is_verified = selenium_utils.is_element_exist(
         self.info_widget_elem, self._locators.ICON_VERIFIED)
@@ -445,12 +439,6 @@ class Assessments(InfoWidget):
         [self.is_verified, self.creators_txt, self.assignees_txt,
          self.verifiers_txt, self.mapped_objects_titles_txt,
          self.comments_scopes_txt, self.asmt_type_txt])
-
-  def get_title_lbl_txt(self):
-    """Get title's label element from Assessment's Info Widget."""
-    #  Issue in app GGRC-3451
-    return (self._elements.TITLE.upper() if self.is_info_page else
-            super(Assessments, self).get_title_lbl_txt())
 
   def _get_mapped_objs_titles_txt(self):
     """Return lists of str for mapped snapshots titles text from current tab.
