@@ -16,6 +16,19 @@ from ggrc.models.custom_attribute_value import CustomAttributeValue
 from ggrc.access_control import role as acr
 from ggrc.models.exceptions import ValidationError
 from ggrc.models import reflection
+from ggrc.cache import memcache
+
+
+@memcache.cached
+def get_inflector_model_name_pairs():
+  """Returns pairs with asociation between definition_type and model_name"""
+  from ggrc.models import all_models
+  return [(m._inflector.table_singular, m.__name__)
+          for m in all_models.all_models]
+
+
+def get_inflector_model_name_dict():
+  return dict(get_inflector_model_name_pairs())
 
 
 class CustomAttributeDefinition(attributevalidator.AttributeValidator,
@@ -41,12 +54,6 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
   attribute_values = db.relationship('CustomAttributeValue',
                                      backref='custom_attribute',
                                      cascade='all, delete-orphan')
-
-  @cached_property
-  def inflector_model_name_dict(self):  # pylint: disable=no-self-use
-    from ggrc.models import all_models
-    return {m._inflector.table_singular: m.__name__
-            for m in all_models.all_models}
 
   @property
   def definition_attr(self):
@@ -281,7 +288,7 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
       raise ValueError(u"Global custom attribute '{}' "
                        u"already exists for this object type"
                        .format(name))
-    model_name = self.inflector_model_name_dict[definition_type]
+    model_name = get_inflector_model_name_dict()[definition_type]
     acrs = {i.lower() for i in acr.get_custom_roles_for(model_name).values()}
     if name in acrs:
       raise ValueError(u"Custom Role with a name of '{}' "
