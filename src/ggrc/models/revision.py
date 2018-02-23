@@ -324,13 +324,43 @@ class Revision(Base, db.Model):
         result.append(categorization)
     return {key_name: result}
 
-  def populate_cavs(self):
-    """Populate custom_attribute_values based on custom_attributes."""
-    if "custom_attributes" not in self._content:
-      return {}
+  def _get_cavs(self):
+    """Return cavs values from content."""
     if "custom_attribute_values" in self._content:
-      return {}
-    return {"custom_attribute_values": self._content["custom_attributes"]}
+      return self._content["custom_attribute_values"]
+    if "custom_attributes" in self._content:
+      return self._content["custom_attributes"]
+    return []
+
+  def populate_cavs(self):
+    """Setup cads in cav list if they are not presented in content
+
+    but now they are associated to instance."""
+    from ggrc.models import custom_attribute_definition
+    cads = custom_attribute_definition.get_custom_attributes_for(
+        self.resource_type, self.resource_id)
+    cavs = {int(i["custom_attribute_id"]): i for i in self._get_cavs()}
+    for cad in cads:
+      custom_attribute_id = int(cad["id"])
+      if custom_attribute_id in cavs:
+        continue
+      if cad["attribute_type"] == "Map:Person":
+        value = "Person"
+      else:
+        value = ""
+      cavs[custom_attribute_id] = {
+          "attribute_value": value,
+          "attribute_object_id": None,
+          "custom_attribute_id": custom_attribute_id,
+          "attributable_id": self.resource_id,
+          "attributable_type": self.resource_type,
+          "display_name": "",
+          "attribute_object": None,
+          "type": "CustomAttributeValue",
+          "context_id": None,
+      }
+    return {"custom_attribute_values": cavs.values(),
+            "custom_attribute_definitions": cads}
 
   @builder.simple_property
   def content(self):
