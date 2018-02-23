@@ -301,6 +301,39 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
     return value
 
 
+@memcache.cached
+def get_global_cads(definition_type):
+  """Returns global cad jsons list for sent definition_type."""
+  return [i.log_json() for i in
+          CustomAttributeDefinition.query.filter(
+              CustomAttributeDefinition.definition_type == definition_type,
+              CustomAttributeDefinition.definition_id.is_(None))]
+
+
+@memcache.cached
+def get_local_cads(definition_type, instance_id):
+  """Returns local cad jsons list for sent definition_type and instance_id."""
+  return [i.log_json() for i in
+          CustomAttributeDefinition.query.filter(
+              CustomAttributeDefinition.definition_type == definition_type,
+              CustomAttributeDefinition.definition_id == instance_id)]
+
+
+def get_model_name_inflector_dict():
+  return {m: i for i, m in get_inflector_model_name_pairs()}
+
+
+def get_custom_attributes_for(model_name, instance_id=None):
+  """Returns custom attributes jsons for sent model_name and instance_id."""
+  definition_type = get_model_name_inflector_dict()[model_name]
+  if not definition_type:
+    return []
+  cads = get_global_cads(definition_type)
+  if instance_id is not None:
+    cads.extend(get_local_cads(definition_type, instance_id))
+  return cads
+
+
 class CustomAttributeMapable(object):
   # pylint: disable=too-few-public-methods
   # because this is a mixin
