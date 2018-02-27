@@ -5,6 +5,7 @@
 import ddt
 
 import ggrc.models
+from ggrc.models import all_models
 import integration.ggrc.generator
 from integration.ggrc import TestCase
 
@@ -228,3 +229,76 @@ class TestRevisions(TestCase):
 
     self.assertEquals(last_revision.content["modified_by_id"], expected_id)
     self.assertEquals(last_revision.content["modified_by"]["id"], expected_id)
+
+  def _test_revision_with_empty_cads(self,
+                                     attribute_type,
+                                     attribute_value,
+                                     is_global):
+    """Population cavs and cads depend on is_global flag and send params."""
+    control = factories.ControlFactory()
+    control_id = control.id
+    cad_params = {
+        "title": "test_cad",
+        "definition_type": "control",
+        "attribute_type": attribute_type
+    }
+    if not is_global:
+      cad_params["definition_id"] = control_id
+    with factories.single_commit():
+      cad = factories.CustomAttributeDefinitionFactory(**cad_params)
+    cad_id = cad.id
+    revisions = ggrc.models.Revision.query.filter(
+        ggrc.models.Revision.resource_id == control_id,
+        ggrc.models.Revision.resource_type == "Control",
+    ).order_by(ggrc.models.Revision.id.desc()).all()
+    self.assertEqual(1, len(revisions))
+    revision = revisions[0]
+    # pylint: disable=protected-access
+    self.assertIn("custom_attribute_values", revision._content)
+    self.assertIn("custom_attribute_definitions", revision._content)
+    self.assertEqual([], revision._content["custom_attribute_values"])
+    self.assertEqual([], revision._content["custom_attribute_definitions"])
+    self.assertIn("custom_attribute_values", revision.content)
+    self.assertEqual(
+        [{
+            'attributable_id': control_id,
+            'attributable_type': u'Control',
+            'attribute_object': None,
+            'attribute_object_id': None,
+            'attribute_value': attribute_value,
+            'context_id': None,
+            'custom_attribute_id': cad_id,
+            'display_name': '',
+            'type': 'CustomAttributeValue',
+        }],
+        revision.content["custom_attribute_values"])
+    self.assertIn("custom_attribute_definitions", revision.content)
+    cad = all_models.CustomAttributeDefinition.query.get(cad_id)
+    self.assertEqual([cad.log_json()],
+                     revision.content["custom_attribute_definitions"])
+
+  @ddt.data(
+      ("Text", ""),
+      ("Rich Text", ""),
+      ("Dropdown", ""),
+      ("Checkbox", ""),
+      ("Date", ""),
+      ("Map:Person", "Person"),
+  )
+  @ddt.unpack
+  def test_revisions_with_empty_gcads(self, attribute_type, attribute_value):
+    """Population cavs and global cads for type {0}."""
+    self._test_revision_with_empty_cads(attribute_type, attribute_value, True)
+
+  @ddt.data(
+      ("Text", ""),
+      ("Rich Text", ""),
+      ("Dropdown", ""),
+      ("Checkbox", ""),
+      ("Date", ""),
+      ("Map:Person", "Person"),
+  )
+  @ddt.unpack
+  def test_revisions_with_empty_lcads(self, attribute_type, attribute_value):
+    """Population cavs and local cads for type {0}."""
+    self._test_revision_with_empty_cads(attribute_type, attribute_value, False)
