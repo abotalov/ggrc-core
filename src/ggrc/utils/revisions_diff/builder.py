@@ -252,9 +252,7 @@ def prepare(instance, content):
                             current_data.get("access_control_list", []))
   else:
     acl = {}
-  if (
-          "custom_attribute_values" in diff_data or
-          "custom_attributes" in diff_data):
+  if "custom_attribute_values" in diff_data:
     cav = generate_cav_diff(
         instance,
         diff_data.pop("custom_attribute_values", []),
