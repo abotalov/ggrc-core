@@ -1,12 +1,15 @@
 # Copyright (C) 2018 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
+from collections import OrderedDict
 import itertools
 
+import flask
 from google.appengine.api import memcache
+
+from ggrc import settings
 from cache import Cache
 from cache import all_cache_entries
-from collections import OrderedDict
 from copy import deepcopy
 
 """
@@ -242,32 +245,55 @@ class MemCache(Cache):
     return self.memcache_client.flush_all()
 
 
-
 class _Decorated(object):
   """Decorated class."""
 
   def __init__(self, function):
+    self.active = settings.MEMCACHE_MECHANISM
     self.memcache_client = memcache.Client()
     self.function = function
 
-  def get_key(self, *args, **kwargs):
-    prefix = "{}.{}".format(self.function.__module__, self.function.__name__)
+  @property
+  def superhot_cache(self):
+    if not hasattr(flask, self.get_key_prefix()):
+      setattr(flask.g, self.get_key_prefix(), {})
+    return getattr(flask.g, self.get_key_prefix())
+
+  @superhot_cache.setter
+  def superhot_cache(self, data):
+    return setattr(flask.g, self.get_key_prefix(), data)
+
+  def get_key_prefix(self):
+    return "{}.{}".format(self.function.__module__, self.function.__name__)
+
+  def get_key_suffix(self, *args, **kwargs):
     key_args = list(args)
     for pair in kwargs.iteritems():
       key_args.extend(pair)
-    suffix = ','.join([str(a) for a in key_args])
-    return "{}:{}".format(prefix, suffix)
+    return ','.join([str(a) for a in key_args])
+
+  def get_key(self, *args, **kwargs):
+    return "{}:{}".format(self.get_key_prefix(), self.get_key_suffix())
 
   def __call__(self, *args, **kwargs):
+    if not self.active:
+      return self.function(*args, **kwargs)
+    if self.get_key_suffix(*args, **kwargs) in self.superhot_cache:
+      return self.superhot_cache[self.get_key_suffix(*args, **kwargs)]
     key = self.get_key(*args, **kwargs)
-    if self.memcache_client.get(key) is not None:
-      return self.memcache_client.get(key)
+    get_value = self.memcache_client.get(key)
+    if get_value is not None:
+      return get_value
     result = self.function(*args, **kwargs)
     self.memcache_client.add(key, result)
+    self.superhot_cache[self.get_key_suffix(*args, **kwargs)] = result
     return result
 
   def invalidate_cache(self, *args, **kwargs):
+    if not self.active:
+      return
     self.memcache_client.delete(self.get_key(*args, **kwargs))
+    self.superhot_cache = {}
 
 
 def cached(function):
