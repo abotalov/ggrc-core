@@ -495,9 +495,9 @@ import template from './revision-log.mustache';
         );
         diff.changes = diff.changes.concat(
           this._objectCADiff(
-            rev1.content.custom_attributes,
+            rev1.content.custom_attribute_values,
             rev1.content.custom_attribute_definitions,
-            rev2.content.custom_attributes,
+            rev2.content.custom_attribute_values,
             rev2.content.custom_attribute_definitions));
         return diff;
       },
