@@ -472,7 +472,6 @@ class CustomAttributable(object):
       res["custom_attribute_definitions"] = []
       res["custom_attribute_values"] = []
 
-    res["custom_attributes"] = res["custom_attribute_values"]
     return res
 
   def validate_custom_attributes(self):

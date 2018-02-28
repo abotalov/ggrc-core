@@ -378,6 +378,11 @@ class Revision(Base, db.Model):
     populated_content.update(self.populate_categoies("categories"))
     populated_content.update(self.populate_categoies("assertions"))
     populated_content.update(self.populate_cavs())
+
+    # remove custom_attributes,
+    # it's old style interface and now it's not needed
+    populated_content.pop("custom_attributes", None)
+
     return populated_content
 
   @content.setter
