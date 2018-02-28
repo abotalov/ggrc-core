@@ -392,7 +392,7 @@ export default can.Component.extend({
         let instance = revision.instance;
         return prepareCustomAttributes(
           instance.attr('custom_attribute_definitions'),
-          instance.attr('custom_attributes'));
+          instance.attr('custom_attribute_values'));
       }
 
       /**
