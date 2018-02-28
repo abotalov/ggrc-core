@@ -128,7 +128,6 @@ export default can.Component.extend({
         buildModifiedAttValues(values, definitions, modifiedAttributes);
 
       instance.custom_attribute_values = modifiedValues;
-      instance.custom_attributes = modifiedValues;
     },
     openRevisionComparer() {
       const el = this.attr('$el');
