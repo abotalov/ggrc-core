@@ -246,20 +246,3 @@ class TestCheckPopulatedContent(unittest.TestCase):
         revision._document_evidence_hack(),
         expected_evidence,
     )
-
-  @ddt.data(
-      ({}, {}),
-      ({"custom_attribute_values": [], "custom_attributes": []}, {}),
-      ({"custom_attributes": []}, {"custom_attribute_values": []}),
-      ({"custom_attributes": [1, 2, 3]},
-       {"custom_attribute_values": [1, 2, 3]}),
-      ({"custom_attribute_values": [1, 2, 3]}, {}),
-  )
-  @ddt.unpack
-  def test_populated_content_cavs(self, content, expected_content):
-    """Test populated cavs content for revision if start content is {0}."""
-    obj = mock.Mock()
-    obj.id = self.object_id
-    obj.__class__.__name__ = self.object_type
-    revision = all_models.Revision(obj, mock.Mock(), mock.Mock(), content)
-    self.assertEqual(expected_content, revision.populate_cavs())
