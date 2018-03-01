@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
 from sqlalchemy.sql.schema import UniqueConstraint
 
+from ggrc import builder
 from ggrc import db
 from ggrc.models.mixins import attributevalidator
 from ggrc.models import mixins
@@ -72,7 +73,7 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
   def value_mapping(self):
     return self.ValidTypes.DEFAULT_VALUE_MAPPING.get(self.attribute_type) or {}
 
-  @property
+  @builder.simple_property
   def default_value(self):
     return self.ValidTypes.DEFAULT_VALUE.get(self.attribute_type)
 
@@ -104,7 +105,9 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
       'placeholder',
   ]
 
-  _api_attrs = reflection.ApiAttributes(*_include_links)
+  _api_attrs = reflection.ApiAttributes(
+      reflection.Attribute("default_value", create=False, update=False),
+      *_include_links)
 
   _sanitize_html = [
       "multi_choice_options",
