@@ -146,7 +146,7 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
     MAP = "Map"
 
     DEFAULT_VALUE = {
-        CHECKBOX: 0,
+        CHECKBOX: "0",
         RICH_TEXT: "",
         TEXT: "",
     }
