@@ -28,7 +28,6 @@ class TestCADProposalsApi(base.BaseTestProposalApi):
     control_id = control.id
     cad_id = cad.id
     data = control.log_json()
-    del data["custom_attributes"]
     data["custom_attribute_values"][0]["attribute_value"] = "321"
     self.create_proposal(control,
                          full_instance_content=data,

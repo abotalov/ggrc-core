@@ -243,6 +243,7 @@ class TestCheckPopulatedContent(unittest.TestCase):
     revision = all_models.Revision(obj, mock.Mock(), mock.Mock(), content)
 
     self.assertEqual(
+        # pylint: disable=protected-access
         revision._document_evidence_hack(),
         expected_evidence,
     )

@@ -475,6 +475,7 @@ class CustomAttributable(object):
     return res
 
   def validate_custom_attributes(self):
+    """Set CADs and validate CAVs one by one."""
     # pylint: disable=not-an-iterable; we can iterate over relationships
     map_ = {d.id: d for d in self.custom_attribute_definitions}
     for value in self._custom_attribute_values:

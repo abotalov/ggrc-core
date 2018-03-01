@@ -3,7 +3,6 @@
 
 """Custom attribute definition module"""
 
-from cached_property import cached_property
 import flask
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import validates
@@ -337,6 +336,7 @@ def get_custom_attributes_for(model_name, instance_id=None):
 class CustomAttributeMapable(object):
   # pylint: disable=too-few-public-methods
   # because this is a mixin
+  """Mixin. Setup for models that can be mapped as CAV value."""
 
   @declared_attr
   def related_custom_attributes(cls):  # pylint: disable=no-self-argument

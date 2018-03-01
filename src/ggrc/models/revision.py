@@ -101,6 +101,8 @@ class Revision(Base, db.Model):
       instance = referenced_objects.get(self.resource_type, self.resource_id)
       if instance:
         return revisions_diff.prepare(instance, self.content)
+      # return empty diff object has already been removed
+      return {}
 
     return lazy_loader
 
