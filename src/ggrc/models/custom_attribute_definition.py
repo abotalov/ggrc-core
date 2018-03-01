@@ -54,6 +54,12 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
                                      backref='custom_attribute',
                                      cascade='all, delete-orphan')
 
+  def log_json(self, *args, **kwargs):
+    """Log method for CADs."""
+    data = super(CustomAttributeDefinition, self).log_json(*args, **kwargs)
+    data["default_value"] = self.default_value
+    return data
+
   @property
   def definition_attr(self):
     return '{0}_definition'.format(self.definition_type)

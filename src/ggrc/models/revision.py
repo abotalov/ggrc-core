@@ -349,7 +349,7 @@ class Revision(Base, db.Model):
       if cad["attribute_type"] == "Map:Person":
         value = "Person"
       else:
-        value = ""
+        value = cad["default_value"]
       cavs[custom_attribute_id] = {
           "attribute_value": value,
           "attribute_object_id": None,
