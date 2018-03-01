@@ -96,7 +96,7 @@ def get_searchable_attributes(attributes, cads, content):
     searchable_values[attr.alias] = value
 
   cav_dict = {v["custom_attribute_id"]: v
-              for v in content.get("custom_attributes", [])}
+              for v in content.get("custom_attribute_values", [])}
   for cad in cads:
     cav = cav_dict.get(cad.id)
     if not cav:
