@@ -280,9 +280,9 @@ class TestRevisions(TestCase):
   @ddt.data(
       ("Text", ""),
       ("Rich Text", ""),
-      ("Dropdown", ""),
-      ("Checkbox", ""),
-      ("Date", ""),
+      ("Dropdown", None),
+      ("Checkbox", "0"),
+      ("Date", None),
       ("Map:Person", "Person"),
   )
   @ddt.unpack
@@ -293,9 +293,9 @@ class TestRevisions(TestCase):
   @ddt.data(
       ("Text", ""),
       ("Rich Text", ""),
-      ("Dropdown", ""),
-      ("Checkbox", ""),
-      ("Date", ""),
+      ("Dropdown", None),
+      ("Checkbox", "0"),
+      ("Date", None),
       ("Map:Person", "Person"),
   )
   @ddt.unpack
