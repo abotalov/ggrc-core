@@ -437,7 +437,7 @@ class TestSnapshotIndexing(SnapshotterBaseTestCase):
   )
   @ddt.unpack
   def test_filter_by_checkbox_cad(self, value, search_value):
-    """Test index by Checkdoxed cad."""
+    """Test index by Checkdoxed cad {0} value and search_value {1}."""
     checkbox_type = all_models.CustomAttributeDefinition.ValidTypes.CHECKBOX
     cad_title = "Checkbox"
     with factories.single_commit():
