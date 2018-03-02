@@ -310,21 +310,22 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
 
 
 @memcache.cached
+def get_cads(definition_type):
+  """Returns jsons list for sent definition_type."""
+  query = CustomAttributeDefinition.query.filter(
+      CustomAttributeDefinition.definition_type == definition_type)
+  return [i.log_json() for i in query]
+
+
 def get_global_cads(definition_type):
   """Returns global cad jsons list for sent definition_type."""
-  return [i.log_json() for i in
-          CustomAttributeDefinition.query.filter(
-              CustomAttributeDefinition.definition_type == definition_type,
-              CustomAttributeDefinition.definition_id.is_(None))]
+  return [i for i in get_cads(definition_type) if i["definition_id"] is None]
 
 
-@memcache.cached
 def get_local_cads(definition_type, instance_id):
   """Returns local cad jsons list for sent definition_type and instance_id."""
-  return [i.log_json() for i in
-          CustomAttributeDefinition.query.filter(
-              CustomAttributeDefinition.definition_type == definition_type,
-              CustomAttributeDefinition.definition_id == instance_id)]
+  return [i for i in get_cads(definition_type)
+          if i["definition_id"] == instance_id]
 
 
 def get_model_name_inflector_dict():

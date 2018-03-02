@@ -14,13 +14,7 @@ from ggrc.models import custom_attribute_definition
 def invalidate_cache(sender, obj, src=None, service=None):
   """Invalidate cache related to cads."""
   # pylint: disable=unused-argument
-  if obj.definition_id:
-    custom_attribute_definition.get_local_cads.invalidate_cache(
-        obj.definition_type,
-        obj.definition_id)
-  else:
-    custom_attribute_definition.get_global_cads.invalidate_cache(
-        obj.definition_type)
+  custom_attribute_definition.get_cads.invalidate_cache(obj.definition_type)
 
 
 def init_hook():
@@ -44,6 +38,9 @@ def init_hook():
   signals.Restful.model_posted.connect(invalidate_cache,
                                        all_models.CustomAttributeDefinition,
                                        weak=False)
+  signals.Restful.model_put.connect(invalidate_cache,
+                                    all_models.CustomAttributeDefinition,
+                                    weak=False)
   signals.Restful.model_deleted.connect(invalidate_cache,
                                         all_models.CustomAttributeDefinition,
                                         weak=False)
