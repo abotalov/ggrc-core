@@ -4,6 +4,8 @@
 
 import sys
 
+import inflection
+
 
 # objects
 PROGRAMS = "programs"
@@ -106,7 +108,7 @@ def get_singular(plural, title=False):
  """
   _singular = _get_singular([plural])[0]
   if title:
-    _singular = _singular.title()
+    _singular = inflection.camelize(_singular.lower())
   else:
     _singular = _singular.lower()
   return _singular
