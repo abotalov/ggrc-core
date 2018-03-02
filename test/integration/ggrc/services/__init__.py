@@ -9,6 +9,7 @@ import ggrc
 import ggrc.builder
 import ggrc.services
 from ggrc import db
+from ggrc.models import all_models
 from ggrc.models.mixins import Base
 from ggrc.models import reflection
 from ggrc.models.exceptions import ValidationError
@@ -55,6 +56,9 @@ URL_MOCK_RESOURCE = '/api/mock_resources/{0}'
 reset_first_request_flag()
 Resource.add_to(
     ggrc.app.app, URL_MOCK_COLLECTION, model_class=ServicesTestMockModel)
+
+
+all_models.all_models.append(ServicesTestMockModel)
 
 
 class TestCase(BaseTestCase):
