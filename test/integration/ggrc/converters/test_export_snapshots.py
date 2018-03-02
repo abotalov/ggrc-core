@@ -9,7 +9,10 @@ from ggrc.utils import QueryCounter
 from integration.ggrc import TestCase
 from integration.ggrc.models import factories
 
+from appengine import base
 
+
+@base.with_memcache
 class TestExportSnapshots(TestCase):
   """Tests basic snapshot export."""
 

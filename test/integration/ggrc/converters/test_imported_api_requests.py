@@ -18,9 +18,11 @@ from integration.ggrc_workflows.generator import WorkflowsGenerator
 from integration.ggrc import TestCase
 from integration.ggrc.generator import ObjectGenerator
 from integration.ggrc.models import factories
+from appengine import base
 
 
 @ddt.ddt
+@base.with_memcache
 class TestComprehensiveSheets(TestCase):
 
   """
