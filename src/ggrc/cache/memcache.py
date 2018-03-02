@@ -267,9 +267,12 @@ class _Decorated(object):
   """Decorated class."""
 
   def __init__(self, function):
-    self.active = settings.MEMCACHE_MECHANISM
     self.memcache_client = memcache.Client()
     self.function = function
+
+  @property
+  def active(self):
+    return settings.MEMCACHE_MECHANISM
 
   @property
   def superhot_cache(self):
