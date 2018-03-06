@@ -46,6 +46,17 @@ class AccessControlRole(Indexed, attributevalidator.AttributeValidator,
   access_control_list = db.relationship(
       'AccessControlList', backref='ac_role', cascade='all, delete-orphan')
 
+  parent_id = db.Column(
+      db.Integer,
+      db.ForeignKey('access_control_roles.id', ondelete='CASCADE'),
+      nullable=True,
+  )
+  parent = db.relationship(
+      lambda: AccessControlRole,
+      remote_side=lambda: AccessControlRole.id
+  )
+
+
   _reserved_names = {}
 
   @staticmethod
