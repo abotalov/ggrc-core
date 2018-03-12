@@ -175,7 +175,6 @@ dashboard-js-template-files:
   - base_objects/edit_object_link.mustache
   - programs/search_result.mustache
   - import_export/export/attribute_selector.mustache
-  - import_export/export/filter_query.mustache
   - quick_form/confirm_buttons.mustache
   - snapshots/dropdown_menu.mustache
   - snapshots/tree_add_item.mustache
