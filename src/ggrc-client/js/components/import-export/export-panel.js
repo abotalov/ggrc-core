@@ -20,7 +20,7 @@ export default can.Component.extend({
       first_panel: {
         type: 'boolean',
         get: function () {
-          return Number(this.attr('panel_number')) === 0;
+          return Number(this.attr('panel_index')) === 0;
         },
       },
       showAttributes: {
@@ -47,10 +47,15 @@ export default can.Component.extend({
           setValue(newValue);
         },
       },
+      panelNumber: {
+        get() {
+          return Number(this.attr('panel_index')) + 1;
+        },
+      },
     },
     exportable: GGRC.Bootstrap.exportable,
     snapshotable_objects: GGRC.config.snapshotable_objects,
-    panel_number: '@',
+    panel_index: '@',
     has_parent: false,
     fetch_relevant_data: function (id, type) {
       let dfd = CMS.Models[type].findOne({id: id});
@@ -115,9 +120,9 @@ export default can.Component.extend({
   },
   events: {
     inserted: function () {
-      let panelNumber = Number(this.viewModel.attr('panel_number'));
+      let panelNumber = this.viewModel.attr('panelNumber');
 
-      if (!panelNumber && url.relevant_id && url.relevant_type) {
+      if (panelNumber !== 1 && url.relevant_id && url.relevant_type) {
         this.viewModel.fetch_relevant_data(url.relevant_id, url.relevant_type);
       }
       this.viewModel.refreshItems();

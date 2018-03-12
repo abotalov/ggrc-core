@@ -21,7 +21,7 @@ export default can.Component.extend({
       let menu = this.menu();
 
       if (this.attr('relevant_menu_item') === 'parent' &&
-           Number(this.attr('panel_number')) !== 0 &&
+           Number(this.attr('panel_index')) !== 0 &&
            !this.attr('has_parent')) {
         menu.unshift({
           title_singular: 'Previous objects',
