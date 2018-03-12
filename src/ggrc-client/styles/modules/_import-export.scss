@@ -171,7 +171,15 @@ $controlsWidth: 400px;
 }
 
 .relevant-filter-group {
-  background: $white;
+  .new-relevant-block {
+    &:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 1px solid $itemBorder;;
+  }
 }
 
 .save-template-wrap {
@@ -182,14 +190,6 @@ $controlsWidth: 400px;
     float: left;
     padding-top: 5px;
   }
-}
-
-.new-relevant-block {
-  padding: 30px;
-}
-
-.new-relevant-block {
-  border-bottom: 1px solid $itemBorder;;
 }
 
 .report-title {
@@ -217,6 +217,11 @@ $controlsWidth: 400px;
 #csv_export {
   margin: 10px 40px 60px;
   font-size: 13px;
+
+  .export-groups {
+    padding: 30px;
+    background: $white;
+  }
 
   .export-panels {
     @include box-shadow(0 3px 3px -3px rgba(0,0,0, 0.3));
@@ -263,6 +268,7 @@ $controlsWidth: 400px;
 
   .filter-query {
     width: $controlsWidth;
+    margin-bottom: 30px;
   }
 }
 
@@ -308,6 +314,7 @@ $controlsWidth: 400px;
 
   .export-panel__title {
     font-weight: bold;
+    font-size: 12px;
     text-transform: uppercase;
     margin-right: 10px;
   }

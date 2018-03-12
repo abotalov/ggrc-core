@@ -34,6 +34,9 @@ can.Component.extend({
   viewModel: {
     isFilterActive: false,
     'export': new exportModel(),
+    addObjectType() {
+      this.attr('export').dispatch('addPanel');
+    },
   },
   events: {
     toggleIndicator: function (currentFilter) {
@@ -119,10 +122,6 @@ can.Component.extend({
       }.bind(this)).always(function () {
         this.viewModel.attr('export.loading', false);
       }.bind(this));
-    },
-    '#addAnotherObjectType click': function (el, ev) {
-      ev.preventDefault();
-      this.viewModel.attr('export').dispatch('addPanel');
     },
   },
 });
