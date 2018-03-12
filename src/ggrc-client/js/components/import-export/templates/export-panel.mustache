@@ -3,42 +3,37 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
-<div class="row-fluid">
-  <div class="span4">
-    <div class="flex-box">
-      <h6>Export object type</h6>
-      {{#unless first_panel}}
-        <button type="submit" class="remove_filter_group">
-          <i class="fa fa-trash"></i>
-        </button>
-      {{/unless}}
-    </div>
-    <div class="single-line-filter">
-      <select can-value="type" class="input-block-level option-type-selector">
-        {{#exportable}}
-          <option value="{{model_singular}}" label="{{title_plural}}"></option>
-        {{/exportable}}
-      </select>
-    </div>
+<div class="flex-box flex-col">
+  <h4> Object {{panelNumber}}
+    {{#unless first_panel}}
+      <i class="fa fa-trash-o" ($click)="removeFilterGroup(%element)"></i>
+    {{/unless}}
+  </h4>
+  <h6>
+    Object type
+  </h6>
+
+  <div class="single-line-filter">
+    <select can-value="type" class="input-block-level option-type-selector">
+      {{#exportable}}
+        <option value="{{model_singular}}" label="{{title_plural}}"></option>
+      {{/exportable}}
+    </select>
   </div>
+
+  {{#if_equals type "Snapshot"}}
+   <h6>Select snapshot object type</h6>
+   <div class="single-line-filter">
+     <select can-value="item.snapshot_type" class="input-block-level option-type-selector">
+       {{#snapshotable_objects}}
+         <option value="{{.}}" label="{{.}}" ></option>
+       {{/snapshotable_objects}}
+     </select>
+   </div>
+  {{/if_equals}}
+
+  {{> /static/mustache/import_export/export/attribute_selector.mustache}}
+  {{> /static/mustache/import_export/export/filter_query.mustache}}
+
+  <relevant-filter show_all="true" has_parent="item.has_parent" relevant_menu_item="parent" type="export.type" panel_index="panel_index" relevant="item.relevant" disable-create="true"></relevant-filter>
 </div>
-
-{{#if_equals type "Snapshot"}}
-  <div class="row-fluid">
-    <div class="span4">
-      <h6>Select snapshot object type</h6>
-      <div class="single-line-filter">
-        <select can-value="item.snapshot_type" class="input-block-level option-type-selector">
-          {{#snapshotable_objects}}
-            <option value="{{.}}" label="{{.}}" ></option>
-          {{/snapshotable_objects}}
-        </select>
-      </div>
-    </div>
-  </div>
-{{/if_equals}}
-
-{{> /static/mustache/import_export/export/attribute_selector.mustache}}
-{{> /static/mustache/import_export/export/filter_query.mustache}}
-
-<relevant-filter show_all="true" has_parent="item.has_parent" relevant_menu_item="parent" type="export.type" panel_number="panel_number" relevant="item.relevant" disable-create="true"></relevant-filter>

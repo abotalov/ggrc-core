@@ -4,28 +4,20 @@
 }}
 
 <h6>
-  <span>
-    Filter by mapping
-  </span>
-  <span class="add-rule">
-    {{^readOnly}}
-      <a href="javascript://" ($click)="addFilter" class="add-filter-rule">
-        <i class="fa fa-fw fa-plus-circle"></i>
-      </a>
-    {{/readOnly}}
-  </span>
+  Filter by mapping
+  {{^readOnly}}
+    <a href="javascript://" ($click)="addFilter" class="add-filter-rule">
+      <i class="fa fa-fw fa-plus-circle"></i>
+    </a>
+  {{/readOnly}}
 </h6>
 {{#each relevant}}
   <div class="single-line-filter">
     {{^readOnly}}
-      <button type="submit" ($click)="removeFilter(%element, @index)">
-        <i class="fa fa-trash"></i>
-      </button>
+      <i class="fa fa-trash" ($click)="removeFilter(%element, @index)"></i>
     {{/readOnly}}
-    <label>
-      {{#if @index}}AND {{/if}}Mapped to:
-    </label>
-    <select class="input-small filter-type-selector select-filter{{@index}}"
+    {{#if @index}}AND {{/if}}Mapped to:
+    <select class="filter-type-selector select-filter{{@index}}"
             {{#readOnly}}disabled="disabled"{{/readOnly}}
             can-value="model_name">
       {{#menu}}
@@ -40,20 +32,20 @@
     {{#filter}}
       {{#if_helpers '\n #if' model_name '\n and ^if_equals' model_name '__previous__'}}
         {{#model_name}}
-        <div class="modal-search objective-selector">
-          <input
-            {{#readOnly}}disabled="disabled"{{/readOnly}}
-            class="input-large search-icon search-filter-{{@index}}"
-            placeholder="Enter text to search for {{model_name}}"
-            type="text"
-            data-index="{{@index}}"
-            name="filter_list.{{@index}}.filter"
-            value="{{firstnonempty filter.name filter.email filter.title}}"
-            data-lookup="{{this}}"
-            data-template="/{{#if_equals model_name 'Person'}}people{{else}}base_objects{{/if_equals}}/autocomplete_result.mustache"
-            {{ autocomplete_select disableCreate }}
+          <div class="modal-search objective-selector">
+            <input
+                {{#readOnly}}disabled="disabled"{{/readOnly}}
+                class="input-large search-icon search-filter-{{@index}}"
+                placeholder="Enter text to search for {{model_name}}"
+                type="text"
+                data-index="{{@index}}"
+                name="filter_list.{{@index}}.filter"
+                value="{{firstnonempty filter.name filter.email filter.title}}"
+                data-lookup="{{this}}"
+                data-template="/{{#if_equals model_name 'Person'}}people{{else}}base_objects{{/if_equals}}/autocomplete_result.mustache"
+              {{ autocomplete_select disableCreate }}
             >
-        </div>
+          </div>
         {{/model_name}}
       {{/if_helpers}}
     {{/filter}}

@@ -3,6 +3,8 @@
  * Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+$controlsWidth: 400px;
+
 #import_view > header {
   margin: 0 40px;
 }
@@ -184,10 +186,6 @@
 
 .new-relevant-block {
   padding: 30px;
-
-  relevant-filter {
-    max-width: 560px;
-  }
 }
 
 .new-relevant-block {
@@ -217,10 +215,54 @@
 }
 
 #csv_export {
-  margin: 10px 40px;
+  margin: 10px 40px 60px;
+  font-size: 13px;
 
   .export-panels {
     @include box-shadow(0 3px 3px -3px rgba(0,0,0, 0.3));
+  }
+
+  h4 {
+    font-size: 16px;
+    margin-bottom: 20px;
+
+    i {
+      cursor: pointer;
+    }
+  }
+
+  h6 {
+    display: flex;
+    align-content: baseline;
+    margin-bottom: 5px;
+
+    .fa-trash-o {
+      margin-left: 5px;
+    }
+  }
+
+  .option-type-selector {
+    max-width: $controlsWidth;
+  }
+
+  .attribute-wrap {
+    display: flex;
+    flex-wrap: wrap;
+
+    label {
+      min-width: 150px;
+      display: flex;
+      align-items: baseline;
+      margin-right: 5px;
+    }
+
+    input {
+      margin-right: 3px;
+    }
+  }
+
+  .filter-query {
+    width: $controlsWidth;
   }
 }
 
@@ -274,10 +316,6 @@
     line-height: 10px;
     margin-right: 5px;
   }
-}
-
-.remove_filter_group {
-  margin: 0 0 5px 10px;
 }
 
 .quick-tips {
@@ -347,5 +385,27 @@
   &__value {
     width: 280px;
     color: $grayLight;
+  }
+}
+
+.single-line-filter {
+  margin-bottom: 20px;
+
+  select, input {
+    margin-bottom: 0;
+  }
+  .relevance-filters & {
+    margin-bottom: 6px;
+  }
+  .input-xlarge {
+    width: 85%;
+    box-sizing: border-box;
+    height: 28px;
+    .relevant-filter-group & {
+      width: 79%;
+    }
+  }
+  .objective-selector {
+    display: inline-block;
   }
 }
