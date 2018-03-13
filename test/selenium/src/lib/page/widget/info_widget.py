@@ -59,7 +59,7 @@ class InfoWidget(base.Widget):
           re.sub(element.Common.CREATED_AT, string_utils.Symbols.BLANK,
                  _created_at_txt))
       self.updated_at_txt = (
-          _updated_at_txt.splitlines()[1].replace(
+          _updated_at_txt.splitlines()[2].replace(
               "on ", string_utils.Symbols.BLANK))
       self._extend_list_all_scopes(
           [self._elements.CREATED_AT.upper(),
