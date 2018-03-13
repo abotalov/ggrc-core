@@ -225,7 +225,7 @@ class CustomAttributeDefinitionsService(BaseRestService):
   """Service for working with Custom Attributes entities."""
   def __init__(self):
     super(CustomAttributeDefinitionsService, self).__init__(
-        url.CUSTOM_ATTRIBUTES)
+        url.CUSTOM_ATTRIBUTE_DEFINITIONS)
 
   def create_dashboard_gcas(self, obj_type, count=1):
     """Create 'Dashboard' CAs via rest according to passed obj_type and count.

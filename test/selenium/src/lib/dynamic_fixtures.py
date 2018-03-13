@@ -60,7 +60,8 @@ def _new_objs_rest(obj_name, obj_count,  # noqa: ignore=C901
     and list extra attributes.
     Return: [lib.entities.entity.*Entity, ...]
     """
-    if extra_attrs[0].type == objects.get_singular(objects.CUSTOM_ATTRIBUTES):
+    obj_name = objects.get_singular(objects.CUSTOM_ATTRIBUTE_DEFINITIONS)
+    if extra_attrs[0].type == obj_name:
       if name == objects.ASSESSMENT_TEMPLATES:
         return factory.get_cls_rest_service(object_name=name)().create_objs(
             count=1, factory_params=factory_params,
@@ -69,10 +70,12 @@ def _new_objs_rest(obj_name, obj_count,  # noqa: ignore=C901
                 list_ca_definitions=extra_attrs[:len(_list_cas_types)]),
             audit=extra_attrs[len(_list_cas_types):][0].__dict__)
       else:
+        cads = [cad.__dict__ for cad in extra_attrs]
         return factory.get_cls_rest_service(object_name=name)().create_objs(
             count=1, factory_params=factory_params,
-            custom_attributes=CustomAttributeDefinitionsFactory().
-            generate_ca_values(list_ca_def_objs=extra_attrs))
+            custom_attribute_definitions=cads,
+            custom_attribute_values=CustomAttributeDefinitionsFactory().
+            generate_ca_values(list_ca_def_objs=cads))
     else:
       return ([factory.get_cls_rest_service(object_name=name)().
               create_objs(count=1, factory_params=factory_params,
@@ -122,7 +125,7 @@ def generate_common_fixtures(*fixtures):  # noqa: ignore=C901
     """
     if "new_cas_for_" in fixture:
       fixture_params = fixture.replace("new_cas_for_", "").replace("_rest", "")
-      obj_name = objects.CUSTOM_ATTRIBUTES
+      obj_name = objects.CUSTOM_ATTRIBUTE_DEFINITIONS
       factory_cas_for_objs = [CustomAttributeDefinitionsFactory().create(
           attribute_type=unicode(ca_type),
           definition_type=unicode(objects.get_singular(fixture_params)))
@@ -212,7 +215,7 @@ def generate_common_fixtures(*fixtures):  # noqa: ignore=C901
         updated_objs = (
             factory.get_cls_rest_service(object_name=obj_name)().update_objs(
                 objs=objs_to_update, factory_params=factory_params,
-                custom_attributes=CustomAttributeDefinitionsFactory().
+                custom_attribute_values=CustomAttributeDefinitionsFactory().
                 generate_ca_values(list_ca_def_objs=parent_objs)))
       else:
         updated_objs = factory.get_cls_rest_service(
@@ -238,7 +241,7 @@ def generate_common_fixtures(*fixtures):  # noqa: ignore=C901
     if "_with_cas" in obj_name:
       obj_name = objects.get_plural(obj_name.replace("_with_cas", ""))
     if "cas_for_" in obj_name:
-      obj_name = objects.CUSTOM_ATTRIBUTES
+      obj_name = objects.CUSTOM_ATTRIBUTE_DEFINITIONS
     if objs_to_delete:
       deleted_objs = factory.get_cls_rest_service(
           object_name=obj_name)().delete_objs(objs=objs_to_delete)

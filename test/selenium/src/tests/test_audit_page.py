@@ -142,8 +142,9 @@ class TestAuditPage(base.Test):
         src_obj=new_audit_rest, objs=expected_asmt)
     expected_asmt = expected_asmt.repr_ui()
     # 'expected_asmt': custom_attributes (None) *factory
+    # TODO
     self.general_equal_assert(
-        expected_asmt, actual_asmt, "custom_attributes")
+        expected_asmt, actual_asmt, "custom_attribute_values")
 
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize(
@@ -184,6 +185,7 @@ class TestAuditPage(base.Test):
         src_obj=new_audit_rest, objs=expected_asmts)
     # 'expected_asmt': slug, custom_attributes (None) *factory
     # 'actual_asmt': audit (None)
+    # TODO
     self.general_equal_assert(
         expected_asmts, actual_asmts, "slug", "custom_attributes", "audit")
 
@@ -342,7 +344,7 @@ class TestAuditPage(base.Test):
         new_control_rest.type, count=len(urls)))
     control_rest_service = rest_service.ControlsService()
     control_rest_service.update_obj(
-        obj=new_control_rest, custom_attributes=dict(
+        obj=new_control_rest, custom_attribute_values=dict(
             zip([gca_def.id for gca_def in gca_defs], urls)))
     expected_dashboards_items = dict(zip(
         [gca_def.title.replace(aliases.DASHBOARD + "_", "")

@@ -35,7 +35,7 @@ MARKETS = "markets"
 RISKS = "risks"
 THREATS = "threats"
 RISK_ASSESSMENTS = "risk_assessments"
-CUSTOM_ATTRIBUTES = "custom_attribute_definitions"
+CUSTOM_ATTRIBUTE_DEFINITIONS = "custom_attribute_definitions"
 COMMENTS = "comments"
 SNAPSHOTS = "snapshots"
 TASK_GROUPS = "task_groups"
@@ -148,4 +148,4 @@ ALL_OBJS = [obj for obj in [getattr(sys.modules[__name__], _obj) for _obj in
 
 def get_obj_type(obj_name):
   """Get object's type based on object's name."""
-  return get_singular(obj_name, title=obj_name != CUSTOM_ATTRIBUTES)
+  return get_singular(obj_name, title=obj_name != CUSTOM_ATTRIBUTE_DEFINITIONS)

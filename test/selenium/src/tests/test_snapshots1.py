@@ -163,15 +163,10 @@ class TestSnapshots(base.Test):
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize(
       ("dynamic_create_audit_with_control", "control", "expected_control"),
-      [("create_audit_with_control_and_update_control",
-        "new_control_rest", "update_control_rest"),
-       ("create_audit_with_control_with_cas_and_update_control_with_cas",
-        "new_control_with_cas_rest", "update_control_with_cas_rest"),
+      [
        ("create_audit_with_control_with_cas_and_delete_cas_for_controls",
         "new_control_with_cas_rest", "new_control_with_cas_rest")],
-      ids=["Update snapshotable Control to latest ver after updating Control",
-           "Update snapshotable Control to latest ver "
-           "after updating Control with CAs",
+      ids=[
            "Update snapshotable Control to latest ver "
            "after deleting CAs for Controls"],
       indirect=["dynamic_create_audit_with_control"])
@@ -214,10 +209,12 @@ class TestSnapshots(base.Test):
     # 'actual_control': created_at, updated_at, modified_by (None)
     self.general_equal_assert(
         expected_control, actual_control,
-        "created_at", "updated_at", "modified_by", "custom_attributes")
+        "created_at", "updated_at", "modified_by", "custom_attribute_values")
     self.xfail_equal_assert(
         expected_control, actual_control,
-        "Issue in app GGRC-2344", "custom_attributes")
+        "Issue in app GGRC-2344", "custom_attribute_values")
+    # Control: CAD - all, CAV - none
+    # Control revision: CAD - all, CAV - all
 
   @pytest.mark.smoke_tests
   def test_mapped_to_program_controls_does_not_added_to_existing_audit(

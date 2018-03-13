@@ -191,23 +191,23 @@ class InfoWidget(base.Widget):
     if len(cas_headers_and_values) >= 1:
       list_text_cas_scopes = []
       for scope in cas_headers_and_values:
-        ca_header_text = scope.text.splitlines()[0]
-        if len(scope.text.splitlines()) >= 2:
-          if scope.text.splitlines()[1].strip():
-            list_text_cas_scopes.append(
-                [ca_header_text, scope.text.splitlines()[1]])
+        selenium_ca_value = None
+        lines = scope.text.splitlines()
+        ca_header_text = lines[0]
+        if len(lines) >= 2:
+          if lines[1].strip():
+            selenium_ca_value = [ca_header_text, lines[1]]
           else:
-            list_text_cas_scopes.append([ca_header_text, None])
-        if len(scope.text.splitlines()) == 1:
+            selenium_ca_value = [ca_header_text, None]
+        if len(lines) == 1:
           if (element.AdminWidgetCustomAttributes.CHECKBOX.upper() in
                   ca_header_text):
-            list_text_cas_scopes.append(
-                [ca_header_text,
-                 unicode(int(base.Checkbox(self._driver, scope.find_element(
-                     *self._locators.CAS_CHECKBOXES)).is_checked_via_js()))
-                 ])
+            selenium_ca_value = [ca_header_text,
+                unicode(int(base.Checkbox(self._driver, scope.find_element(
+                    *self._locators.CAS_CHECKBOXES)).is_checked_via_js()))]
           else:
-            list_text_cas_scopes.append([ca_header_text, None])
+            selenium_ca_value = [ca_header_text, None]
+        list_text_cas_scopes.append(selenium_ca_value)
       cas_headers, _cas_values = [list(text_cas_scope) for text_cas_scope
                                   in zip(*list_text_cas_scopes)]
       # conversion

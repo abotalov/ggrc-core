@@ -226,10 +226,10 @@ class TestAssessmentsWorkflow(base.Test):
     expected_asmt = new_assessments_rest[0]
     asmts_rest_service = rest_service.AssessmentsService()
     asmts_rest_service.update_obj(
-        obj=expected_asmt, custom_attributes=custom_attr_values)
+        obj=expected_asmt, custom_attribute_values=custom_attr_values)
     asmts_rest_service.update_obj(
         obj=new_assessments_rest[1],
-        custom_attributes={checkbox_id: not custom_attr_values[checkbox_id]})
+        custom_attribute_values={checkbox_id: not custom_attr_values[checkbox_id]})
     self._check_assessments_filtration(expected_asmt, custom_attr_values,
                                        operator, new_audit_rest, selenium)
 
@@ -268,7 +268,7 @@ class TestAssessmentsWorkflow(base.Test):
             list_ca_def_objs=custom_attr_definitions)
         attr_values[checkbox_id] = checkbox_value
       rest_service.AssessmentsService().update_obj(
-          obj=assessment, custom_attributes=attr_values)
+          obj=assessment, custom_attribute_values=attr_values)
       return attr_values
 
     unchecked_asmt = new_assessments_from_template_rest[0]

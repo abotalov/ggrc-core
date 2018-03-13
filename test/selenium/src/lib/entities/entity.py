@@ -84,7 +84,8 @@ class Representation(object):
     ui_remap_items = {
         els.MANAGER: "managers", els.VERIFIED: "verified",
         els.STATUS: "status", els.LAST_UPDATED: "updated_at",
-        els.AUDIT_CAPTAINS: "audit_captains", els.CAS: "custom_attributes",
+        els.AUDIT_CAPTAINS: "audit_captains",
+        els.CAS: "selenium_custom_attributes",
         els.MAPPED_OBJECTS: "mapped_objects", els.ASSIGNEES: "assignees",
         els.CREATORS: "creators", els.VERIFIERS: "verifiers",
         els.COMMENTS_HEADER: "comments", els.CREATED_AT: "created_at",
@@ -207,8 +208,7 @@ class Representation(object):
         setattr(obj, obj_attr_name, obj_attr_value)
       # merge "custom_attribute_definitions" and "custom_attribute_values"
       obj_cas_attrs_names = [
-          "custom_attributes", "custom_attribute_definitions",
-          "custom_attribute_values"]
+          "custom_attribute_definitions", "custom_attribute_values"]
       if set(obj_cas_attrs_names).issubset(obj.__dict__.keys()):
         cas_def = obj.custom_attribute_definitions
         cas_val = obj.custom_attribute_values
@@ -241,7 +241,7 @@ class Representation(object):
         cas = StringMethods.merge_dicts_by_same_key(cas_def_dict, cas_val_dict)
         if cas in [{None: None}, {}]:
           cas = None
-        setattr(obj, "custom_attributes", cas)
+        setattr(obj, "selenium_custom_attributes", cas)
       return obj
     return help_utils.execute_method_according_to_plurality(
         objs=objs, types=Entity.all_entities_classes(),
@@ -422,6 +422,7 @@ class Representation(object):
 
   @staticmethod
   def compare_cas(self_cas, other_cas):
+    # TODO
     """Compare entities' 'custom_attributes' attributes."""
     if (isinstance(self_cas, (dict, type(None))) and
             isinstance(other_cas, (dict, type(None)))):
