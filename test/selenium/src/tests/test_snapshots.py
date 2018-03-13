@@ -104,14 +104,16 @@ class TestSnapshots(base.Test):
   @pytest.mark.parametrize(
       ("dynamic_create_audit_with_control", "expected_control", "is_openable",
        "is_updateable"),
-      [("create_audit_with_control_and_update_control",
-        "new_control_rest", True, True),
-       ("create_audit_with_control_and_delete_control",
-        "new_control_rest", False, False),
+      [pytest.mark.skip(reason="CADs are not set in response")((
+          "create_audit_with_control_and_update_control",
+          "new_control_rest", True, True)),
+       pytest.mark.skip(reason="CADs are not set in response")((
+           "create_audit_with_control_and_delete_control",
+           "new_control_rest", False, False)),
        ("create_audit_with_control_with_cas_and_update_control_with_cas",
-        "new_control_with_cas_rest", True, True),
+       "new_control_with_cas_rest", True, True),
        ("create_audit_with_control_with_cas_and_delete_cas_for_controls",
-        "new_control_with_cas_rest", True, True)],
+       "new_control_with_cas_rest", True, True)],
       ids=["Audit contains snapshotable Control after updating Control",
            "Audit contains snapshotable Control after deleting Control",
            "Audit contains snapshotable Control "
@@ -163,8 +165,9 @@ class TestSnapshots(base.Test):
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize(
       ("dynamic_create_audit_with_control", "control", "expected_control"),
-      [("create_audit_with_control_and_update_control",
-        "new_control_rest", "update_control_rest"),
+      [pytest.mark.skip(reason="CADs are not set in response")((
+          "create_audit_with_control_and_update_control",
+          "new_control_rest", "update_control_rest")),
        ("create_audit_with_control_with_cas_and_update_control_with_cas",
         "new_control_with_cas_rest", "update_control_with_cas_rest"),
        ("create_audit_with_control_with_cas_and_delete_cas_for_controls",
