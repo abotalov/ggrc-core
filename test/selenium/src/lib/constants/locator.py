@@ -17,7 +17,7 @@ class Common(object):
   SPINNER_CSS = (By.CSS_SELECTOR, SPINNER)
   # modal
   MODAL_CREATE = ".modal-wide"
-  MODAL_CONFIRM = ".modal.hide"
+  MODAL_CONFIRM = ".modal.in"
   MODAL_MAPPER = ".modal-selector"
   MODAL_FOOTER = " .modal-footer"
   MODAL_BODY = " .modal-body"

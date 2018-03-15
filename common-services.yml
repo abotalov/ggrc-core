@@ -1,0 +1,26 @@
+version: "2.2"
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+     - ".:/vagrant"
+     - ".:/vagrant_bind"
+    ports:
+      - "127.0.0.1:8081-8082:8080"
+    expose:
+      - "8080"
+    environment:
+     - PYTHONDONTWRITEBYTECODE=true
+     - NODE_PATH=/vagrant-dev/node_modules/
+     - GGRC_DATABASE_URI=mysql+mysqldb://root:root@db/ggrcdev?charset=utf8
+     - GGRC_DATABASE_HOST=db
+  db:
+    image: mysql:5.6
+    volumes:
+     - "./provision/docker/mysql:/etc/mysql/conf.d"
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+    tmpfs:
+      - /var/lib/mysql/:rw,noexec,nosuid,size=1G

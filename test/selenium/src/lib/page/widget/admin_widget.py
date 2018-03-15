@@ -3,8 +3,8 @@
 """Widgets on Admin Dashboard page."""
 # pylint: disable=too-few-public-methods
 
-from lib import base, environment, exception
-from lib.constants import locator, url, objects
+from lib import base, exception
+from lib.constants import locator, objects
 from lib.page.widget import widget_base
 from lib.utils import selenium_utils
 
@@ -16,8 +16,6 @@ class Widget(base.Widget):
 class Events(Widget):
   """Event widget on Admin Dashboard."""
   _locators = locator.WidgetAdminEvents
-
-  URL = environment.APP_URL + url.ADMIN_DASHBOARD + url.Widget.EVENTS
 
   def __init__(self, driver):
     super(Events, self).__init__(driver)
@@ -32,13 +30,13 @@ class Events(Widget):
 
 class People(Widget):
   """People widget on Admin Dashboard."""
-  URL = environment.APP_URL + url.ADMIN_DASHBOARD + url.Widget.PEOPLE
+
+  def __init__(self, driver):
+    super(People, self).__init__(driver)
 
 
 class Roles(Widget):
   """Admin roles widget on Admin Dashboard."""
-
-  URL = environment.APP_URL + url.ADMIN_DASHBOARD + url.Widget.ROLES
 
   def __init__(self, driver):
     super(Roles, self).__init__(driver)
@@ -53,9 +51,6 @@ class Roles(Widget):
 
 class CustomAttributes(widget_base.WidgetAdminCustomAttributes):
   """Custom attributes widget on Admin Dashboard page."""
-
-  URL = (environment.APP_URL + url.ADMIN_DASHBOARD +
-         url.Widget.CUSTOM_ATTRIBUTES)
 
   def __init__(self, driver):
     super(CustomAttributes, self).__init__(driver)

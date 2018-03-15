@@ -2,15 +2,13 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Login page."""
 
-from lib import environment, base
+from lib import base
 from lib.constants import locator
 from lib.page import dashboard
 
 
-class LoginPage(base.Page):
+class LoginPage(base.AbstractPage):
   """Login page model."""
-
-  URL = environment.APP_URL
 
   def __init__(self, driver):
     super(LoginPage, self).__init__(driver)

@@ -20,7 +20,6 @@ class Section(object):
 class Values(object):
   """Setting parameters for test launch."""
   WAIT_FOR_APP_SERVER = "wait_for_app_server"
-  BASE_URL = "base_url"
   PORT = "port"
   LEVEL = "level"
   FORMAT = "format"

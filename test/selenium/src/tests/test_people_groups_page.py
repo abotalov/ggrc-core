@@ -6,8 +6,7 @@
 
 import pytest  # pylint: disable=import-error
 
-from lib import base
-from lib.constants import url
+from lib import base, url
 
 
 class TestOrgGroupPage(base.Test):

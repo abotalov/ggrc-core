@@ -11,7 +11,9 @@ this module.
 import re
 import uuid
 
-from lib import base
+import waiting
+
+from lib import base, constants
 from lib.constants.test import modal_create_new, modal_custom_attribute
 
 
@@ -138,3 +140,9 @@ class ModalNewProducts(ModalInput):
 
 class ModalNewProjects(ModalInput):
   """Utils for data entry for Project modals."""
+
+
+def wait_for(*args, **kwargs):
+  if "timeout_seconds" not in kwargs:
+    kwargs["timeout_seconds"] = constants.ux.MAX_USER_WAIT_SECONDS
+  return waiting.wait(*args, **kwargs)

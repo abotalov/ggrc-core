@@ -6,8 +6,10 @@
 
 import pytest    # pylint: disable=import-error
 from lib import base
-from lib.page import login
 from lib.constants import locator
+from lib.page import login
+from lib.url import Urls
+from lib.utils import selenium_utils
 
 
 class TestLoginPage(base.Test):
@@ -15,5 +17,6 @@ class TestLoginPage(base.Test):
   @pytest.mark.smoke_tests
   def test_login_as_admin(self, selenium):
     """Logs in and verifies that we're logged in as admin."""
+    selenium_utils.open_url(selenium, Urls().login)
     login.LoginPage(selenium).login()
     selenium.find_element(*locator.PageHeader.BUTTON_ADMIN_DASHBOARD)

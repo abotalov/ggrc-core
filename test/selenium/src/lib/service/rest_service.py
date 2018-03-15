@@ -7,8 +7,8 @@ import json
 
 import requests
 
-from lib import environment, factory
-from lib.constants import url, objects, messages
+from lib import environment, factory, url
+from lib.constants import objects, messages
 from lib.entities import entities_factory
 from lib.entities.entities_factory import (
     PeopleFactory, CustomAttributeDefinitionsFactory, AssessmentsFactory)

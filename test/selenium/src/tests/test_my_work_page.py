@@ -8,10 +8,9 @@
 
 import pytest  # pylint: disable=import-error
 
-from lib import base
-from lib.constants import objects, url
+from lib import base, url
 from lib.page import dashboard, lhn
-from lib.page.widget import generic_widget
+from lib.url import Urls
 from lib.utils import selenium_utils
 
 
@@ -19,30 +18,11 @@ class TestMyWorkPage(base.Test):
   """Tests My Work page, part of smoke tests, section 2."""
 
   @pytest.mark.smoke_tests
-  def test_horizontal_nav_bar_tabs(self, new_controls_rest, my_work_dashboard,
-                                   selenium):
-    """Tests that several objects in widget can be deleted sequentially.
-    Preconditions:
-    - Controls created via REST API.
-    """
-    controls_tab = my_work_dashboard.select_controls()
-    for _ in xrange(controls_tab.member_count):
-      counter = controls_tab.get_items_count()
-      (controls_tab.select_member_by_num(0).
-       open_info_3bbs().select_delete().confirm_delete())
-      controls_tab.wait_member_deleted(counter)
-    controls_generic_widget = generic_widget.Controls(
-        selenium, objects.CONTROLS)
-    expected_widget_members = []
-    actual_widget_members = controls_generic_widget.members_listed
-    assert expected_widget_members == actual_widget_members
-
-  @pytest.mark.smoke_tests
   def test_redirect(self, header_dashboard, selenium):
     """Tests if user is redirected to My Work page after clicking on
     the my work button in user dropdown."""
     header_dashboard.select_my_work()
-    expected_url = dashboard.Dashboard.URL + url.Widget.INFO
+    expected_url = Urls().dashboard + url.Widget.INFO
     actual_url = selenium.current_url
     assert expected_url == actual_url
 
@@ -67,7 +47,7 @@ class TestMyWorkPage(base.Test):
     lhn_menu.select_my_objects()
     header_dashboard.close_lhn_menu()
     header_dashboard.open_user_list()
-    selenium.get(dashboard.Dashboard.URL)
+    selenium.get(Urls().dashboard)
     new_lhn_menu = dashboard.Header(selenium).open_lhn_menu()
     assert selenium_utils.is_value_in_attr(
         new_lhn_menu.my_objects.element) is True

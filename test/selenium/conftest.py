@@ -4,18 +4,18 @@
 # pylint: disable=invalid-name
 # pylint: disable=global-variable-not-assigned
 # pylint: disable=unused-argument
-
+import os
 import pytest
 
-from lib import dynamic_fixtures
+from lib import dynamic_fixtures, environment
+from lib.custom_pytest_scheduling import CustomPytestScheduling
 from lib.page import dashboard
 from lib.service import rest_service
+from lib.url import Urls
 from lib.utils import selenium_utils, help_utils
 from lib.utils.selenium_utils import get_full_screenshot_as_base64
 
 # pylint: disable=redefined-outer-name
-pytest_plugins = "selenium", "xdist", "xvfb", "timeout", "flask", \
-                 "rerunfailures", "timeout", "repeat", "pycharm"
 
 
 def _common_fixtures(fixture):
@@ -68,6 +68,10 @@ def pytest_runtest_makereport(item, call):
   report.extra = extra
 
 
+def pytest_xdist_make_scheduler(config, log):
+  return CustomPytestScheduling(config, log)
+
+
 @pytest.fixture(scope="function")
 def selenium(selenium):
   """Create Web Driver instance and setup test resources for running test
@@ -106,17 +110,19 @@ def chrome_options(chrome_options, create_tmp_dir):
   return chrome_options
 
 
-@pytest.fixture(scope="session")
-def base_url(base_url):
-  """Add '/' if base_url not end by '/'."""
-  yield base_url if base_url[-1] == "/" else base_url + "/"
+@pytest.fixture(scope="function", autouse=True)
+def dev_url():
+  environment.APP_URL = os.environ["DEV_URL"]
+  if not environment.APP_URL.endswith("/"):
+    environment.APP_URL += "/"
+  return environment.APP_URL
 
 
 @pytest.fixture(scope="function")
 def my_work_dashboard(selenium):
   """Open My Work Dashboard URL and
   return My Work Dashboard page objects model."""
-  selenium_utils.open_url(selenium, dashboard.Dashboard.URL)
+  selenium_utils.open_url(selenium, Urls().dashboard)
   return dashboard.Dashboard(selenium)
 
 
@@ -124,7 +130,7 @@ def my_work_dashboard(selenium):
 def header_dashboard(selenium):
   """Open My Work Dashboard URL and
   return Header Dashboard page objects model."""
-  selenium_utils.open_url(selenium, dashboard.Dashboard.URL)
+  selenium_utils.open_url(selenium, Urls().dashboard)
   return dashboard.Header(selenium)
 
 

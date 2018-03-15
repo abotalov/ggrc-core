@@ -7,6 +7,7 @@
 import re
 from urlparse import urldefrag
 
+from lib import environment
 from lib.constants import regex
 from lib.constants.objects import *  # noqa; the names are later exported
 
@@ -44,6 +45,13 @@ class Widget(object):
   CONTROLS = "#!control_widget"
   ISSUES = "#!issue_widget"
   PROGRAMS = "#!program_widget"
+
+
+class Urls(object):
+  def __init__(self):
+    self.admin_dashboard = environment.APP_URL + ADMIN_DASHBOARD
+    self.dashboard = environment.APP_URL + DASHBOARD
+    self.login = environment.APP_URL
 
 
 class Utils(object):

@@ -23,7 +23,7 @@ from lib.utils.string_utils import StringMethods
 
 class TestAssessmentsWorkflow(base.Test):
   """Tests for Assessments Workflow functionality."""
-  info_service = rest_service.ObjectsInfoService()
+  info_service = rest_service.ObjectsInfoService
 
   @pytest.mark.smoke_tests
   def test_add_comment_to_asmt_via_info_panel(
@@ -46,13 +46,13 @@ class TestAssessmentsWorkflow(base.Test):
     assert asmt_comments_panel.is_input_empty is True
     # 'expected_asmt_comments': created_at (None) *factory
     expected_asmt_comments = [expected_comment.update_attrs(
-        created_at=self.info_service.get_comment_obj(
+        created_at=self.info_service().get_comment_obj(
             paren_obj=expected_asmt,
             comment_description=expected_comment.description).created_at
     ).repr_ui() for expected_comment in expected_asmt_comments]
     # 'expected_asmt': updated_at (outdated)
     expected_asmt.update_attrs(
-        updated_at=self.info_service.get_obj(obj=expected_asmt).updated_at,
+        updated_at=self.info_service().get_obj(obj=expected_asmt).updated_at,
         comments=expected_asmt_comments,
         status=AssessmentStates.IN_PROGRESS).repr_ui()
     actual_asmt = asmts_ui_service.get_obj_from_info_page(obj=expected_asmt)
@@ -197,7 +197,7 @@ class TestAssessmentsWorkflow(base.Test):
                expected_asmt.title if "edit" in action
                else expected_asmt.title),
         status=expected_final_state.title(), verified=expected_verified,
-        updated_at=self.info_service.get_obj(
+        updated_at=self.info_service().get_obj(
             obj=expected_asmt).updated_at).repr_ui()
     actual_asmt = asmts_ui_service.get_obj_from_info_page(expected_asmt)
     # 'actual_asmt': audit (None)
@@ -349,7 +349,7 @@ class TestAssessmentsWorkflow(base.Test):
             expected_asmt, expected_asmt.mapped_objects))
     assert expected_titles == actual_titles
     # 'expected_asmt': updated_at (outdated)
-    expected_asmt.update_attrs(updated_at=self.info_service.get_obj(
+    expected_asmt.update_attrs(updated_at=self.info_service().get_obj(
         obj=expected_asmt).updated_at).repr_ui()
     actual_asmt = asmts_ui_service.get_obj_from_info_page(expected_asmt)
     # 'actual_asmts': audit (None)

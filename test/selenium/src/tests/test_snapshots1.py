@@ -17,6 +17,7 @@ from lib.entities.entity import Representation
 from lib.factory import get_cls_webui_service, get_cls_rest_service
 from lib.page import dashboard
 from lib.service import webui_service
+from lib.url import Urls
 from lib.utils import selenium_utils
 from lib.utils.filter_utils import FilterUtils
 
@@ -53,7 +54,7 @@ class TestSnapshots(base.Test):
   @pytest.fixture(scope="function")
   def lhn_menu(self, selenium):
     """Open LHN menu and return LHN page objects model."""
-    selenium_utils.open_url(selenium, dashboard.Dashboard.URL)
+    selenium_utils.open_url(selenium, Urls().dashboard)
     return dashboard.Dashboard(selenium).open_lhn_menu()
 
   @pytest.fixture(scope="function")
@@ -163,17 +164,17 @@ class TestSnapshots(base.Test):
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize(
       ("dynamic_create_audit_with_control", "control", "expected_control"),
-      [("create_audit_with_control_and_update_control",
-        "new_control_rest", "update_control_rest"),
+      [#("create_audit_with_control_and_update_control",
+       # "new_control_rest", "update_control_rest"),
        ("create_audit_with_control_with_cas_and_update_control_with_cas",
-        "new_control_with_cas_rest", "update_control_with_cas_rest"),
-       ("create_audit_with_control_with_cas_and_delete_cas_for_controls",
-        "new_control_with_cas_rest", "new_control_with_cas_rest")],
-      ids=["Update snapshotable Control to latest ver after updating Control",
+        "new_control_with_cas_rest", "update_control_with_cas_rest")],
+       #("create_audit_with_control_with_cas_and_delete_cas_for_controls",
+        #"new_control_with_cas_rest", "new_control_with_cas_rest")],
+      ids=[#"Update snapshotable Control to latest ver after updating Control",
            "Update snapshotable Control to latest ver "
-           "after updating Control with CAs",
-           "Update snapshotable Control to latest ver "
-           "after deleting CAs for Controls"],
+           "after updating Control with CAs"],
+           #"Update snapshotable Control to latest ver "
+           #"after deleting CAs for Controls"],
       indirect=["dynamic_create_audit_with_control"])
   def test_update_snapshotable_control_to_latest_ver(
       self, new_cas_for_controls_rest, dynamic_create_audit_with_control,
@@ -579,12 +580,10 @@ class TestSnapshots(base.Test):
     expected_control = audit_with_one_control["new_control_rest"][0].repr_ui()
     controls_ui_service = webui_service.ControlsService(
         selenium, is_versions_widget=is_issue_flow)
-    exported_file_name = (
-        controls_ui_service.
-        export_objs_via_tree_view_and_get_file_name(src_obj=dynamic_objects))
+    path_to_exported_file = controls_ui_service.export_objs_via_tree_view(
+        path_to_export_dir=create_tmp_dir, src_obj=dynamic_objects)
     actual_controls = controls_ui_service.get_list_objs_from_csv(
-        path_to_export_dir=create_tmp_dir,
-        exported_file_name=exported_file_name)
+        path_to_exported_file=path_to_exported_file)
     # 'actual_controls': created_at, updated_at,
     #                    custom_attributes (GGRC-2344) (None)
     self.general_equal_assert(

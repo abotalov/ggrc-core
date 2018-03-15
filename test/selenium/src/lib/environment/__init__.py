@@ -28,15 +28,7 @@ def _set_loggers(settings):
   selenium_logger.setLevel(logging_level)
 
 
-def _get_base_url(settings):
-  "Get base URL."
-  base_url = settings.get(
-      constants.settings.Section.PYTEST, constants.settings.Values.BASE_URL)
-  return base_url if base_url.endswith("/") else base_url + "/"
-
-
 _settings = _get_settings(PROJECT_ROOT_PATH + constants.path.CONFIG)
-APP_URL = _get_base_url(_settings)
 SERVER_WAIT_TIME = int(_settings.get(
     constants.settings.Section.APP,
     constants.settings.Values.WAIT_FOR_APP_SERVER))

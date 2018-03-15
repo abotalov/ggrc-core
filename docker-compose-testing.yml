@@ -1,47 +1,73 @@
-version: "2"
+version: "2.2"
 services:
   dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        CHROME_DRIVER_VERSION: "2.33"
-    volumes:
-     - ".:/vagrant"
-     - ".:/vagrant_bind"
-    ports:
-     - "127.0.0.1:8001:8000"
-     - "127.0.0.1:8081:8080"
-     - "127.0.0.1:9877:9876"
-    environment:
-     - PYTHONDONTWRITEBYTECODE=true
-     - NODE_PATH=/vagrant-dev/node_modules/
-     - GGRC_DATABASE_URI=mysql+mysqldb://root:root@db/ggrcdev?charset=utf8
-     - GGRC_DATABASE_HOST=db
-    links:
-     - db
-
+    extends:
+      service: dev
+      file: common-services.yml
+    depends_on:
+      - db
+    networks:
+      - network_1
+      - selenium
   db:
-    image: mysql:5.6
-    volumes:
-     - "./provision/docker/mysql:/etc/mysql/conf.d"
-    environment:
-     - MYSQL_ROOT_PASSWORD=root
-    tmpfs:
-      - /var/lib/mysql/:rw,noexec,nosuid,size=1G
-
+    extends:
+      service: db
+      file: common-services.yml
+    networks:
+      - network_1
+  dev_destructive:
+    extends:
+      service: dev
+      file: common-services.yml
+    depends_on:
+      - db_destructive
+    networks:
+      - network_2
+      - selenium
+  db_destructive:
+    extends:
+      service: db
+      file: common-services.yml
+    networks:
+      network_2:
+        aliases:
+          - db
   selenium:
     build:
       context: .
       dockerfile: Dockerfile-selenium
     volumes:
      - "./test/selenium:/selenium"
-     - "/dev/shm:/dev/shm"
-    links:
-     - dev
+    depends_on:
+      - dev
+      - dev_destructive
+      - chrome
+    networks:
+      - selenium
     environment:
      - "TZ=America/Los_Angeles"
      - PYTHONDONTWRITEBYTECODE=true
      - PYTHONPATH=/selenium/src
      - SCREEN_WIDTH=1440
      - SCREEN_HEIGHT=900
+  chrome:
+    image: selenium/node-chrome:3.11.0
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      HUB_HOST: hub
+    networks:
+      - selenium
+    scale: 4
+  hub:
+    image: selenium/hub:3.11.0
+    networks:
+      - selenium
+    expose:
+      - "4444"
+networks:
+  network_1:
+  network_2:
+  selenium:

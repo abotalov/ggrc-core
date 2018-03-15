@@ -5,8 +5,8 @@
 # pylint: disable=not-an-iterable
 # pylint: disable=too-few-public-methods
 
-from lib import base, decorator, environment
-from lib.constants import locator, url
+from lib import base, decorator
+from lib.constants import locator
 from lib.entities.entities_factory import CustomAttributeDefinitionsFactory
 from lib.utils import selenium_utils
 from lib.utils.string_utils import StringMethods
@@ -172,5 +172,6 @@ class DynamicTreeToggle(base.Toggle):
 class WidgetAdminCustomAttributes(base.Widget):
   """Base model for custom attributes on Admin Dashboard page."""
   _locators = locator.AdminCustomAttributes
-  URL = (environment.APP_URL + url.ADMIN_DASHBOARD +
-         url.Widget.CUSTOM_ATTRIBUTES)
+
+  def __init__(self, driver):
+    super(WidgetAdminCustomAttributes, self).__init__(driver)

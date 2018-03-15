@@ -8,8 +8,8 @@
 
 import pytest  # pylint: disable=import-error
 
-from lib import base
-from lib.constants import element, locator, url
+from lib import base, url
+from lib.constants import element, locator
 from lib.page.widget import info_widget
 from lib.utils import test_utils, selenium_utils
 

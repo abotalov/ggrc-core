@@ -8,9 +8,8 @@
 import copy
 import random
 
-from lib import factory
-from lib.constants import (element, objects, roles, value_aliases,
-                           url as const_url, messages)
+from lib import factory, url as const_url
+from lib.constants import element, objects, roles, value_aliases, messages
 from lib.constants.element import AdminWidgetCustomAttributes
 from lib.entities.entity import (
     PersonEntity, CustomAttributeDefinitionEntity, CommentEntity)

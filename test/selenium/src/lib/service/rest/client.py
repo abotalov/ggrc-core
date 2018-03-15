@@ -9,8 +9,7 @@ import urlparse
 
 import requests
 
-from lib import environment
-from lib.constants import url
+from lib import environment, url
 from lib.service.rest.template_provider import TemplateProvider
 
 

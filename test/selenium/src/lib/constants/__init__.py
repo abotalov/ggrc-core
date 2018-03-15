@@ -12,7 +12,6 @@ from lib.constants import (
   locator,
   method,
   regex,
-  url,
   ux,
   test_runner,
   settings,

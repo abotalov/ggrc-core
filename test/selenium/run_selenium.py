@@ -11,10 +11,11 @@ tests pass.
 """
 
 import os
+import subprocess
 import sys
 import time
 
-import pytest  # pylint: disable=import-error
+import _pytest
 import requests
 
 from lib import file_ops, environment, decorator  # noqa
@@ -27,28 +28,41 @@ sys.path.append(PROJECT_ROOT_PATH + "src")
 
 
 @decorator.track_time
-def wait_for_server():
+def wait_for_server(url):
   """Wait for the server to return '200' status code in response during
   predefined time in 'pytest.ini'.
   """
-  sys.stdout.write("Wating on server: ")
+  print "Wating on server: {}".format(url)
   for _ in xrange(environment.SERVER_WAIT_TIME):
     try:
-      if (requests.head(environment.APP_URL).status_code ==
+      if (requests.head(url).status_code ==
               client.RestClient.STATUS_CODES["OK"]):
-        print "[Done]"
-        return True
+        return
     except IOError:
-      sys.stdout.write(".")
-      sys.stdout.flush()
       time.sleep(1)
-  print "[Failed]"
-  return False
+  print "Failed waiting for server {}".format(url)
+  sys.exit(3)
+
+
+def parse_pytest_ini():
+  """# Initialize plugins, parse pytest.ini"""
+  _pytest.config._prepareconfig()
+
+
+def run_tests():
+  """Plugins were already imported to this process by `parse_pytest_ini`.
+  Running `pytest.main()` will cause them to be imported again and will produce
+  a warning. So `pytest` is run in a subprocess.
+  """
+  sys.stdout.flush()  # Flush should be before calling a subprocess
+  return subprocess.call("pytest")
 
 
 if __name__ == "__main__":
-  if not wait_for_server():
-    sys.exit(3)
+  parse_pytest_ini()
+  wait_for_server(os.environ["DEV_URL"])
+  wait_for_server(os.environ["DEV_DESTRUCTIVE_URL"])
   file_ops.create_directory(environment.LOG_PATH)
   file_ops.delete_directory_contents(environment.LOG_PATH)
-  sys.exit(pytest.main())
+  #return_code = run_tests()
+  #sys.exit(return_code)
