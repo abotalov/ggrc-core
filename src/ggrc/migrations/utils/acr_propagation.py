@@ -9,6 +9,29 @@ import sqlalchemy as sa
 
 from alembic import op
 
+BASIC_ROLES = (
+    "Admin",
+    "Primary Contacts",
+    "Secondary Contacts",
+)
+
+BASIC_PROPAGATION = {
+    "Admin": {
+        "Relationship R": {
+            "Comment R": {},
+            "Document RU": {},
+        },
+    },
+}
+
+_PROPOSAL_PROPAGATION = {
+    "Relationship R": {
+        "Comment R": {},
+        "Document RU": {},
+        "Proposal RU": {},
+    },
+}
+
 
 acr = sa.sql.table(
     "access_control_roles",

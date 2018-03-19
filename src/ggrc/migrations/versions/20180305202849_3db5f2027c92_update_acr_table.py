@@ -20,76 +20,72 @@ from ggrc.migrations.utils import acr_propagation
 revision = '3db5f2027c92'
 down_revision = 'd1671a8dac7'
 
-ASSESSMENT_ROLE_PROPAGATION = {
-    "Relationship R": {
-        "Audit R": {
-            "Relationship R": {
-                "Document R": {},
+_ASSESSMENT_ROLES = ("Creators", "Assignees", "Verifiers")
+
+_ASSESSMENT_PROPAGATION = {
+    _ASSESSMENT_ROLES: {
+        "Relationship R": {
+            "Audit R": {
+                "Relationship R": {
+                    "Document R": {},
+                },
             },
-        },
-        "Document RU": {},
-        "Comment R": {},
-        "Issue R": {
-            "Relationship R": {
-                "Comment R": {},
-                "Document R": {},
+            "Document RU": {},
+            "Comment R": {},
+            "Issue R": {
+                "Relationship R": {
+                    "Comment R": {},
+                    "Document R": {},
+                },
             },
-        },
-        "Snapshot R": {
-            "Relationship R": {
-                "Snapshot R": {},
+            "Snapshot R": {
+                "Relationship R": {
+                    "Snapshot R": {},
+                },
             },
         },
     },
 }
 
+_CONTROL_ROLES = (
+    "Admin",
+    "Primary Contacts",
+    "Secondary Contacts",
+    "Principal Assignees",
+    "Secondary Assignees",
+)
 
-_BASIC_PROPAGATION = {
-    "Admin": {
-        "Relationship R": {
-            "Comment R": {},
-            "Document RU": {},
-        },
-    },
-}
-
-_PROPOSAL_PROPAGATION = {
-    "Admin": {
-        "Relationship R": {
-            "Comment R": {},
-            "Document RU": {},
-            "Proposal RU": {},
-        },
-    },
+_CONTROL_PROPAGATION = {
+    _CONTROL_ROLES: acr_propagation._PROPOSAL_PROPAGATION,
 }
 
 
 PROPAGATION = {
-    "Assessment": {
-        ("Creators", "Assignees", "Verifiers"): ASSESSMENT_ROLE_PROPAGATION,
-    },
-    "AccessGroup": _BASIC_PROPAGATION,
-    "Clause": _BASIC_PROPAGATION,
-    "Contract": _BASIC_PROPAGATION,
-    "Control": _PROPOSAL_PROPAGATION,
-    "DataAsset": _BASIC_PROPAGATION,
-    "Facility": _BASIC_PROPAGATION,
-    "Issue": _BASIC_PROPAGATION,
-    "Market": _BASIC_PROPAGATION,
-    "Objective": _BASIC_PROPAGATION,
-    "OrgGroup": _BASIC_PROPAGATION,
-    "Policy": _BASIC_PROPAGATION,
-    "Process": _BASIC_PROPAGATION,
-    "Product": _BASIC_PROPAGATION,
-    "Project": _BASIC_PROPAGATION,
-    "Regulation": _BASIC_PROPAGATION,
-    "Risk": _PROPOSAL_PROPAGATION,
-    # "RiskAssessment": _BASIC_PROPAGATION,
-    "Section": _BASIC_PROPAGATION,
-    "Standard": _BASIC_PROPAGATION,
-    "System": _BASIC_PROPAGATION,
-    "Threat": _BASIC_PROPAGATION,
-    "Vendor": _BASIC_PROPAGATION,
+    "Assessment": _ASSESSMENT_PROPAGATION,
+
+    "Control": _CONTROL_PROPAGATION,
+
+    "AccessGroup": acr_propagation.BASIC_PROPAGATION,
+    "Clause": acr_propagation.BASIC_PROPAGATION,
+    "Contract": acr_propagation.BASIC_PROPAGATION,
+    "DataAsset": acr_propagation.BASIC_PROPAGATION,
+    "Facility": acr_propagation.BASIC_PROPAGATION,
+    "Issue": acr_propagation.BASIC_PROPAGATION,
+    "Market": acr_propagation.BASIC_PROPAGATION,
+    "Objective": acr_propagation.BASIC_PROPAGATION,
+    "OrgGroup": acr_propagation.BASIC_PROPAGATION,
+    "Policy": acr_propagation.BASIC_PROPAGATION,
+    "Process": acr_propagation.BASIC_PROPAGATION,
+    "Product": acr_propagation.BASIC_PROPAGATION,
+    "Project": acr_propagation.BASIC_PROPAGATION,
+    "Regulation": acr_propagation.BASIC_PROPAGATION,
+    "Section": acr_propagation.BASIC_PROPAGATION,
+    "Standard": acr_propagation.BASIC_PROPAGATION,
+    "System": acr_propagation.BASIC_PROPAGATION,
+    "Threat": acr_propagation.BASIC_PROPAGATION,
+    "Vendor": acr_propagation.BASIC_PROPAGATION,
+
+    # "RiskAssessment": does not have ACL roles
 }
 
 
