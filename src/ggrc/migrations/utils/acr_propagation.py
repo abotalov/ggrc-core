@@ -59,24 +59,31 @@ def _parse_object_data(object_data):
 
 
 def _add_subtree(tree, role_name, parent_id):
-  """Add propagated roles for the given tree."""
+  """Add propagated roles for the given tree.
+
+  keys of the tree must contain object data in form of "object_type RUD"
+  strings or a list of those strings.
+  """
   connection = op.get_bind()
   role_name = "{}*{}*".format(role_name.rstrip("*"), parent_id)
-  for object_data, subtree in tree.items():
-    object_type, permissions_dict = _parse_object_data(object_data)
-    insert = connection.execute(
-        acr.insert().values(
-            name=role_name,
-            object_type=object_type,
-            parent_id=parent_id,
-            created_at=datetime.datetime.now(),
-            updated_at=datetime.datetime.now(),
-            internal=True,
-            non_editable=True,
-            **permissions_dict
-        )
-    )
-    _add_subtree(subtree, role_name, insert.lastrowid)
+  for object_data_list, subtree in tree.items():
+    if isinstance(object_data_list, basestring):
+      object_data_list = [object_data_list]
+    for object_data in object_data_list:
+      object_type, permissions_dict = _parse_object_data(object_data)
+      insert = connection.execute(
+          acr.insert().values(
+              name=role_name,
+              object_type=object_type,
+              parent_id=parent_id,
+              created_at=datetime.datetime.now(),
+              updated_at=datetime.datetime.now(),
+              internal=True,
+              non_editable=True,
+              **permissions_dict
+          )
+      )
+      _add_subtree(subtree, role_name, insert.lastrowid)
 
 
 def _get_acr(object_type, name):
@@ -92,12 +99,12 @@ def _get_acr(object_type, name):
   ).fetchone()
 
 
-def propagate_roles(object_type, roles_tree):
+def _propagate_object_roles(object_type, roles_tree):
   """Propagate roles in the role tree for a given object type.
 
   The role propagation rules are given in the following format:
   {
-      <role_name>: {
+      <role_name> | <iterable role_names>: {
           "<sub_type> <rights>": {
               "<sub_type> <rights>": {
                   ...
@@ -115,9 +122,18 @@ def propagate_roles(object_type, roles_tree):
     object_type: Class name of the object for which we want to propagate roles.
     roles_tree: a dictionary with the role propagation rules.
   """
-  for role_name, propagation_tree in roles_tree.items():
-    role = _get_acr(object_type, role_name)
-    _add_subtree(propagation_tree, role.name, role.id)
+  for role_names, propagation_tree in roles_tree.items():
+    if isinstance(role_names, basestring):
+      role_names = [role_names]
+
+    for role_name in role_names:
+      role = _get_acr(object_type, role_name)
+      _add_subtree(propagation_tree, role.name, role.id)
+
+
+def propagate_roles(propagation_rules):
+  for object_type, roles_tree in propagation_rules.items():
+    _propagate_object_roles(object_type, roles_tree)
 
 
 def remove_propagated_roles(object_type, role_names):
