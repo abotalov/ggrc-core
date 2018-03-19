@@ -18,7 +18,7 @@ from ggrc.migrations.utils import acr_propagation
 
 # revision identifiers, used by Alembic.
 revision = '3db5f2027c92'
-down_revision = '19a260ec358e'
+down_revision = 'd1671a8dac7'
 
 ASSESSMENT_ROLE_PROPAGATION = {
     "Relationship R": {
