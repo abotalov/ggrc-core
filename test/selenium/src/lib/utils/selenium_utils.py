@@ -138,13 +138,6 @@ def wait_for_element_text(driver, locator, text):
           until(EC.text_to_be_present_in_element(locator, text)))
 
 
-def scroll_to_page_bottom(driver):
-  """Scroll to page bottom using JS."""
-  driver.execute_script(
-      "scrollBlock = document.getElementsByClassName('object-area')[0];"
-      "scrollBlock.scrollTo(0,  scrollBlock.scrollHeight);")
-
-
 def is_value_in_attr(element, attr="class", value="active"):
   """Check if attribute value is present for given attribute.
  Args:

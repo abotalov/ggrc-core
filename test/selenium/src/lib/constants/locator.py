@@ -223,15 +223,15 @@ class ExportPage(object):
   _EXPORT_PANEL = ".new-relevant-block"
   # general
   EXPORT_PAGE_CSS = (By.CSS_SELECTOR, _EXPORT_PAGE)
-  EXPORT_PANEL_CSS = (By.CSS_SELECTOR, ".choose-object-wrap " + _EXPORT_PANEL)
+  EXPORT_PANEL_CSS = (By.CSS_SELECTOR, ".export-groups " + _EXPORT_PANEL)
   EXPORT_ACTIONS_PANEL_CSS = (By.CSS_SELECTOR, ".export-group__actions-wrap")
   # labels
   TITLE_LBL_CSS = (By.CSS_SELECTOR, Common.TITLE)
   # user input elements
   EXPORT_FORMAT_DD_CSS = (
       By.CSS_SELECTOR, ".export-format")
-  ADD_OBJECT_TYPE_BTN_CSS = (
-      By.CSS_SELECTOR, "#addAnotherObjectType")
+  ADD_OBJECT_TYPE_BTN_XPATH = (
+      By.XPATH, "//button[normalize-space()='Add Object Type']")
   EXPORT_OBJECTS_BTN_CSS = (By.CSS_SELECTOR, "#export-csv-button")
 
 

@@ -26,12 +26,12 @@ class ExportPage(base.Page):
     self.export_page = self._driver.find_element(
         *self._locators.EXPORT_PAGE_CSS)
     self.export_panels = self.get_list_export_panels()
+    self.add_obj_type_btn = base.Button(
+        self.export_page, self._locators.ADD_OBJECT_TYPE_BTN_XPATH)
     self.export_actions_panel = self.export_page.find_element(
         *self._locators.EXPORT_ACTIONS_PANEL_CSS)
     self.export_format_dd = base.DropdownStatic(
         self.export_actions_panel, self._locators.EXPORT_FORMAT_DD_CSS)
-    self.add_obj_type_btn = base.Button(
-        self.export_actions_panel, self._locators.ADD_OBJECT_TYPE_BTN_CSS)
     self.export_objs_btn = base.Button(
         self.export_actions_panel, self._locators.EXPORT_OBJECTS_BTN_CSS)
 
@@ -51,7 +51,6 @@ class ExportPage(base.Page):
     """
     # pylint: disable=invalid-name
     # reason: to make method's name informative
-    selenium_utils.scroll_to_page_bottom(self._driver)
     self.export_objs_btn.click()
     datetime_of_export_clicking = datetime.now()
     selenium_utils.get_when_invisible(
