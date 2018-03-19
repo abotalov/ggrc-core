@@ -20,7 +20,7 @@ from ggrc.migrations.utils import acr_propagation
 revision = '3db5f2027c92'
 down_revision = '19a260ec358e'
 
-_PROPAGATION = {
+ASSESSMENT_ROLE_PROPAGATION = {
     "Relationship R": {
         "Audit R": {
             "Relationship R": {
@@ -43,10 +43,53 @@ _PROPAGATION = {
     },
 }
 
-ASSESSMENT_PROPAGATION = {
-    "Creators": _PROPAGATION,
-    "Assignees": _PROPAGATION,
-    "Verifiers": _PROPAGATION,
+
+_BASIC_PROPAGATION = {
+    "Admin": {
+        "Relationship R": {
+            "Comment R": {},
+            "Document RU": {},
+        },
+    },
+}
+
+_PROPOSAL_PROPAGATION = {
+    "Admin": {
+        "Relationship R": {
+            "Comment R": {},
+            "Document RU": {},
+            "Proposal RU": {},
+        },
+    },
+}
+
+
+PROPAGATION = {
+    "Assessment": {
+        ("Creators", "Assignees", "Verifiers"): ASSESSMENT_ROLE_PROPAGATION,
+    },
+    "AccessGroup": _BASIC_PROPAGATION,
+    "Clause": _BASIC_PROPAGATION,
+    "Contract": _BASIC_PROPAGATION,
+    "Control": _PROPOSAL_PROPAGATION,
+    "DataAsset": _BASIC_PROPAGATION,
+    "Facility": _BASIC_PROPAGATION,
+    "Issue": _BASIC_PROPAGATION,
+    "Market": _BASIC_PROPAGATION,
+    "Objective": _BASIC_PROPAGATION,
+    "OrgGroup": _BASIC_PROPAGATION,
+    "Policy": _BASIC_PROPAGATION,
+    "Process": _BASIC_PROPAGATION,
+    "Product": _BASIC_PROPAGATION,
+    "Project": _BASIC_PROPAGATION,
+    "Regulation": _BASIC_PROPAGATION,
+    "Risk": _PROPOSAL_PROPAGATION,
+    # "RiskAssessment": _BASIC_PROPAGATION,
+    "Section": _BASIC_PROPAGATION,
+    "Standard": _BASIC_PROPAGATION,
+    "System": _BASIC_PROPAGATION,
+    "Threat": _BASIC_PROPAGATION,
+    "Vendor": _BASIC_PROPAGATION,
 }
 
 
@@ -71,10 +114,7 @@ def _remove_parent_id_column():
 
 
 def _add_assessment_roles_tree():
-  acr_propagation.propagate_roles(
-      "Assessment",
-      ASSESSMENT_PROPAGATION,
-  )
+  acr_propagation.propagate_roles(PROPAGATION)
 
 
 def upgrade():
@@ -85,8 +125,6 @@ def upgrade():
 
 def downgrade():
   """Downgrade database schema and/or data back to the previous revision."""
-  acr_propagation.remove_propagated_roles(
-      "Assessment",
-      ASSESSMENT_PROPAGATION.keys()
-  )
+  for object_type, roles_tree in PROPAGATION.items():
+    acr_propagation.remove_propagated_roles(object_type, roles_tree.keys())
   _remove_parent_id_column()
