@@ -383,7 +383,7 @@ class TestExportSnapshots(TestCase):
     # pylint: disable=too-many-locals
     ac_roles = models.AccessControlRole.query.filter(
         models.AccessControlRole.object_type == "Control",
-        models.AccessControlRole.internal == 0,
+        models.AccessControlRole.parent_id.is_(None),
     ).all()
     control_acr_people = collections.defaultdict(dict)
     with factories.single_commit():
@@ -508,5 +508,4 @@ class TestExportSnapshots(TestCase):
         },
     }]
     parsed_data = self.export_parsed_csv(search_request)["Control Snapshot"][0]
-
     self.assertNotIn("Custom Role", parsed_data)
