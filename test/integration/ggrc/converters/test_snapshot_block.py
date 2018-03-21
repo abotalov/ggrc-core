@@ -104,11 +104,12 @@ class TestSnapshotBlockConverter(TestCase):
         ('folder', "Folder"),
     ]
     ac_roles = db.session.query(all_models.AccessControlRole.name).filter(
-        all_models.AccessControlRole.object_type == "Control"
+        all_models.AccessControlRole.object_type == "Control",
+        all_models.AccessControlRole.parent_id.is_(None),
     ).all()
-    expected_attrs += [
+    expected_attrs += sorted(
         ("__acl__:{}".format(role[0]), role[0]) for role in ac_roles
-    ]
+    )
     # last_assessment_date and comments should be in the end
     # according to current order
     expected_attrs.append(('comments', 'Comments'))
