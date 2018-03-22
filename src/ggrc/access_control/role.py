@@ -52,10 +52,10 @@ class AccessControlRole(Indexed, attributevalidator.AttributeValidator,
       nullable=True,
   )
   parent = db.relationship(
+      # pylint: disable=undefined-variable
       lambda: AccessControlRole,
       remote_side=lambda: AccessControlRole.id
   )
-
 
   _reserved_names = {}
 

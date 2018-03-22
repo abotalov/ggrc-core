@@ -28,6 +28,10 @@ Example:
 
 import collections
 
+# pylint: disable=unused-import
+# This is needed so that this script can be run as an independent python
+# script, since we have issues with importing models without importing the
+# entire app first.
 from ggrc import app, db, models  # noqa
 
 
@@ -63,7 +67,7 @@ def print_children(acr, id_map, parent_map, prefix="        "):
   """Print acr children and their sub-trees."""
   for child in parent_map[acr.id]:
     print "{}{} {}".format(prefix, child.object_type, get_rud(child))
-    print_children(child, id_map, parent_map, prefix=prefix+"    ")
+    print_children(child, id_map, parent_map, prefix=prefix + "    ")
 
 
 def print_tree():

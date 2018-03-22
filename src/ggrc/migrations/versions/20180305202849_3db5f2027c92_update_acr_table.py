@@ -30,19 +30,14 @@ _ASSESSMENT_PROPAGATION = {
                     "Document R": {},
                 },
             },
-            "Document RU": {},
-            "Comment R": {},
-            "Issue R": {
-                "Relationship R": {
-                    "Comment R": {},
-                    "Document R": {},
-                },
-            },
             "Snapshot R": {
                 "Relationship R": {
                     "Snapshot R": {},
                 },
             },
+            "Document RU": {},
+            "Comment R": {},
+            "Issue R": acr_propagation.COMMENT_DOCUMENT_R,
         },
     },
 }
@@ -56,7 +51,7 @@ _CONTROL_ROLES = (
 )
 
 _CONTROL_PROPAGATION = {
-    _CONTROL_ROLES: acr_propagation._PROPOSAL_PROPAGATION,
+    _CONTROL_ROLES: acr_propagation.PROPOSAL_RU,
 }
 
 
@@ -90,6 +85,7 @@ PROPAGATION = {
 
 
 def _add_parent_id_column():
+  """Add parent id column to access control roles table."""
   op.add_column('access_control_roles', sa.Column(
       'parent_id', sa.Integer(), nullable=True))
   op.create_foreign_key(
@@ -101,6 +97,7 @@ def _add_parent_id_column():
 
 
 def _remove_parent_id_column():
+  """Remove parent id column from access control roles table."""
   op.drop_constraint(
       "fk_access_control_roles_parent_id",
       "access_control_roles",

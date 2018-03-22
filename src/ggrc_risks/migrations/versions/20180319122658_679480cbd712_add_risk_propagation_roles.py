@@ -16,7 +16,7 @@ revision = '679480cbd712'
 down_revision = '3e667570f21f'
 
 _RISK_PROPAGATION = {
-    acr_propagation.BASIC_ROLES: acr_propagation._PROPOSAL_PROPAGATION,
+    acr_propagation.BASIC_ROLES: acr_propagation.PROPOSAL_RU,
 }
 
 PROPAGATION = {
