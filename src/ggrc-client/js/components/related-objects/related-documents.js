@@ -13,11 +13,10 @@ import pubsub from '../../pub-sub';
 (function (can, $, _, GGRC) {
   'use strict';
 
-  let DOCUMENT_KIND_MAP = {};
-
-  DOCUMENT_KIND_MAP[CMS.Models.Document.FILE] = 'documents_file';
-  DOCUMENT_KIND_MAP[CMS.Models.Document.URL] = 'documents_url';
-  DOCUMENT_KIND_MAP[CMS.Models.Document.REFERENCE_URL] = 'documents_reference_url';
+  let DOCUMENT_KIND_MAP = {
+    FILE: 'documents_file',
+    REFERENCE_URL: 'documents_reference_url',
+  };
 
   GGRC.Components('relatedDocuments', {
     tag: 'related-documents',
