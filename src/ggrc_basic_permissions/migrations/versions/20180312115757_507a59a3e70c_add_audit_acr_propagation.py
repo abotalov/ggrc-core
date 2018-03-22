@@ -29,14 +29,13 @@ _AUDIT_FULL_ACCESS = {
 
 _AUDIT_READ_ACCESS = {
     "Relationship R": {
-        "Assessment RU": acr_propagation.COMMENT_DOCUMENT_RU,
+        "Assessment R": acr_propagation.COMMENT_DOCUMENT_R,
         "AssessmentTemplate R": {},
         "Document R": {},
-        "Issue RU": acr_propagation.COMMENT_DOCUMENT_RU,
+        "Issue R": acr_propagation.COMMENT_DOCUMENT_R,
     },
-    "Snapshot RU": {},
+    "Snapshot R": {},
 }
-
 
 _PROGRAM_OBJECTS = (
     "AccessGroup",
