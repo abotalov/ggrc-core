@@ -16,7 +16,7 @@ revision = '1af8cf55ae02'
 down_revision = '4489d0ec0076'
 
 
-PROPAGATION = {
+WORKFLOW_PROPAGATION = {
     "Workflow": {
         "Workflow Member": {
             "TaskGroup R": {
@@ -50,10 +50,10 @@ PROPAGATION = {
 
 def upgrade():
   """Upgrade database schema and/or data, creating a new revision."""
-  acr_propagation.propagate_roles(PROPAGATION)
+  acr_propagation.propagate_roles(WORKFLOW_PROPAGATION)
 
 
 def downgrade():
-  """Remove Risk propagated roles"""
-  for object_type, roles_tree in PROPAGATION.items():
+  """Remove Workflow propagated roles"""
+  for object_type, roles_tree in WORKFLOW_PROPAGATION.items():
     acr_propagation.remove_propagated_roles(object_type, roles_tree.keys())

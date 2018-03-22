@@ -19,40 +19,20 @@ down_revision = '242b8dc8493b'
 
 _AUDIT_FULL_ACCESS = {
     "Relationship R": {
-        "Assessment RUD": {
-            "Relationship R": {
-                "Comment R": {},
-                "Document RU": {},
-            },
-        },
+        "Assessment RUD": acr_propagation.COMMENT_DOCUMENT_RU,
         "AssessmentTemplate RUD": {},
         "Document RU": {},
-        "Issue RUD": {
-            "Relationship R": {
-                "Comment R": {},
-                "Document RU": {},
-            },
-        },
+        "Issue RUD": acr_propagation.COMMENT_DOCUMENT_RU,
     },
     "Snapshot RU": {},
 }
 
 _AUDIT_READ_ACCESS = {
     "Relationship R": {
-        "Assessment RU": {
-            "Relationship R": {
-                "Comment R": {},
-                "Document RU": {},
-            },
-        },
+        "Assessment RU": acr_propagation.COMMENT_DOCUMENT_RU,
         "AssessmentTemplate R": {},
         "Document R": {},
-        "Issue RU": {
-            "Relationship R": {
-                "Comment R": {},
-                "Document RU": {},
-            },
-        },
+        "Issue RU": acr_propagation.COMMENT_DOCUMENT_RU,
     },
     "Snapshot RU": {},
 }
@@ -83,26 +63,15 @@ _PROGRAM_OBJECTS = (
     "Vendor",
 )
 
-PROPAGATION = {
+AUTID_PROGRAM_PROPAGATION = {
     "Program": {
         ("Program Managers", "Program Editors"): {
             "Audit RUD": _AUDIT_FULL_ACCESS,
             "Relationship R": {
                 "Comment R": {},
                 "Document RU": {},
-                _PROGRAM_OBJECTS: {
-                    "Relationship R": {
-                        "Comment R": {},
-                        "Document RU": {},
-                    }
-                },
-                ("Control", "Risk"): {
-                    "Relationship R": {
-                        "Comment R": {},
-                        "Document RU": {},
-                        "Proposal RU": {},
-                    }
-                },
+                _PROGRAM_OBJECTS: acr_propagation.COMMENT_DOCUMENT_RU,
+                ("Control", "Risk"): acr_propagation.PROPOSAL_RU,
             }
         },
         "Program Readers": {
@@ -110,19 +79,8 @@ PROPAGATION = {
             "Relationship R": {
                 "Comment R": {},
                 "Document R": {},
-                _PROGRAM_OBJECTS: {
-                    "Relationship R": {
-                        "Comment R": {},
-                        "Document R": {},
-                    }
-                },
-                ("Control", "Risk"): {
-                    "Relationship R": {
-                        "Comment R": {},
-                        "Document R": {},
-                        "Proposal R": {},
-                    }
-                },
+                _PROGRAM_OBJECTS: acr_propagation.COMMENT_DOCUMENT_R,
+                ("Control", "Risk"): acr_propagation.PROPOSAL_R,
             }
         },
     },
@@ -138,10 +96,10 @@ PROPAGATION = {
 
 def upgrade():
   """Upgrade database schema and/or data, creating a new revision."""
-  acr_propagation.propagate_roles(PROPAGATION)
+  acr_propagation.propagate_roles(AUTID_PROGRAM_PROPAGATION)
 
 
 def downgrade():
   """Downgrade database schema and/or data back to the previous revision."""
-  for object_type, roles_tree in PROPAGATION.items():
+  for object_type, roles_tree in AUTID_PROGRAM_PROPAGATION.items():
     acr_propagation.remove_propagated_roles(object_type, roles_tree.keys())

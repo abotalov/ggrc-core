@@ -15,16 +15,21 @@ BASIC_ROLES = (
     "Secondary Contacts",
 )
 
-BASIC_PROPAGATION = {
-    "Admin": {
-        "Relationship R": {
-            "Comment R": {},
-            "Document RU": {},
-        },
+COMMENT_DOCUMENT_R = {
+    "Relationship R": {
+        "Comment R": {},
+        "Document R": {},
     },
 }
 
-_PROPOSAL_PROPAGATION = {
+COMMENT_DOCUMENT_RU = {
+    "Relationship R": {
+        "Comment R": {},
+        "Document RU": {},
+    },
+}
+
+PROPOSAL_RU = {
     "Relationship R": {
         "Comment R": {},
         "Document RU": {},
@@ -32,8 +37,20 @@ _PROPOSAL_PROPAGATION = {
     },
 }
 
+PROPOSAL_R = {
+    "Relationship R": {
+        "Comment R": {},
+        "Document RU": {},
+        "Proposal RU": {},
+    },
+}
 
-acr = sa.sql.table(
+BASIC_PROPAGATION = {
+    "Admin": COMMENT_DOCUMENT_RU,
+}
+
+
+ACR_TABLE = sa.sql.table(
     "access_control_roles",
     sa.sql.column('id', sa.Integer),
     sa.sql.column('name', sa.String),
@@ -95,7 +112,7 @@ def _add_subtree(tree, role_name, parent_id):
     for object_data in object_data_list:
       object_type, permissions_dict = _parse_object_data(object_data)
       insert = connection.execute(
-          acr.insert().values(
+          ACR_TABLE.insert().values(
               name=role_name,
               object_type=object_type,
               parent_id=parent_id,
@@ -113,10 +130,10 @@ def _get_acr(object_type, name):
   """Get access control entry for a given role on object."""
   connection = op.get_bind()
   return connection.execute(
-      acr.select().where(
+      ACR_TABLE.select().where(
           sa.and_(
-              acr.c.name == name,
-              acr.c.object_type == object_type,
+              ACR_TABLE.c.name == name,
+              ACR_TABLE.c.object_type == object_type,
           )
       )
   ).fetchone()
@@ -169,16 +186,16 @@ def remove_propagated_roles(object_type, role_names):
   """
   connection = op.get_bind()
   parent_ids = connection.execute(
-      acr.select([acr.parent_id]).where(
+      ACR_TABLE.select([ACR_TABLE.parent_id]).where(
           sa.and_(
-              acr.c.name.in_(role_names),
-              acr.c.object_type == object_type,
+              ACR_TABLE.c.name.in_(role_names),
+              ACR_TABLE.c.object_type == object_type,
           )
       )
   ).fetchall()
   ids = [row.parent_id for row in parent_ids]
   op.execute(
-      acr.delete().where(
-          acr.c.parent_id.in_(ids)
+      ACR_TABLE.delete().where(
+          ACR_TABLE.c.parent_id.in_(ids)
       )
   )

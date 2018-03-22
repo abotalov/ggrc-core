@@ -28,6 +28,10 @@ Example:
 
 import collections
 
+# pylint: disable=unused-import
+# This is needed so that this script can be run as an independent python
+# script, since we have issues with importing models without importing the
+# entire app first.
 from ggrc import app, db, models  # noqa
 
 
