@@ -8,6 +8,7 @@ import {
   batchRequests,
 } from '../../plugins/utils/query-api-utils';
 import {initCounts} from '../../plugins/utils/current-page-utils';
+import {REFRESH_MAPPING} from '../../events/eventTypes';
 import pubsub from '../../pub-sub';
 
 (function (can, $, _, GGRC) {
@@ -261,9 +262,13 @@ import pubsub from '../../pub-sub';
       '{viewModel.instance} resolvePendingBindings': function () {
         this.viewModel.refreshRelatedDocuments();
       },
+      [`{viewModel.instance} ${REFRESH_MAPPING.type}`]() {
+        this.viewModel.refreshRelatedDocuments();
+      },
       '{pubsub} objectDeleted'(pubsub, event) {
         let instance = event.instance;
-        if (instance instanceof CMS.Models.Evidence) {
+        if (instance instanceof CMS.Models.Evidence ||
+          instance instanceof CMS.Models.Document) {
           this.viewModel.refreshRelatedDocuments();
         }
       },
