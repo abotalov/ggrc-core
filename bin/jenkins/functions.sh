@@ -57,10 +57,7 @@ setup () {
 
   echo "Provisioning ${PROJECT}_cleandev_1"
   docker exec -i ${PROJECT}_cleandev_1 su -c "
-    source /vagrant/bin/init_vagrant_env
     ln -s /vagrant-dev/node_modules /vagrant/node_modules
-    build_assets
-    make appengine_packages
   "
 }
 
@@ -100,19 +97,20 @@ selenium_tests () {
   PROJECT=$1
   print_line
 
-  echo "Resetting the DB"
-  docker exec -i ${PROJECT}_cleandev_1 su -c "
+  docker exec -i ${PROJECT}_cleandev_1 bash -c "
     source /vagrant/bin/init_vagrant_env
     source /vagrant/bin/init_test_env
+    echo ""Set env vars and rebuild asset files""
+    deploy_appengine extras/deploy_settings_local.sh \
+      extras/deploy_settings_selenium.override.sh
+    echo ""Resetting the DB""
     db_reset -d ggrcdevtest
   "
 
   echo "Running Test server"
-  docker exec -id ${PROJECT}_cleandev_1 su -c "
+  docker exec -id ${PROJECT}_cleandev_1 bash -c "
     source /vagrant/bin/init_vagrant_env
-    source /vagrant/bin/init_test_env
-    export DASHBOARD_INTEGRATION='on'
-    launch_ggrc
+    launch_gae_ggrc
   "
 
   echo "Running Selenium tests"

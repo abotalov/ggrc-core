@@ -75,6 +75,7 @@ def selenium(selenium):
   """
   selenium.set_window_size(1440, 900)
   dynamic_fixtures.dict_executed_fixtures.update({"selenium": selenium})
+  selenium_utils.open_url(selenium, url.Urls().gae_login)
   yield selenium
 
 

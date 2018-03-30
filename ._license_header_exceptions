@@ -51,6 +51,7 @@
 < .eslintrc.json
 < extras/deploy/README.md
 < extras/deploy_settings_local.sh
+< extras/deploy_settings_selenium.override.sh
 < extras/google_appengine__force_noauth_local_webserver.diff
 < extras/webassets__fix_builtin_filter_loading.diff
 < .gitattributes

@@ -13,6 +13,7 @@ from lib.constants.objects import *  # noqa; the names are later exported
 
 # URL's parts for work with objects and REST API queries
 API = "api"
+LOGIN = "login"
 DASHBOARD = "dashboard"
 ADMIN_DASHBOARD = "admin"
 AUDIT = AUDITS + "/{0}"
@@ -26,6 +27,7 @@ QUERY = "query"
 DEFAULT_EMAIL_DOMAIN = "example.com"
 DEFAULT_USER_EMAIL = "user@" + DEFAULT_EMAIL_DOMAIN
 DEFAULT_USER_HREF = "/".join([API, PEOPLE, str(1)])
+GAE_LOGIN = "_ah/login?email={}&action=Login".format(DEFAULT_USER_EMAIL)
 
 
 class Widget(object):
@@ -52,6 +54,7 @@ class Urls(object):
     self.admin_dashboard = environment.app_url + ADMIN_DASHBOARD
     self.dashboard = environment.app_url + DASHBOARD
     self.login = environment.app_url
+    self.gae_login = environment.app_url + GAE_LOGIN
 
 
 class Utils(object):

@@ -32,10 +32,10 @@ class RestClient(object):
     """Send GET request to login URL, get response and return session
     cookie from response headers for further usage.
     """
-    resp = requests.get(urlparse.urljoin(environment.app_url, "/login"))
-    cookies = Cookie.SimpleCookie()
-    cookies.load(resp.headers["Set-Cookie"])
-    self.session_cookie = cookies["session"].value
+    session = requests.Session()
+    session.get(url.Urls().gae_login)
+    session.get(url.Urls().login)
+    self.session_cookie = session.cookies["session"]
 
   def generate_req_headers(self, resp_headers=None):
     """Create request headers for further HTTP calls.

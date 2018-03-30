@@ -16,7 +16,6 @@ services:
     environment:
      - PYTHONDONTWRITEBYTECODE=true
      - NODE_PATH=/vagrant-dev/node_modules/
-     - GGRC_DATABASE_URI=mysql+mysqldb://root:root@db/ggrcdev?charset=utf8
      - GGRC_DATABASE_HOST=db
     links:
      - db
