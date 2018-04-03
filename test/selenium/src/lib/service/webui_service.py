@@ -184,6 +184,7 @@ class BaseWebUiService(object):
     self._open_create_modal_and_fill_data(src_obj, obj).save_and_close()
 
   def export_objs_via_tree_view(self, path_to_export_dir, src_obj):
+    # pylint: disable=fixme
     """Open generic widget of mapped objects, open modal of export from
     Tree View, fill data according to 'src_objs' (filter by mapping to source
     objects), 'mapped_objs' (export objects' types, export objects' filter
@@ -193,10 +194,14 @@ class BaseWebUiService(object):
     objs_widget = self.open_widget_of_mapped_objs(src_obj)
     path_to_exported_file = objs_widget.tree_view.open_3bbs().select_export(
     ).export_objs_to_csv(path_to_export_dir)
-    obj_part = "{obj_type}{snapshot_obj_type}_".format(
-        obj_type=self.obj_type,
-        snapshot_obj_type=(
-            " " + self.snapshot_obj_type if self.snapshot_obj_type else ""))
+    # FIXME: Filename was "{obj_type} {snapshot_obj_type}
+    # before migration of export page on background job.
+    # Current behavior may be a bug.
+    if self.snapshot_obj_type:
+      obj_part = self.snapshot_obj_type
+    else:
+      obj_part = self.obj_type
+    obj_part = "{}_".format(obj_part)
     assert os.path.basename(path_to_exported_file).startswith(obj_part) is True
     return path_to_exported_file
 
