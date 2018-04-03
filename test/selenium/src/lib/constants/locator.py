@@ -216,23 +216,21 @@ class LhnMenu(object):
       By.CSS_SELECTOR, '[data-for="Workflow"]>[data-value="Inactive"]')
 
 
+class ExportItem(object):
+  """Locators for Export items on Export page."""
+  DOWNLOAD_CSV_XPATH = (
+      By.XPATH, ".//button[normalize-space()='Download CSV']")
+
+
 class ExportPage(object):
-  """Locators for Export Page and Export Panels."""
+  """Locators for Export page."""
   _CONTENT = Common.CONTENT
   _EXPORT_PAGE = _CONTENT + " #csv_export"
-  _EXPORT_PANEL = ".new-relevant-block"
-  # general
   EXPORT_PAGE_CSS = (By.CSS_SELECTOR, _EXPORT_PAGE)
-  EXPORT_PANEL_CSS = (By.CSS_SELECTOR, ".export-groups " + _EXPORT_PANEL)
-  EXPORT_ACTIONS_PANEL_CSS = (By.CSS_SELECTOR, ".export-group__actions-wrap")
-  # labels
-  TITLE_LBL_CSS = (By.CSS_SELECTOR, Common.TITLE)
-  # user input elements
-  EXPORT_FORMAT_DD_CSS = (
-      By.CSS_SELECTOR, ".export-format")
   ADD_OBJECT_TYPE_BTN_XPATH = (
       By.XPATH, "//button[normalize-space()='Add Object Type']")
   EXPORT_OBJECTS_BTN_CSS = (By.CSS_SELECTOR, "#export-csv-button")
+  EXPORT_ITEM_CSS = (By.CSS_SELECTOR, ".current-exports__item")
 
 
 class ExtendedInfo(object):
