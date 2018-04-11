@@ -25,41 +25,22 @@ class RestClient(object):
     self.is_api = "" if endpoint == url.QUERY else url.API
     self.endpoint_url = urlparse.urljoin(
         environment.app_url, "/".join([self.is_api, endpoint]))
-    self.session_cookie = None
+    self.session = requests.Session()
+    self.session.headers = self.BASIC_HEADERS
+    self.login()
 
-  def get_session_cookie(self):
-    """Send GET request to login URL, get response and return session
-    cookie from response headers for further usage.
-    """
-    session = requests.Session()
-    session.get(url.Urls().gae_login)
-    session.get(url.Urls().login)
-    self.session_cookie = session.cookies["session"]
-
-  def generate_req_headers(self, resp_headers=None):
-    """Create request headers for further HTTP calls.
-    If 'resp_headers' is 'None' than return request headers from predefined
-    basic headers and session cookie.
-    If 'resp_headers' is not 'None' than return request headers from
-    predefined basic headers, session cookie and response headers.
-    """
-    req_headers = self.BASIC_HEADERS
-    if self.session_cookie is None:
-      self.get_session_cookie()
-    req_headers["Cookie"] = "session={value}".format(value=self.session_cookie)
-    if resp_headers:
-      req_headers["If-Match"] = resp_headers["Etag"]
-      req_headers["If-Unmodified-Since"] = resp_headers["Last-Modified"]
-    return req_headers
+  def login(self):
+    """Set dev_appserver_login and session cookies."""
+    self.session.get(url.Urls().gae_login)
+    self.session.get(url.Urls().login)
 
   def create_object(self, type, **kwargs):
     """Create object or make other operations used POST request and
     return raw response.
     """
-    req_headers = self.generate_req_headers()
     create_obj_req_body = self.generate_body(type_name=type, **kwargs)
-    create_obj_resp = requests.post(
-        url=self.endpoint_url, data=create_obj_req_body, headers=req_headers)
+    create_obj_resp = self.session.post(
+        url=self.endpoint_url, data=create_obj_req_body)
     return create_obj_resp
 
   def update_object(self, href, **kwargs):
@@ -68,10 +49,10 @@ class RestClient(object):
     obj_resp = self.get_object(href_url)
     obj_resp_headers = obj_resp.headers
     obj_resp_body = obj_resp.text
-    update_obj_req_headers = self.generate_req_headers(
+    update_obj_req_headers = self.req_headers_from_resp_headers(
         resp_headers=obj_resp_headers)
     update_obj_req_body = self.update_body(body=obj_resp_body, **kwargs)
-    update_obj_resp = requests.put(
+    update_obj_resp = self.session.put(
         url=href_url, data=update_obj_req_body, headers=update_obj_req_headers)
     return update_obj_resp
 
@@ -79,16 +60,16 @@ class RestClient(object):
     """Delete object used GET, POST requests and return raw response."""
     href_url = urlparse.urljoin(environment.app_url, href)
     obj_resp_headers = self.get_object(href_url).headers
-    del_obj_req_headers = self.generate_req_headers(
+    del_obj_req_headers = self.req_headers_from_resp_headers(
         resp_headers=obj_resp_headers)
-    del_obj_resp = requests.delete(url=href_url, headers=del_obj_req_headers)
+    del_obj_resp = self.session.delete(
+        url=href_url, headers=del_obj_req_headers)
     return del_obj_resp
 
   def get_object(self, href):
     """Get object used GET request and return raw response."""
     href_url = urlparse.urljoin(environment.app_url, href)
-    req_headers = self.generate_req_headers()
-    get_obj_resp = requests.get(url=href_url, headers=req_headers)
+    get_obj_resp = self.session.get(url=href_url)
     return get_obj_resp
 
   def generate_body(self, type_name, **kwargs):
@@ -98,6 +79,15 @@ class RestClient(object):
     if not self.is_api:
       body = body[type_name]
     return json.dumps([body]).encode("string-escape")
+
+  @staticmethod
+  def req_headers_from_resp_headers(resp_headers=None):
+    """Return request headers from response headers."""
+    headers = {}
+    if resp_headers:
+      headers["If-Match"] = resp_headers["Etag"]
+      headers["If-Unmodified-Since"] = resp_headers["Last-Modified"]
+    return headers
 
   @staticmethod
   def update_body(body, **kwargs):
