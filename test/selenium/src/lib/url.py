@@ -22,6 +22,7 @@ OBJECT_OWNERS = "object_owners"
 USER_ROLES = "user_roles"
 CONTACTS = "contacts"
 QUERY = "query"
+ACCESS_CONTROL_ROLES = "access_control_roles"
 
 DEFAULT_EMAIL_DOMAIN = "example.com"
 GAE_LOGIN = "_ah/login?email={}&action=Login".format(users.DEFAULT_USER_EMAIL)

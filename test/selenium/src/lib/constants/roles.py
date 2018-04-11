@@ -1,6 +1,10 @@
 # Copyright (C) 2018 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Constants for roles."""
+from lib import url
+from lib.decorator import lazy_property
+from lib.service.rest.client import RestClient
+
 
 # global roles
 NO_ROLE = "No role"
@@ -40,14 +44,64 @@ SUPERUSER = "Superuser"
 NO_ACCESS = "No Access"
 
 
+class ACLRolesIDsMetaClass(type):
+  """A class to set ACL role ids"""
+  # pylint: disable=invalid-name
+  # pylint: disable=no-self-use
+  # pylint: disable=not-an-iterable
+  # pylint: disable=no-value-for-parameter
+
+  @lazy_property
+  def roles(cls):
+    """Return ACL roles"""
+    acr_url = "/".join([url.API, url.ACCESS_CONTROL_ROLES])
+    return RestClient("").get_object(acr_url).json()[
+        "{}_collection".format(url.ACCESS_CONTROL_ROLES)][
+        url.ACCESS_CONTROL_ROLES]
+
+  def id_of_role(cls, object_type, name):
+    """Get id of the role by `object_type` and `name`"""
+    for role in cls.roles:
+      if role["object_type"] == object_type and role["name"] == name:
+        return role["id"]
+    raise ValueError("Invalid role. name {0}, object_type {1}".format(
+        name, object_type))
+
+  @property
+  def CONTROL_ADMINS(cls):
+    return cls.id_of_role(object_type="Control", name="Admin")
+
+  @property
+  def ISSUE_ADMINS(cls):
+    return cls.id_of_role(object_type="Issue", name="Admin")
+
+  @property
+  def OBJECTIVE_ADMINS(cls):
+    return cls.id_of_role(object_type="Objective", name="Admin")
+
+  @property
+  def ASSESSMENT_CREATORS(cls):
+    return cls.id_of_role(object_type="Assessment", name="Creators")
+
+  @property
+  def ASSESSMENT_ASSIGNEES(cls):
+    return cls.id_of_role(object_type="Assessment", name="Assignees")
+
+  @property
+  def ASSESSMENT_VERIFIERS(cls):
+    return cls.id_of_role(object_type="Assessment", name="Verifiers")
+
+  @property
+  def AUDIT_CAPTAINS(cls):
+    return cls.id_of_role(object_type="Audit", name="Audit Captains")
+
+  @property
+  def PROGRAM_MANAGERS(cls):
+    return cls.id_of_role(object_type="Program", name="Program Managers")
+
+
 class ACLRolesIDs(object):
-  """Access Control List Roles IDs constants."""
+  """Access Control List Roles IDs."""
   # pylint: disable=too-few-public-methods
-  CONTROL_ADMINS = 49
-  ISSUE_ADMINS = 53
-  OBJECTIVE_ADMINS = 55
-  ASSESSMENT_CREATORS = 76
-  ASSESSMENT_ASSIGNEES = 72
-  ASSESSMENT_VERIFIERS = 73
-  AUDIT_CAPTAINS = 82
-  PROGRAM_MANAGERS = 87
+
+  __metaclass__ = ACLRolesIDsMetaClass
