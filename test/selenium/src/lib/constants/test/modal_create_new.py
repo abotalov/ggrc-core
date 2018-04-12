@@ -2,7 +2,6 @@
 # Copyright (C) 2018 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Constants to fill of create modals."""
-from lib.constants import roles
 
 SHORT_TITLE = u"""Un texte en français and additionally đšžćč!#./?€ħ&^~'"""
 
@@ -56,4 +55,3 @@ class Programs(object):
   PROGRAM_URL = "www.program_url.com"
   REFERENCE_URL = "www.reference_url.com"
   EFFECTIVE_DATE = "12/01/2014"
-  DEFAULT_MANAGER = roles.DEFAULT_USER_EMAIL

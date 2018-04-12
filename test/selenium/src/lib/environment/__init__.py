@@ -5,6 +5,7 @@
 import ConfigParser
 import logging
 import os
+import urlparse
 
 from lib import constants
 

@@ -8,7 +8,7 @@ import re
 from urlparse import urldefrag
 
 from lib import environment
-from lib.constants import regex
+from lib.constants import regex, users
 from lib.constants.objects import *  # noqa; the names are later exported
 
 # URL's parts for work with objects and REST API queries
@@ -23,11 +23,8 @@ USER_ROLES = "user_roles"
 CONTACTS = "contacts"
 QUERY = "query"
 
-# url path for user
 DEFAULT_EMAIL_DOMAIN = "example.com"
-DEFAULT_USER_EMAIL = "user@" + DEFAULT_EMAIL_DOMAIN
-DEFAULT_USER_HREF = "/".join([API, PEOPLE, str(1)])
-GAE_LOGIN = "_ah/login?email={}&action=Login".format(DEFAULT_USER_EMAIL)
+GAE_LOGIN = "_ah/login?email={}&action=Login".format(users.DEFAULT_USER_EMAIL)
 
 
 class Widget(object):
@@ -50,6 +47,9 @@ class Widget(object):
 
 
 class Urls(object):
+  """Provide urls"""
+  # pylint: disable=too-few-public-methods
+
   def __init__(self):
     self.admin_dashboard = environment.app_url + ADMIN_DASHBOARD
     self.dashboard = environment.app_url + DASHBOARD

@@ -8,9 +8,11 @@
 import copy
 import random
 
-from lib import factory, url as const_url
-from lib.constants import element, objects, roles, value_aliases, messages
+from lib import factory, url as url_module
+from lib.constants import (
+    element, objects, roles, value_aliases, messages, users)
 from lib.constants.element import AdminWidgetCustomAttributes
+from lib.decorator import lazy_property
 from lib.entities.entity import (
     PersonEntity, CustomAttributeDefinitionEntity, CommentEntity)
 from lib.utils import help_utils, string_utils
@@ -63,7 +65,7 @@ class EntitiesFactory(object):
     return unicode("{slug}".format(slug=StringMethods.random_uuid()))
 
   @classmethod
-  def generate_email(cls, domain=const_url.DEFAULT_EMAIL_DOMAIN):
+  def generate_email(cls, domain=url_module.DEFAULT_EMAIL_DOMAIN):
     """Generate email in unicode format according to domain."""
     return unicode("{mail_name}@{domain}".format(
         mail_name=StringMethods.random_uuid(), domain=domain))
@@ -75,20 +77,22 @@ class PeopleFactory(EntitiesFactory):
   def __init__(self):
     super(PeopleFactory, self).__init__(objects.PEOPLE)
 
+  class __metaclass__(type):
+    # pylint: disable=no-self-use
+
+    @lazy_property
+    def default_user(cls):
+      """Return Person instance for default system superuser."""
+      from lib.service import rest_service
+      return rest_service.ObjectsInfoService().get_person(
+          users.DEFAULT_USER_EMAIL)
+
   @staticmethod
   def extract_people_emails(people):
     """Extract values for person's email attributes."""
     return [
         person.email for person in help_utils.convert_to_list(people)
         if isinstance(person, PersonEntity)]
-
-  @property
-  def default_user(self):
-    """Create object's instance for default system superuser."""
-    return PersonEntity().update_attrs(
-        type=self.obj_type,
-        name=roles.DEFAULT_USER, id=1, href=const_url.DEFAULT_USER_HREF,
-        email=const_url.DEFAULT_USER_EMAIL, system_wide_role=roles.SUPERUSER)
 
   @staticmethod
   def get_acl_members(role_id, people):
@@ -125,7 +129,7 @@ class CommentsFactory(EntitiesFactory):
     'is_add_rest_attrs' then add attributes for REST."""
     comment_obj = self.obj_inst().update_attrs(
         description=self.obj_title,
-        modified_by=PeopleFactory().default_user.name)
+        modified_by=PeopleFactory.default_user.name)
     if is_add_rest_attrs:
       comment_obj.update_attrs(
           assignee_type=",".join((
@@ -174,7 +178,7 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
             ca_value = unicode(
                 random.choice(ca["multi_choice_options"].split(",")))
           if ca_attr_type == AdminWidgetCustomAttributes.PERSON:
-            person_id = "1"
+            person_id = PeopleFactory.default_user.id
             ca_value = "Person:{}".format(person_id)
         else:
           ca_value = (
@@ -271,11 +275,10 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
 
 class ProgramsFactory(EntitiesFactory):
   """Factory class for Programs entities."""
-  def_user = PeopleFactory().default_user
 
-  def __init__(self, obj_creator=def_user):
+  def __init__(self):
     super(ProgramsFactory, self).__init__(objects.PROGRAMS)
-    self.managers = [obj_creator]
+    self.managers = [PeopleFactory.default_user]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Program entity with randomly and predictably filled fields, if
@@ -299,11 +302,9 @@ class ProgramsFactory(EntitiesFactory):
 
 class ControlsFactory(EntitiesFactory):
   """Factory class for Controls entities."""
-  def_user = PeopleFactory().default_user
-
-  def __init__(self, obj_creator=def_user):
+  def __init__(self):
     super(ControlsFactory, self).__init__(objects.CONTROLS)
-    self.admins = [obj_creator]
+    self.admins = [PeopleFactory.default_user]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Control entity with randomly and predictably filled fields, if
@@ -327,11 +328,9 @@ class ControlsFactory(EntitiesFactory):
 
 class ObjectivesFactory(EntitiesFactory):
   """Factory class for Objectives entities."""
-  def_user = PeopleFactory().default_user
-
-  def __init__(self, obj_creator=def_user):
+  def __init__(self):
     super(ObjectivesFactory, self).__init__(objects.OBJECTIVES)
-    self.admins = [obj_creator]
+    self.admins = [PeopleFactory.default_user]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Objective entity with randomly and predictably filled fields, if
@@ -355,11 +354,9 @@ class ObjectivesFactory(EntitiesFactory):
 
 class AuditsFactory(EntitiesFactory):
   """Factory class for Audit entity."""
-  def_user = PeopleFactory().default_user
-
-  def __init__(self, obj_creator=def_user):
+  def __init__(self):
     super(AuditsFactory, self).__init__(objects.AUDITS)
-    self.admins = [obj_creator]
+    self.admins = [PeopleFactory.default_user]
 
   @staticmethod
   def clone(audit, count_to_clone=1):
@@ -434,12 +431,12 @@ class AssessmentTemplatesFactory(EntitiesFactory):
 
 class AssessmentsFactory(EntitiesFactory):
   """Factory class for Assessments entities."""
-  def_user = PeopleFactory().default_user
 
-  def __init__(self, obj_creator=def_user):
+  def __init__(self):
     super(AssessmentsFactory, self).__init__(objects.ASSESSMENTS)
-    self.admins = [obj_creator]
-    self.assignees = [self.def_user]
+    default_user = PeopleFactory.default_user
+    self.admins = [default_user]
+    self.assignees = [default_user]
 
   def obj_inst(self):
     """Create Assessment object's instance and set values for attributes:
@@ -538,11 +535,10 @@ class AssessmentsFactory(EntitiesFactory):
 
 class IssuesFactory(EntitiesFactory):
   """Factory class for Issues entities."""
-  def_user = PeopleFactory().default_user
 
-  def __init__(self, obj_creator=def_user):
+  def __init__(self):
     super(IssuesFactory, self).__init__(objects.ISSUES)
-    self.admins = [obj_creator]
+    self.admins = [PeopleFactory.default_user]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Issue entity with randomly and predictably filled fields, if

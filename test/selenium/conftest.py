@@ -121,13 +121,21 @@ def chrome_options(chrome_options, pytestconfig):
   return chrome_options
 
 
+# `environment.app_url` is overridden in `dev_url` fixture.
+# Setting this variable on import time is done as `test_check_asmt_state_change`
+# uses `PeopleFactory.default_user` in parametrize parameters.
+# Pytest evaluates parametrize parameters before it evaluates fixtures.
+environment.app_url = os.environ["DEV_URL"]
+environment.app_url = urlparse.urljoin(environment.app_url, "/")
+
+
 @pytest.fixture(scope="function", autouse=True)
 def dev_url(request):
   """Set environment.app_url to be used as a base url"""
   if DESTRUCTIVE_TEST_METHOD_PREFIX in request.node.name:
-    environment.app_url = os.environ["DEV_URL"]
-  else:
     environment.app_url = os.environ["DEV_DESTRUCTIVE_URL"]
+  else:
+    environment.app_url = os.environ["DEV_URL"]
   environment.app_url = urlparse.urljoin(environment.app_url, "/")
   return environment.app_url
 

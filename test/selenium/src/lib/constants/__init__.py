@@ -6,7 +6,6 @@
 
 from lib.constants import (
   cls_name,
-  element,
   log,
   path,
   locator,
@@ -16,7 +15,6 @@ from lib.constants import (
   test_runner,
   settings,
   messages,
-  roles,
   value_aliases,
   files,
   objects,
