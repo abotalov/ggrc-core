@@ -12,7 +12,7 @@ import re
 import pytest
 
 from lib import base, constants, url
-from lib.constants import objects, messages
+from lib.constants import objects, messages, users
 from lib.constants.element import AdminWidgetCustomAttributes
 from lib.entities import entities_factory
 from lib.page import dashboard
@@ -46,13 +46,17 @@ class TestAdminDashboardPage(base.Test):
   def test_events_widget_tree_view_has_data(self, admin_dashboard):
     """Confirms tree view has at least one data row in valid format."""
     admin_events_tab = admin_dashboard.select_events()
-    list_items = admin_events_tab.get_events()
+    list_items = [item.text for item in admin_events_tab.get_events()]
     assert list_items
     items_with_incorrect_format = [
-        getattr(item, 'text') for item in list_items if not
-        re.compile(self._event_el.TREE_VIEW_ROW_REGEXP).
-        match(getattr(item, 'text'))]
-    assert items_with_incorrect_format == []
+        item for item in list_items if not
+        re.compile(self._event_el.TREE_VIEW_ROW_REGEXP).match(item)]
+    assert len(items_with_incorrect_format) in [0, 1]
+    if len(items_with_incorrect_format) == 1:
+      # A line with incorrect format is created during DB migration.
+      # We decided it's OK.
+      assert items_with_incorrect_format[0].startswith(
+          "by {}".format(users.MIGRATOR_USER_EMAIL))
     expected_header_text = self._event_el.WIDGET_HEADER
     actual_header_text = admin_events_tab.widget_header.text
     assert expected_header_text == actual_header_text

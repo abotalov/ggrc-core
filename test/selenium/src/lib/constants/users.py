@@ -3,3 +3,4 @@
 """Constants related to people objects"""
 
 DEFAULT_USER_EMAIL = "user@example.com"
+MIGRATOR_USER_EMAIL = "migrator@example.com"
