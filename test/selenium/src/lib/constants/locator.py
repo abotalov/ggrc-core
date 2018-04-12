@@ -265,7 +265,8 @@ class CommonModalUnifiedMapper(object):
   # user input elements
   OBJ_TYPE_DROPDOWN = (By.CSS_SELECTOR, MODAL + " .input-block-level")
   BUTTON_SEARCH = (By.CSS_SELECTOR, MODAL + " button[type='submit']")
-  FOUND_OBJECTS_TITLES = (By.CSS_SELECTOR, MODAL + " .flex-box .title-attr")
+  FOUND_OBJECTS_TITLES = (
+      By.CSS_SELECTOR, MODAL + " .flex-box .attr:first-child")
   FOUND_OBJECTS_CHECKBOXES = (By.CSS_SELECTOR,
                               MODAL + ' .flex-box [type="checkbox"]')
   BUTTON_MAP_SELECTED = (By.CSS_SELECTOR, MODAL + Common.MODAL_FOOTER +
