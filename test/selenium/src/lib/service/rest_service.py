@@ -292,6 +292,12 @@ class ObjectsOwnersService(HelpRestService):
   def __init__(self):
     super(ObjectsOwnersService, self).__init__(url.OBJECT_OWNERS)
 
+  def assign_owner_to_objs(self, objs, owner=PeopleFactory.default_user):
+    """Assign of an owner to objects."""
+    return [self.client.create_object(
+        type=objects.get_singular(self.endpoint), ownable=obj.__dict__,
+        person=owner.__dict__) for obj in help_utils.convert_to_list(objs)]
+
 
 class ObjectsInfoService(HelpRestService):
   """Service for getting information about entities."""
@@ -335,16 +341,3 @@ class ObjectsInfoService(HelpRestService):
                 comment_desc=comment_description),
             order_by=[{"name": "created_at", "desc": True}])).get("values")[0])
     return Representation.repr_dict_to_obj(comment_obj_dict)
-
-  def get_person(self, email):
-    """Get and return person object by email"""
-    attrs = (
-        BaseRestService.get_items_from_resp(self.client.create_object(
-            type=self.endpoint,
-            object_name=objects.get_obj_type(objects.PEOPLE),
-            filters=query.Query.expression_get_person_by_email(
-                email=email))).get("values")[0])
-    person = PeopleFactory().create()
-    person.__dict__.update({k: v for k, v in attrs.iteritems()
-                            if v and k not in ["type", ]})
-    return person

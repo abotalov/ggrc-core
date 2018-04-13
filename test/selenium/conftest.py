@@ -121,21 +121,13 @@ def chrome_options(chrome_options, pytestconfig):
   return chrome_options
 
 
-# `PeopleFactory.default_user` uses `environment.app_url` and
-# is used in @pytest.mark.parametrize parameters.
-# Parametrize parameters are evaluated before fixtures so
-# `environment.app_url` should be already set.
-environment.app_url = os.environ["DEV_URL"]
-environment.app_url = urlparse.urljoin(environment.app_url, "/")
-
-
 @pytest.fixture(scope="function", autouse=True)
 def dev_url(request):
   """Set environment.app_url to be used as a base url"""
   if DESTRUCTIVE_TEST_METHOD_PREFIX in request.node.name:
-    environment.app_url = os.environ["DEV_DESTRUCTIVE_URL"]
-  else:
     environment.app_url = os.environ["DEV_URL"]
+  else:
+    environment.app_url = os.environ["DEV_DESTRUCTIVE_URL"]
   environment.app_url = urlparse.urljoin(environment.app_url, "/")
   return environment.app_url
 

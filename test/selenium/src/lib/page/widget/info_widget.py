@@ -7,7 +7,7 @@ import re
 
 from lib import base
 from lib.constants import (
-    locator, objects, element, roles, regex, messages, users)
+    locator, objects, element, roles, regex, messages)
 from lib.constants.locator import WidgetInfoAssessment
 from lib.element import widget_info, tab_containers
 from lib.page.modal import update_object
@@ -222,7 +222,7 @@ class InfoWidget(base.Widget):
       for ca_val in _cas_values:
         if ca_val is None:
           cas_values.append(None)
-        elif ca_val == users.DEFAULT_USER_EMAIL:
+        elif ca_val == roles.DEFAULT_USER:
           # Example User
           cas_values.append(
               unicode(objects.get_singular(objects.PEOPLE).title()))

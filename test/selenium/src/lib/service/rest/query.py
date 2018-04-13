@@ -70,14 +70,3 @@ class Query(object):
             }
         }
     }
-
-  @staticmethod
-  def expression_get_person_by_email(email):
-    """Expression to get person object by email"""
-    return {
-        "expression": {
-            "left": "email",
-            "op": {"name": "="},
-            "right": email
-        }
-    }
