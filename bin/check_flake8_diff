@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Copyright (C) 2018 Google Inc.
+# Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+
+set -o nounset
+set -o errexit
+
+ARG1=${1:-}
+SCRIPT=$(basename "$0")
+SCRIPTPATH=$( cd "$(dirname "$0")" ; pwd -P )
+cd "${SCRIPTPATH}/../"
+
+
+if [[ "$ARG1" == "-h" || "$ARG1" == "--help" ]]; then
+  echo "
+Usage: $SCRIPT [base_commit] [-h]
+
+This script will run flake8 over a list of changed files. It has three modes of
+operation depending on where and how we run it. Without parameters on a normal
+commit, it will use the files of that commit. Without parameters on a merge
+commit, it will use files that were modified on the branch that was merged into
+the current one. With a parameter, it will use the files that were changed
+between the current commit and the latest common commit if it's on a different
+branch.
+
+Given the commit tree:
+
+       D---E---F---G---H
+            \\         /
+             A---B---C
+
+- Running '$SCRIPT' on C will use files changed in the commit C.
+- Running '$SCRIPT' on H will use files changed in commits A, B, C.
+- Running '$SCRIPT H' on C will use files changed in commits A, B, C.
+- Running '$SCRIPT D' on C will use files changed in commits E, A, B, C.
+- Running '$SCRIPT F' on H will use files changed in commits G, H.
+"
+  exit 0
+fi
+
+CURRENT_COMMIT=$(git rev-parse HEAD)
+if [[ "$ARG1" != "" ]]; then
+  BASE_COMMIT="$ARG1"
+  PARENT_2=$CURRENT_COMMIT
+else
+  PARENT_1=$(git show --pretty=raw $CURRENT_COMMIT | grep parent | head -1 | grep -oE "[^ ]*$")
+  PARENT_2=$(git show --pretty=raw $CURRENT_COMMIT | head -6 | grep parent | tail -1 | grep -oE "[^ ]*$")
+  BASE_COMMIT=$(git merge-base $PARENT_1 $PARENT_2)
+fi
+
+
+# List files changed in a commit, or if it's a merge commit, list files chaged
+# from the begin of the branch to the last commit on the merged branch.
+if [[ "$PARENT_2" == "$BASE_COMMIT" ]]; then
+  CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $CURRENT_COMMIT | grep "\.py$" || true )
+else
+  CHANGED_FILES=$(git diff --name-only $BASE_COMMIT $PARENT_2 | grep "\.py$" || true )
+fi
+
+if [[ "$CHANGED_FILES" == "" ]]; then
+  echo "No python files changed. Skipping flake checks"
+  exit 0
+fi
+
+echo "Checking files:"
+echo "$CHANGED_FILES"
+echo ""
+
+echo $CHANGED_FILES | xargs flake8 --config setup.cfg

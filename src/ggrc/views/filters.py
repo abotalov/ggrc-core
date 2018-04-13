@@ -4,57 +4,8 @@
 from ggrc.app import app
 import ggrc.views
 
-"""Filters for GRC specific Jinja processing."""
-
-
-DISPLAY_CLASS_MAPPINGS = {
-    'Program': 'program',
-
-    'Control': 'controls',
-
-    'Objective': 'objectives',
-
-    'Directive': 'governance',
-    'Contract': 'governance',
-    'Policy': 'governance',
-    'Regulation': 'governance',
-    'Standard': 'governance',
-
-    'Project': 'business',
-    'Facility': 'business',
-    'Product': 'business',
-    'DataAsset': 'business',
-    'Market': 'business',
-    'System': 'business',
-    'Process': 'business',
-
-    'OrgGroup': 'entities',
-    'Person': 'entities',
-    'AccessGroup': 'entities',
-
-    'Risk': 'risk',
-    'RiskyAttribute': 'risk',
-}
-
-
-def _get_display_class_filter(obj):
-  """Return the display class for an instance, model, or name.
-  Returns one of 'business', 'governance', 'risk', 'programs',
-  'objective', 'control', 'people'
-  """
-  from ggrc.models.mixins import Base
-  from ggrc.models import get_model
-  if isinstance(obj, type):
-    obj = obj.__name__
-  elif isinstance(obj, Base):
-    obj = obj.__class__.__name__
-
-  if isinstance(obj, (str, unicode)):
-    model = get_model(obj)
-    obj = model._inflector.model_singular
-
-  return DISPLAY_CLASS_MAPPINGS.get(obj, "")
-
+"""Filters for GRC specific Jinja processing
+"""
 
 def init_filter_views():
   @app.template_filter("with_static_subdomain")
@@ -63,7 +14,7 @@ def init_filter_views():
     from flask import request
     from ggrc import settings
     if not getattr(settings, 'APP_ENGINE', False) \
-            or not getattr(settings, 'USE_APP_ENGINE_ASSETS_SUBDOMAIN', True):
+        or not getattr(settings, 'USE_APP_ENGINE_ASSETS_SUBDOMAIN', True):
       return path
     scheme, netloc, _, _, _ = urlparse.urlsplit(request.url_root)
     if not netloc.startswith('static-dot-'):
@@ -84,7 +35,37 @@ def init_filter_views():
     Returns one of 'business', 'governance', 'risk', 'programs',
     'objective', 'control', 'people'
     """
-    return _get_display_class_filter(obj)
+    from ggrc.models.mixins import Base
+    from ggrc.models import get_model
+    if isinstance(obj, type):
+      obj = obj.__name__
+    elif isinstance(obj, Base):
+      obj = obj.__class__.__name__
+
+    if isinstance(obj, (str, unicode)):
+      model = get_model(obj)
+      obj = model._inflector.model_singular
+
+    if obj in ('Program',):
+      return 'program'
+    elif obj in ('Control',):
+      return 'controls'
+    elif obj in ('Objective',):
+      return 'objectives'
+    elif obj in (
+        'Directive', 'Contract', 'Policy', 'Regulation', 'Standard'):
+      return 'governance'
+    elif obj in (
+        'Project', 'Facility', 'Product', 'DataAsset', 'Market',
+        'System', 'Process'):
+      return 'business'
+    elif obj in ('OrgGroup', 'Person', 'AccessGroup'):
+      return 'entities'
+    elif obj in ('Risk', 'RiskyAttribute'):
+      return 'risk'
+    else:
+      return ''
+
 
   # Additional generic filters
   #

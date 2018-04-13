@@ -1,12 +1,10 @@
 # Copyright (C) 2018 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
-
 class UserPermissions(object):
   """Interface required for extensions providing user rights information for
   role-based access control.
   """
-
   def is_allowed_create(self, resource_type, resource_id, context_id):
     """Whether or not the user is allowed to create a resource of the specified
     type in the context."""
@@ -69,13 +67,12 @@ class UserPermissions(object):
     """All contexts in which the user has delete permission."""
     raise NotImplementedError()
 
-
 class BasicUserPermissions(UserPermissions):
   """Basic implementation of a UserPermissions object."""
 
   def __init__(
-          self, create_contexts=None, read_contexts=None, update_contexts=None,
-          delete_contexts=None):
+      self, create_contexts=None, read_contexts=None, update_contexts=None,
+      delete_contexts=None):
     """Args:
       create_contexts (dict of (resource_type,[context_id])): The contexts
         where the user is allowed to create a resource of a given type.
@@ -136,3 +133,5 @@ class BasicUserPermissions(UserPermissions):
   def delete_contexts_for(self, resource_type):
     """All contexts in which the user has delete permission."""
     return self.delete_contexts.get(resource_type) or []
+
+
