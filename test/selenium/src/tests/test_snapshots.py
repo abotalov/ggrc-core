@@ -439,6 +439,7 @@ class TestSnapshots(base.Test):
         src_obj=new_audit_rest, dest_objs=[new_control_rest])
     actual_controls_count_in_tab_audit = (
         controls_ui_service.get_count_objs_from_tab(src_obj=new_audit_rest))
+    assert len([expected_control]) == actual_controls_count_in_tab_audit
     actual_controls_in_audit = (
         controls_ui_service.get_list_objs_from_tree_view(
             src_obj=new_audit_rest))

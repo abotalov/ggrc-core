@@ -896,6 +896,10 @@ class ListCheckboxes(Component):
     selenium_utils.get_when_visible(self._driver, self.locator_titles)
     checkboxes = self._driver.find_elements(*self.locator_checkboxes)
     title_els = self._driver.find_elements(*self.locator_titles)
+    shown_titles = [title_el.text for title_el in title_els]
+    for title in list_titles:
+      if title not in shown_titles:
+        raise ValueError("Unexpected title: {}".format(title))
     self._select_necessary(checkboxes, title_els, list_titles)
 
   def get_mapping_statuses(self):
