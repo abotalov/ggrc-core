@@ -7,8 +7,8 @@
   <div class="tier-content">
     {{#instance}}
       <div class="pane-header {{#if snapshot}}snapshot{{/if}}" >
-        <div class="row-fluid wrap-row">
-          <div data-test-id="title_0ad9fbaf" class="span6">
+        <div class="pane-header__container">
+          <div class="pane-header__title" data-test-id="title_0ad9fbaf">
             {{#is_info_pin}}
               <h6>{{modifyFieldTitle instance.type 'Title'}}</h6>
             {{/is_info_pin}}
@@ -68,7 +68,7 @@
               {{/using}}
             </div>
           </div>
-
+        </div>
           {{#if snapshot}}
             {{! We need to use `using` to ensure that snapshot is actually
                 reified by the time is_allowed helper uses it }}
@@ -104,7 +104,6 @@
           {{/canUpdate}}
           {{/using}}
           {{/if}}
-        </div>
       </div>
     {{/instance}}
     {{>'/static/mustache/base_objects/object-review.mustache'}}

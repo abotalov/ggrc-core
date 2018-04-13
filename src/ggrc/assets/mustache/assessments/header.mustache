@@ -4,11 +4,11 @@ Copyright (C) 2018 Google Inc.
 }}
 
 <div class="pane-header">
+  <div class="pane-header__container">
     <div class="pane-header__title">
         {{#if is_info_pin}}
             <h6>title</h6>
         {{/if}}
-        <div class="pane-header__container">
             <inline-edit-control
                 (inline-save)="saveInlineForm(%event)"
                 prop-name="title"
@@ -51,9 +51,7 @@ Copyright (C) 2018 Google Inc.
                         </confirm-edit-action>
                     {{/unless}}
             </inline-edit-control>
-        </div>
     </div>
-    <div>
         <div class="pane-header__toolbar">
           {{#is_info_pin}}
             <info-pin-buttons maximized="maximized" on-change-maximized-state="@onChangeMaximizedState"

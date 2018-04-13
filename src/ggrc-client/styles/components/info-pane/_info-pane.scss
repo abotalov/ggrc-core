@@ -106,10 +106,7 @@
   }
 
   .pane-header {
-    display: flex;
     height: 70px;
-    justify-content: space-between;
-    border-bottom: 1px solid #eee;
 
     .pane-header__container {
       width: 100%;
@@ -118,7 +115,6 @@
     .pane-header__title {
       padding-right: 24px;
       max-width: calc(100% - 525px);
-      flex: 1;
 
       .pane-header__title-name {
         max-width: calc(100% - 165px);
@@ -143,7 +139,7 @@
       }
     }
 
-    .pane-header__toolbar {      
+    .pane-header__toolbar {
       .info-pane-utility {
         flex-direction: row-reverse;
       }
