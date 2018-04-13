@@ -421,7 +421,6 @@ class TestSnapshots(base.Test):
                 expected_controls_from_tree_view,
                 actual_controls_from_tree_view)))
 
-  @pytest.mark.skip(reason="Fails in dev branch")
   @pytest.mark.smoke_tests
   def test_destructive_mapping_control_to_existing_audit(
       self, new_program_rest, new_audit_rest, new_control_rest, selenium
