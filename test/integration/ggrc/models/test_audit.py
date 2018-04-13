@@ -10,7 +10,6 @@ from integration.ggrc.models import factories
 
 class TestAudit(TestCase):
   """ Test Audit class. """
-
   def setUp(self):
     super(TestAudit, self).setUp()
     self.api = Api()
@@ -55,78 +54,3 @@ class TestAudit(TestCase):
         }
     }])
     self.assert200(response)
-
-  def test_program_mapping(self):
-    """Check creation of new Audit if Program has Control with mapped roles"""
-
-    program = factories.ProgramFactory()
-    self.api.post(all_models.Audit, [{
-        "audit": {
-            "title": "New Audit",
-            "program": {"id": program.id, "type": program.type},
-            "status": "Planned",
-            "context": None
-        }
-    }])
-    audit = all_models.Audit.query.first()
-    program = all_models.Program.query.first()
-    relationships = all_models.Relationship.find_related(audit, program)
-    self.assertIsNotNone(audit)
-    self.assertIsNotNone(program)
-    self.assertIsNotNone(relationships)
-
-  def test_new_audit_snapshots(self):
-    """Test audit snapshot relationships on new audit creation."""
-
-    program = factories.ProgramFactory()
-    control = factories.ControlFactory()
-    factories.RelationshipFactory(
-        source=program,
-        destination=control,
-    )
-
-    self.api.post(all_models.Audit, [{
-        "audit": {
-            "title": "New Audit",
-            "program": {"id": program.id, "type": program.type},
-            "status": "Planned",
-            "context": None
-        }
-    }])
-    audit = all_models.Audit.query.first()
-    snapshot = all_models.Snapshot.query.first()
-    relationships = all_models.Relationship.find_related(audit, snapshot)
-    self.assertIsNotNone(audit)
-    self.assertIsNotNone(snapshot)
-    self.assertIsNotNone(relationships)
-
-  def test_new_snapshot_mapping(self):
-    """Test audit snapshot relationships on new snapshot creation."""
-
-    audit = factories.AuditFactory()
-    control = factories.ControlFactory()
-    self.gen.generate_relationship(audit, control)
-
-    audit = all_models.Audit.query.first()
-    snapshot = all_models.Snapshot.query.first()
-    relationships = all_models.Relationship.find_related(audit, snapshot)
-    self.assertIsNotNone(audit)
-    self.assertIsNotNone(snapshot)
-    self.assertIsNotNone(relationships)
-
-  def test_new_snapshots_on_update(self):
-    """Test relationships for snapshots created by update audit scope."""
-    audit = factories.AuditFactory()
-    control = factories.ControlFactory()
-    self.gen.generate_relationship(audit.program, control)
-
-    self.api.put(audit, data={
-        "snapshots": {"operation": "upsert"}
-    })
-
-    audit = all_models.Audit.query.first()
-    snapshot = all_models.Snapshot.query.first()
-    relationships = all_models.Relationship.find_related(audit, snapshot)
-    self.assertIsNotNone(audit)
-    self.assertIsNotNone(snapshot)
-    self.assertIsNotNone(relationships)

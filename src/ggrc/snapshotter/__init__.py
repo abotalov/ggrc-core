@@ -73,7 +73,6 @@ class SnapshotGenerator(object):
     self.context_cache[parent] = parent_object.context_id
 
   def _fetch_neighborhood(self, parent_object, objects):
-    """Fetch relationships for objects and parent."""
     with benchmark("Snapshot._fetch_object_neighborhood"):
       query_pairs = set()
 
@@ -147,7 +146,6 @@ class SnapshotGenerator(object):
     if not self.dry_run:
       reindex_pairs(updated)
       self._copy_snapshot_relationships()
-      self._create_audit_relationships()
     return result
 
   def _update(self, for_update, event, revisions, _filter):
@@ -310,7 +308,6 @@ class SnapshotGenerator(object):
       reindex_pairs(to_reindex)
       self._remove_lost_snapshot_mappings()
       self._copy_snapshot_relationships()
-      self._create_audit_relationships()
     return OperationResponse("upsert", True, {
         "create": create,
         "update": update
@@ -344,7 +341,6 @@ class SnapshotGenerator(object):
     if not self.dry_run:
       reindex_pairs(created)
       self._copy_snapshot_relationships()
-      self._create_audit_relationships()
     return result
 
   def _create(self, for_create, event, revisions, _filter):
@@ -468,50 +464,6 @@ class SnapshotGenerator(object):
           "user_id": get_current_user_id(),
           "parent_id": parent.id
       })
-
-  def _create_audit_relationships(self):
-    """Create relationships between snapshot objects and audits.
-
-    Generally snapshots are related to audits by default, but we also duplicate
-    this data in relationships table for ACL propagation.
-    """
-
-    relationships_table = all_models.Relationship.__table__
-    snapshot_table = all_models.Snapshot.__table__
-    inserter = relationships_table.insert().prefix_with("IGNORE")
-
-    audit_ids = {parent.id for parent in self.parents}
-    if not audit_ids:
-      return
-
-    select_statement = sa.select([
-        sa.literal(get_current_user_id()),
-        sa.func.now(),
-        sa.func.now(),
-        snapshot_table.c.parent_id,
-        snapshot_table.c.parent_type,
-        snapshot_table.c.id,
-        sa.literal(all_models.Snapshot.__name__),
-    ]).select_from(
-        snapshot_table
-    ).where(
-        snapshot_table.c.parent_id.in_(audit_ids)
-    )
-
-    db.session.execute(
-        inserter.from_select(
-            [
-                relationships_table.c.modified_by_id,
-                relationships_table.c.created_at,
-                relationships_table.c.updated_at,
-                relationships_table.c.source_id,
-                relationships_table.c.source_type,
-                relationships_table.c.destination_id,
-                relationships_table.c.destination_type,
-            ],
-            select_statement
-        )
-    )
 
   def _remove_lost_snapshot_mappings(self):
     """Remove mappings between snapshots if base objects were unmapped."""

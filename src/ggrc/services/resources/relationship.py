@@ -11,7 +11,6 @@ from ggrc.builder import json as json_builder
 from ggrc import db
 import ggrc.services.common
 from ggrc.models.snapshot import Snapshot
-from ggrc.models import relationship
 from ggrc.login import get_current_user
 
 
@@ -53,7 +52,8 @@ class RelationshipResource(ggrc.services.common.Resource):
       obj = Snapshot()
       db.session.add(obj)
       return obj
-    return super(RelationshipResource, self)._get_model_instance(src, body)
+    else:
+      return super(RelationshipResource, self)._get_model_instance(src, body)
 
   def json_create(self, obj, src):
     """For Parent and Snapshottable src and dst, fill in the Snapshot obj."""
@@ -69,10 +69,5 @@ class RelationshipResource(ggrc.services.common.Resource):
       json_builder.create(obj, snapshot_data)
       obj.modified_by = get_current_user()
       obj.context = obj.parent.context
-      relationship.Relationship(
-          source=obj.parent,
-          destination=obj,
-      )
-      return None
-
-    return super(RelationshipResource, self).json_create(obj, src)
+    else:
+      return super(RelationshipResource, self).json_create(obj, src)
