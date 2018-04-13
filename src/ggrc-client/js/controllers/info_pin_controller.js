@@ -245,6 +245,11 @@ export default can.Control({
           header.removeClass('pane-header_visible');
           header.addClass('pane-header_hidden');
         }
+
+        //hide menu when scrolling down
+        let dropdownMenu = header.find('.details-wrap');
+        dropdownMenu.removeClass('open');
+        
       } else if (scrollTop < prevScrollTop) {
         //scroll top
         header.removeClass('pane-header_hidden');
