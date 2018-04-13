@@ -9,10 +9,6 @@
   background: $snapshotBgnd;
 }
 
-.span12.snapshot {
-  margin-left: 0;
-}
-
 .state-value.snapshot {
   color: $snapshotLbl;
   background: $snapshotLblBgnd;
@@ -37,26 +33,9 @@ a.disabled {
 // Info pane
 .sticky-info-panel {
   .pane-header.snapshot {
-    margin-left: -25px;
-    margin-right: -25px;
-    padding-left: 25px;
-    padding-right: 25px;
+    border-bottom: 1px solid $lightGray;
   }
 }
-
-// Info widget
-.widget {
-  .pane-header.snapshot {
-    margin-top: -25px;
-    margin-bottom: 20px;
-    padding-bottom: 5px;
-    margin-left: -30px;
-    margin-right: -30px;
-    padding-left: 30px;
-    padding-right: 30px;
-  }
-}
-
 // Tree view
 ul.new-tree {
   li.tree-item {
