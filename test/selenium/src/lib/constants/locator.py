@@ -709,7 +709,8 @@ class WidgetInfoPanel(CommonWidgetInfo):
 
 class WidgetSnapshotsInfoPanel(WidgetInfoPanel):
   """Locators specific for Info panels of snapshotable objects."""
-  LINK_GET_LAST_VER = (By.CSS_SELECTOR, ".snapshot [can-click='compareIt']")
+  LINK_GET_LAST_VER = (
+      By.CSS_SELECTOR, ".pane-header__snapshot-info [can-click='compareIt']")
   SNAPSHOT_OBJ_VER = (By.CSS_SELECTOR, "span.snapshot")
 
 
