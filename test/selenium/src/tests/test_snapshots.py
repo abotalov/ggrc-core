@@ -17,6 +17,7 @@ from lib.entities.entity import Representation
 from lib.factory import get_cls_webui_service, get_cls_rest_service
 from lib.page import dashboard
 from lib.service import webui_service
+from lib.service.rest.client import RestClient
 from lib.utils import selenium_utils
 from lib.utils.filter_utils import FilterUtils
 
@@ -439,6 +440,10 @@ class TestSnapshots(base.Test):
         src_obj=new_audit_rest, dest_objs=[new_control_rest])
     actual_controls_count_in_tab_audit = (
         controls_ui_service.get_count_objs_from_tab(src_obj=new_audit_rest))
+    relationships = RestClient("").get_object("api/relationships").json()
+    print(relationships)
+    snapshots = RestClient("").get_object("api/snapshots").json()
+    print(snapshots)
     assert len([expected_control]) == actual_controls_count_in_tab_audit
     actual_controls_in_audit = (
         controls_ui_service.get_list_objs_from_tree_view(

@@ -79,7 +79,7 @@ def run_tests():
   a warning. So `pytest` is run in a subprocess.
   """
   sys.stdout.flush()  # Flush should be called before calling a subprocess
-  return subprocess.call("pytest")
+  return subprocess.call(["pytest"])
 
 
 if __name__ == "__main__":
