@@ -2,6 +2,7 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
 """Module containing Document model."""
+import json
 
 from sqlalchemy import orm
 
@@ -9,6 +10,7 @@ from ggrc import db
 from ggrc.access_control.roleable import Roleable
 from ggrc.builder import simple_property
 from ggrc.fulltext.mixin import Indexed
+from ggrc.login import login_required
 from ggrc.models import exceptions, comment
 from ggrc.models import reflection
 from ggrc.models import mixins

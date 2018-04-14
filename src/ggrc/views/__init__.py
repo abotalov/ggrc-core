@@ -13,6 +13,7 @@ import sqlalchemy
 from sqlalchemy import true
 from flask import flash
 from flask import g
+from flask import jsonify
 from flask import render_template
 from flask import url_for
 from flask import request
@@ -705,3 +706,19 @@ def user_permissions():
      logged in user
   '''
   return get_permissions_json()
+
+
+@app.route("/is_document_with_gdrive_id_exists", methods=["POST"])
+@login_required
+def is_document_with_gdrive_id_exists():
+  if "gdrive_id" not in request.json:
+    return "gdrive_id is mandatory"
+  gdrive_id = request.json["gdrive_id"]
+  doc = all_models.Document.query.filter(
+      all_models.Document.gdrive_id == gdrive_id).first()
+  response = {"status": "Not exists",
+              "gdrive_id": gdrive_id}
+  if doc:
+    response["status"] = "Exists"
+    response["Document"] = {"Id": doc.id}
+  return jsonify(response)

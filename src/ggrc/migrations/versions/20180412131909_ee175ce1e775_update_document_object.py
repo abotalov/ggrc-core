@@ -32,8 +32,12 @@ def upgrade():
                   sa.Column('send_by_default', sa.Boolean(), nullable=True))
     op.add_column('documents',
                   sa.Column('last_deprecated_date', sa.Date))
+
+    op.create_unique_constraint(name='idx_gdrive_id', table_name='documents',
+                                columns=['gdrive_id'])
     op.create_unique_constraint(name='uq_control_document',
                                 table_name='documents', columns=['slug'])
+
 
 def downgrade():
     """Downgrade database schema and/or data back to the previous revision."""
