@@ -3,8 +3,6 @@
 
 SHELL := /bin/bash
 
-.PHONY: clean misspell
-
 PREFIX := $(shell pwd)
 
 DEV_PREFIX ?= $(PREFIX)
@@ -24,9 +22,6 @@ APPENGINE_REQUIREMENTS_TXT=$(PREFIX)/src/requirements.txt
 
 STATIC_PATH=$(PREFIX)/src/ggrc/static
 NODE_MODULES_PATH=$(DEV_PREFIX)/node_modules
-GOLANG_PATH=/vagrant-dev/golang
-GOLANG_BIN=$(GOLANG_PATH)/go/bin/go
-GOLANG_PACKAGES=$(GOLANG_PATH)/bin
 
 $(GCLOUD_SDK_PATH) : $(GCLOUD_ZIP_PATH)
 	cd `dirname $(GCLOUD_SDK_PATH)`; \
@@ -84,12 +79,11 @@ $(DEV_PREFIX)/opt/dev_virtualenv :
 
 dev_virtualenv : $(DEV_PREFIX)/opt/dev_virtualenv
 
-dev_virtualenv_packages : dev_virtualenv src/requirements-dev.txt src/requirements.txt  src/requirements-selenium.txt
+dev_virtualenv_packages : dev_virtualenv src/requirements-dev.txt src/requirements.txt
 	source "$(PREFIX)/bin/init_env"; \
 		pip install -U pip==9.0.1; \
 		pip install --no-deps -r src/requirements.txt; \
-		pip install -r src/requirements-dev.txt; \
-		pip install -r src/requirements-selenium.txt
+		pip install -r src/requirements-dev.txt
 
 git_submodules :
 	git submodule update --init
@@ -99,18 +93,11 @@ linked_packages : dev_virtualenv_packages
 	source bin/init_env; \
 		setup_linked_packages.py $(DEV_PREFIX)/opt/linked_packages
 
-golang_packages : export GOPATH=$(GOLANG_PATH)
-golang_packages : export GOROOT=$(GOLANG_PATH)/go
-golang_packages :
-	mkdir -p $(GOLANG_PATH)
-	wget https://storage.googleapis.com/golang/go1.6.3.linux-amd64.tar.gz -O $(GOLANG_PATH)/go.tar.gz
-	tar -C $(GOLANG_PATH) -xzf $(GOLANG_PATH)/go.tar.gz
-	rm $(GOLANG_PATH)/go.tar.gz
-	$(GOLANG_BIN) get -u github.com/client9/misspell/cmd/misspell
-
-setup_dev : dev_virtualenv_packages linked_packages golang_packages
+setup_dev : dev_virtualenv_packages linked_packages
 
 misspell :
+	curl -L -o ./install-misspell.sh https://git.io/misspell
+	sh ./install-misspell.sh -b /vagrant-dev/misspell/bin
 	find . -type f -name "*" \
 		! -path "*/.*"\
 		! -path "./node_modules/*"\
@@ -129,7 +116,7 @@ misspell :
 		! -path "./src/ggrc/assets/stylesheets/dashboard.css"\
 		! -path "./src/packages/*"\
 		! -path "./package-lock.json"\
-		| xargs $(GOLANG_PACKAGES)/misspell -error -locale US
+		| xargs /vagrant-dev/misspell/bin/misspell -error -locale US
 
 ## Deployment!
 
