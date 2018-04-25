@@ -85,7 +85,6 @@
   });
 
   $win.load(function () {
-    let lastPopover;
     $body.on('click', 'ul.tree-structure .item-main .grcobject,' +
       ' ul.tree-structure .item-main .openclose', function (ev) {
       ev.stopPropagation();
@@ -113,90 +112,6 @@
     $body.on('mouseenter', '.new-tree .tree-info a.reference', function () {
       if ($(this).width() > $('.new-tree .tree-info').width()) {
         $(this).addClass('shrink-it');
-      }
-    });
-
-    // Popover trigger for person tooltip in styleguide
-    // The popover disappears if the show/hide isn't controlled manually
-    $body.on('mouseenter', '.person-tooltip-trigger', function (ev) {
-      let popover;
-      let target = $(ev.currentTarget);
-      let content = target
-        .closest('.person-holder')
-        .find('.custom-popover-content')
-        .html();
-
-      if (!content) {
-        // Don't show tooltip if there is no content
-        return;
-      }
-      if (!target.data('popover')) {
-        target.popover({
-          html: true,
-          delay: {
-            show: 400,
-            hide: 200,
-          },
-          trigger: 'manual',
-          content: function () {
-            return content;
-          },
-        });
-        target.data('popover').tip()
-          .addClass('person-tooltip')
-          .css('z-index', 2000);
-      }
-      popover = target.data('popover');
-      if (lastPopover && lastPopover !== popover) {
-        lastPopover.hide();
-      }
-
-      // If the popover is active, just refresh the timeout
-      if (popover.tip().is(':visible') && popover.timeout) {
-        clearTimeout(popover.timeout);
-        popover.hoverState = 'in';
-      }
-      // Otherwise show popover
-      else {
-        clearTimeout(popover.timeout);
-        popover.enter(ev);
-      }
-
-      lastPopover = popover;
-    });
-    $body.on('mouseenter', '.popover', function (ev) {
-      // Refresh the popover
-      if (lastPopover && lastPopover.tip().is(':visible')) {
-        ev.currentTarget = lastPopover.$element[0];
-        clearTimeout(lastPopover.timeout);
-        lastPopover.hoverState = 'in';
-      }
-    });
-    $body.on('mouseleave', '.person-holder,' +
-      ' .person-tooltip-trigger, .popover,' +
-      ' .popover .square-popover', function (ev) {
-      let target = $(ev.currentTarget);
-      let popover;
-
-      if (target.is('.person-tooltip-trigger')) {
-        target = target.closest('.person-holder');
-      } else if (target.is('.square-popover')) {
-        target = target.closest('.popover');
-      }
-
-      // Hide the popover if we left for good
-      if (target.is('.person-holder') &&
-        (target = target.find('.person-tooltip-trigger')) &&
-        (popover = target.data('popover'))) {
-        ev.currentTarget = target[0];
-        popover.leave(ev);
-      }
-      // Check if this popover originated from the last person popover
-      else if (lastPopover &&
-        target.is('.popover') &&
-        lastPopover.tip()[0] === target[0]) {
-        ev.currentTarget = lastPopover.$element[0];
-        lastPopover.leave(ev);
       }
     });
 
