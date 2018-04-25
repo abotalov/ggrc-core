@@ -5,42 +5,13 @@
 
 {{#person}}
 <span class="person-holder">
-    <a data-test-id="text_manager_7a906d2e" href="/people/{{id}}"><span
-            class="person-tooltip-trigger" data-placement="top">
+    <span>
       {{email}}
-    </span></a>
+    </span>
   {{#if_equals system_wide_role 'No Access'}}
     <span class="user-disabled">
       (Inactive user)
     </span>
   {{/if_equals}}
-  <div class="custom-popover-content">
-    <div class="preview-container person-preview">
-      <div class="row-fluid">
-        <div class="span8">
-          <div class="profile-info">
-            <ul>
-              <li><h4>{{firstnonempty name email}}
-                {{#if_equals system_wide_role 'No Access'}}
-                  <span class="user-disabled">
-                    (Inactive user)
-                  </span>
-                {{/if_equals}}
-              </h4></li>
-              <li><strong>Email:</strong> <a href="mailto:{{email}}" target="_blank">{{email}}</a></li>
-              {{#company}}<li><strong>Company:</strong> {{company}}</li>{{/company}}
-            </ul>
-
-            {{{render_hooks 'Person.popover_actions' person=person}}}
-
-            <a class="info-action" href="/people/{{id}}">View profile <i class="fa fa-long-arrow-right"></i></a>
-          </div>
-        </div>
-
-        {{{render_hooks 'Person.popover_info' person=person}}}
-
-      </div>
-    </div>
-  </div>
 </span>
 {{/person}}
