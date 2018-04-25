@@ -34,17 +34,13 @@
     }
   }
   .person-info-list {
+    .person {
+      line-height: 22px;
+      font-style: italic;
+    }
+
     list-style-type: none;
     margin: 0;
-  }
-  .person-tooltip-trigger {
-    &:hover {
-      text-decoration: underline;
-      cursor: pointer;
-    }
-    &.active {
-      text-decoration: underline;
-    }
   }
   .url {
     @extend %oneline;
