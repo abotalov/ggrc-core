@@ -61,6 +61,8 @@
     }
 
     .person-name {
+      color: black;
+      font-style: italic;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -131,10 +133,6 @@
       border-radius: 16px;
       line-height: 14px;
       margin: 5px 6px 5px 0;
-
-      .person-name {
-        font-style: normal;
-      }
     }
   }
 
