@@ -34,7 +34,6 @@ import template from './person-form-field.mustache';
           type: 'number',
         },
       },
-      withDetails: false,
       setPerson: function (ev) {
         this.attr('_value', ev.selectedItem.serialize().id);
       },

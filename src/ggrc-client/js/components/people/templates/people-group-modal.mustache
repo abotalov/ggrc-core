@@ -48,7 +48,7 @@
           ({items})="people"
           {is-disabled}="isLoading"
           {empty-message}="emptyListMessage">
-            <person-list-item person="{.}" {with-details}="withDetails">
+            <person-list-item person="{.}">
               {{#unmapablePerson}}
                 <a href="javascript://"
                   class="info-action people-group-modal__unmap {{#if isDisabled}}disabled{{/if}}"

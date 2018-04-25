@@ -71,7 +71,6 @@ import template from './person-list-item.mustache';
           },
         },
       },
-      withDetails: true,
     },
   });
 })(window.can, window.GGRC, window.CMS);

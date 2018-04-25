@@ -44,7 +44,7 @@
 
   {{#case 'person'}}
     {{#if context.value}}
-      <person-list-item {person-id}="context.value" {with-details}="withDetails"></person-list-item>
+      <person-list-item {person-id}="context.value"></person-list-item>
     {{else}}
       <span class="empty-message">No person</span>
     {{/if}}
