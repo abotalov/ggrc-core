@@ -22,7 +22,6 @@ can.Component.extend({
     },
     rolesConflict: false,
     infoPaneMode: true,
-    withDetails: false,
     instance: {},
     conflictRoles: ['Assignees', 'Verifiers'],
     orderOfRoles: ['Creators', 'Assignees', 'Verifiers'],
@@ -33,4 +32,3 @@ can.Component.extend({
     },
   },
 });
-

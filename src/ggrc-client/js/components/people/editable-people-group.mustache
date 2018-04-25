@@ -10,8 +10,7 @@
   {{#unless editableMode}}
     <object-list ({items})="showPeople" {empty-message}="emptyListMessage">
       <person-list-item class="people-group__readonly-person"
-        person="{.}"
-        {with-details}="withDetails">
+        person="{.}">
       </person-list-item>
     </object-list>
 
@@ -38,7 +37,7 @@
               ({items})="people"
               {is-disabled}="isLoading"
               {empty-message}="emptyListMessage">
-              <person-list-item person="{.}" {with-details}="withDetails">
+              <person-list-item person="{.}">
                 {{#unmapablePerson}}
                   <a href="javascript://"
                     class="info-action editable-people-group__unmap {{#if isDisabled}}disabled{{/if}}"

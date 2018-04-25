@@ -9,7 +9,7 @@
       <a class="person-info-wrapper__remove-value" href="#" ($click)="unsetPerson">
         <i class="fa fa-times" aria-hidden="true"></i>
       </a>
-      <person-list-item {person-id}="_value" {with-Details}="withDetails"></person-list-item>
+      <person-list-item {person-id}="_value"></person-list-item>
     </div>
   {{else}}
     {{^if_config_exist 'external_services.Person'}}

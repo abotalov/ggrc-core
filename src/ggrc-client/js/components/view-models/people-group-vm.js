@@ -18,7 +18,6 @@ export default can.Map.extend({
   canUnmap: true,
   instance: {},
   isLoading: false,
-  withDetails: false,
   unmapablePerson: function () {
     let required;
     let peopleLength;
