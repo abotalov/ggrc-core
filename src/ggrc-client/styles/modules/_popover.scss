@@ -305,17 +305,6 @@
   .title {
     color:$black;
   }
-  &.person-tooltip {
-    z-index: zIndex(person-tooltip) !important;
-    .popover-inner,
-    .popover-content {
-      margin: -10px 0;
-    }
-    .square-popover {
-      bottom: auto !important;
-      top: 0;
-    }
-  }
   &.popover-help-wrap {
     @include box-shadow(0 0 5px rgba(0,0,0, .3));
     width: 60%;
