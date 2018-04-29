@@ -145,6 +145,28 @@ const REFRESH_SUB_TREE = {
   type: 'refreshSubTree',
 };
 
+/**
+ * Notifies that new document will be created
+ * @event beforeMapping
+ * @type {object}
+ * @property {string} type - Event name.
+ * @property {string} destinationType - Type of mapped object.
+ */
+const BEFORE_DOCUMENT_CREATE = {
+  type: 'beforeDocumentCreate',
+};
+
+/**
+ * Notifies that new document creating failed
+ * @event beforeMapping
+ * @type {object}
+ * @property {string} type - Event name.
+ * @property {string} destinationType - Type of mapped object.
+ */
+const DOCUMENT_CREATE_FAILED = {
+  type: 'documentCreateFailed',
+};
+
 export {
   REFRESH_SUB_TREE,
   REFRESH_RELATED,
@@ -160,4 +182,6 @@ export {
   RELATED_ITEMS_LOADED,
   COMMENT_CREATED,
   REFRESH_MAPPING,
+  BEFORE_DOCUMENT_CREATE,
+  DOCUMENT_CREATE_FAILED,
 };
