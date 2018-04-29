@@ -36,18 +36,18 @@
               {{>'/static/mustache/base_objects/contacts.mustache'}}
 
               <div class="row-fluid wrap-row">
-                <div class="span3">
+                <div class="span4">
                   <div class="info-pane__section-title">Code</div>
                   <span>{{instance.slug}}</span>
                 </div>
-                <div class="span3">
+                <div class="span4">
                   <div class="info-pane__section-title">Type</div>
                   <span>{{instance.kindTitle}}</span>
                 </div>
-                <div class="span3">
-                  <h6>Last Deprecated Date</h6>
+                <div class="span4">
+                  <div class="info-pane__section-title">Last Deprecated Date</div>
                   {{#if instance.last_deprecated_date}}
-                    {{localize_date instance.last_deprecated_date}}
+                    <span>{{localize_date instance.last_deprecated_date}}</span>
                   {{else}}
                     <span class="empty-message">None</span>
                   {{/if}}
