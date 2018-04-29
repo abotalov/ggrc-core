@@ -125,6 +125,17 @@ const COMMENT_CREATED = {
 };
 
 /**
+ * Notifies that new objects are about to map to the instance
+ * @event beforeMapping
+ * @type {object}
+ * @property {string} type - Event name.
+ * @property {string} destinationType - Type of mapped object.
+ */
+const BEFORE_MAPPING = {
+  type: 'beforeMapping',
+};
+
+/**
  * Refreshes mappings of instance
  * @event refreshMapping
  * @type {object}
@@ -181,6 +192,7 @@ export {
   REFRESH_COMMENTS,
   RELATED_ITEMS_LOADED,
   COMMENT_CREATED,
+  BEFORE_MAPPING,
   REFRESH_MAPPING,
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,

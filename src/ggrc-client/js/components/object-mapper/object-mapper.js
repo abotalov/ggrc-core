@@ -22,6 +22,7 @@ import {
 } from '../../plugins/utils/current-page-utils';
 import RefreshQueue from '../../models/refresh_queue';
 import {
+  BEFORE_MAPPING,
   REFRESH_MAPPING,
   REFRESH_SUB_TREE,
 } from '../../events/eventTypes';
@@ -160,6 +161,9 @@ import {
         this.viewModel.attr('newEntries', []);
         this.element.trigger('hideModal');
       },
+      '.create-control modal:dismiss'() {
+        this.closeModal();
+      },
       '{window} modal:dismiss': function (el, ev, options) {
         let joinObjectId = this.viewModel.attr('join_object_id');
 
@@ -246,6 +250,11 @@ import {
         let data = {};
         let defer = [];
         let que = new RefreshQueue();
+
+        instance.dispatch({
+          ...BEFORE_MAPPING,
+          destinationType: type,
+        });
 
         que.enqueue(instance).trigger().done(function (inst) {
           data.context = instance.context || null;
