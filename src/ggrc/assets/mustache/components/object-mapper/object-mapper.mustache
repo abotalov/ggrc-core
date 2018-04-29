@@ -41,21 +41,31 @@
           </a>
         </span>
       {{else}}
-        {{^if showWarning}}
+        {{#if_equals type 'Document'}}
           <span class="create-new-object">
-            Map existing object or
-            <a class="btn btn-link create-control"
-                href="javascript://"
-                data-toggle="modal-ajax-form"
-                data-modal-class="modal-wide"
-                data-object-singular="{{model.singular}}"
-                data-object-plural="{{model.plural}}"
-                data-unique-id="{{join_object_id}}"
-                data-join-object-id="{{join_object_id}}">
-                Create and map new object
-            </a>
+            Do you want to search for an existing document or
+            <create-document-button class="create-control"
+              {parent-instance}="parentInstance">
+              Attach new
+            </create-document-button>
           </span>
-        {{/if}}
+        {{else}}
+          {{^if showWarning}}
+            <span class="create-new-object">
+              Map existing object or
+              <a class="btn btn-link create-control"
+                  href="javascript://"
+                  data-toggle="modal-ajax-form"
+                  data-modal-class="modal-wide"
+                  data-object-singular="{{model.singular}}"
+                  data-object-plural="{{model.plural}}"
+                  data-unique-id="{{join_object_id}}"
+                  data-join-object-id="{{join_object_id}}">
+                  Create and map new object
+              </a>
+            </span>
+          {{/if}}
+        {{/if_equals}}
       {{/if_equals}}
     {{/is_allowed}}
   {{/if}}
