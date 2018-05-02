@@ -56,15 +56,7 @@ import {getRole} from '../plugins/utils/acl-utils';
     orderOfRoles: ['Program Managers', 'Program Editors', 'Program Readers'],
     tree_view_options: {
       attr_view: GGRC.mustache_path + '/programs/tree-item-attr.mustache',
-      attr_list: [
-        {
-          attr_title: 'Manager',
-          attr_name: 'owner',
-          attr_sort_field: 'authorizations.0.person.name|email',
-        },
-      ].concat(can.Model.Cacheable.attr_list.filter(function (attr) {
-        return attr.attr_name !== 'owner';
-      })).concat([
+      attr_list: can.Model.Cacheable.attr_list.concat([
         {attr_title: 'Reference URL', attr_name: 'reference_url'},
         {attr_title: 'Effective Date', attr_name: 'start_date'},
         {attr_title: 'Last Deprecated Date', attr_name: 'end_date'},
