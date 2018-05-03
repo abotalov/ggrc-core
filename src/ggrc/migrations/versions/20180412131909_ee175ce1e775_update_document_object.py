@@ -15,30 +15,33 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'ee175ce1e775'
-down_revision = '7b9aae5d448a'
+revision = "ee175ce1e775"
+down_revision = "b1cb47a3bb3b"
+
+TABLE = "documents"
 
 
 def upgrade():
     """Upgrade database schema and/or data, creating a new revision."""
-    op.add_column('documents',
-                  sa.Column('slug', sa.String(length=250), nullable=False))
-    op.add_column('documents',
-                  sa.Column('status', sa.String(length=250), nullable=False,
-                            server_default='Active'))
-    op.add_column('documents',
-                  sa.Column('recipients', sa.String(length=250), nullable=True))
-    op.add_column('documents',
-                  sa.Column('send_by_default', sa.Boolean(), nullable=True))
-    op.add_column('documents',
-                  sa.Column('last_deprecated_date', sa.Date))
-
-    op.create_unique_constraint(name='idx_gdrive_id', table_name='documents',
-                                columns=['gdrive_id'])
-    op.create_unique_constraint(name='uq_control_document',
-                                table_name='documents', columns=['slug'])
+    op.add_column(TABLE,
+                  sa.Column("slug", sa.String(length=250), nullable=False))
+    op.add_column(TABLE,
+                  sa.Column("status", sa.String(length=250), nullable=False,
+                            server_default="Active"))
+    op.add_column(TABLE,
+                  sa.Column("recipients", sa.String(length=250),
+                            nullable=True))
+    op.add_column(TABLE,
+                  sa.Column("send_by_default", sa.Boolean(), nullable=True))
+    op.add_column(TABLE,
+                  sa.Column("last_deprecated_date", sa.Date))
 
 
 def downgrade():
     """Downgrade database schema and/or data back to the previous revision."""
+    op.drop_column(TABLE, "slug")
+    op.drop_column(TABLE, "status")
+    op.drop_column(TABLE, "recipients")
+    op.drop_column(TABLE, "send_by_default")
+    op.drop_column(TABLE, "last_deprecated_date")
 

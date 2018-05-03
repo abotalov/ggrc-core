@@ -708,7 +708,7 @@ def user_permissions():
   return get_permissions_json()
 
 
-@app.route("/is_document_with_gdrive_id_exists", methods=["POST"])
+@app.route("/api/is_document_with_gdrive_id_exists", methods=["POST"])
 @login_required
 def is_document_with_gdrive_id_exists():
   if "gdrive_id" not in request.json:
@@ -716,9 +716,9 @@ def is_document_with_gdrive_id_exists():
   gdrive_id = request.json["gdrive_id"]
   doc = all_models.Document.query.filter(
       all_models.Document.gdrive_id == gdrive_id).first()
-  response = {"status": "Not exists",
+  response = {"status": "not exists",
               "gdrive_id": gdrive_id}
   if doc:
-    response["status"] = "Exists"
-    response["Document"] = {"Id": doc.id}
+    response["status"] = "exists"
+    response["document"] = {"id": doc.id}
   return jsonify(response)

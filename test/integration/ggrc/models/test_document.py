@@ -337,22 +337,6 @@ class TestDocument(TestCase):
     self.assertEqual(result.description, 'mega description')
     self.assertEqual(result.status, all_models.Document.START_STATE)
 
-  def test_create_document_file_with_parent(self):
-    control = factories.ControlFactory(folder='123')
-    response = self.api.post(all_models.Document, [{
-      "document": {
-        "kind": all_models.Document.FILE,
-        "source_gdrive_id": "some link",
-        "link": "some link",
-        "title": "some title",
-        "context": None,
-        "parent_obj": {
-          "id": control.id,
-          "type": "Control"
-        }
-      }
-    }])
-
   def test_document_url_type_with_parent(self):
     """Document of URL type should mapped to parent if parent specified"""
     control = factories.ControlFactory()
@@ -365,3 +349,40 @@ class TestDocument(TestCase):
     )
     rel_evidences = control.related_objects(_types=[document.type])
     self.assertEqual(document, rel_evidences.pop())
+
+  def test_document_admin_role_propagation(self):
+    """Test map existing document should add doc admin to current user"""
+    document_admin_role = all_models.AccessControlRole.query.filter_by(
+      object_type=all_models.Document.__name__, name="Admin"
+    ).first()
+    with factories.single_commit():
+      user = factories.PersonFactory()
+      doc = factories.DocumentFileFactory()
+      doc_id = doc.id
+      factories.AccessControlListFactory(
+        ac_role=document_admin_role,
+        object=doc,
+        person=user
+      )
+      control = factories.ControlFactory()
+
+    doc = all_models.Document.query.filter_by(id=doc_id).one()
+    self.assertEquals(len(doc.access_control_list), 1)
+
+    response = self.api.post(all_models.Relationship, {
+      "relationship": {"source": {
+        "id": doc.id,
+        "type": doc.type,
+      }, "destination": {
+        "id": control.id,
+        "type": control.type
+      }, "context": None},
+    })
+    self.assertStatus(response, 201)
+    doc = all_models.Document.query.filter_by(id=doc_id).one()
+    self.assertEquals(len(doc.access_control_list), 2)
+
+    current_user = all_models.Person.query.filter_by(
+      email="user@example.com").one()
+    self.assertIn(current_user.id,
+                  [acr.person_id for acr in doc.access_control_list])

@@ -179,7 +179,7 @@ def add_to_objects_without_revisions(connection, obj_id,
                                      obj_type, action='created'):
   """Add object to objects_without_revisions table"""
   sql = """
-      INSERT INTO objects_without_revisions (obj_id, obj_type, action)
+      INSERT IGNORE INTO objects_without_revisions (obj_id, obj_type, action)
       VALUES (:obj_id, :obj_type, :action)
   """
   connection.execute(text(sql), obj_id=obj_id,
@@ -198,7 +198,7 @@ def add_to_objects_without_revisions_bulk(connection, obj_ids,
 
   data = [{'obj_id': obj_id, 'obj_type': obj_type,
            'action': action} for obj_id in obj_ids]
-  connection.execute(rev_table.insert(), data)
+  connection.execute(rev_table.insert().prefix_with('IGNORE'), data)
 
 
 def clean_new_revisions(connection):
