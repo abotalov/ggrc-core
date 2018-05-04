@@ -311,6 +311,20 @@ class Base(ChangeTracked, ContextRBAC, Identifiable):
       logger.warning("display_name error in %s", type(self), exc_info=True)
       return ""
 
+  def log_revision(self, user_id, event_action, revision_action):
+    """Create new event with revision"""
+
+    from ggrc.models import all_models
+    e = all_models.Event(
+      modified_by_id=user_id,
+      action=event_action,
+      resource_id=self.id,
+      resource_type=self.type,
+      revisions=[all_models.Revision(self, user_id,
+                                     revision_action, self.log_json())]
+    )
+    db.session.add(e)
+
   def _display_name(self):
     return getattr(self, "title", None) or getattr(self, "name", "")
 

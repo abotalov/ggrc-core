@@ -2,9 +2,8 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
 """Module containing Document model."""
-import json
 
-from sqlalchemy import orm, exists, join
+from sqlalchemy import orm, exists
 
 from ggrc import db
 from ggrc.access_control.roleable import Roleable
@@ -173,22 +172,6 @@ class Document(Roleable, Relatable, mixins.Titled,
                                                         id=parent_id))
     return obj
 
-  @staticmethod
-  def _build_file_name_postfix(parent_obj):
-    """Build postfix for given parent object"""
-    postfix_parts = [Document.FILE_NAME_SEPARATOR, parent_obj.slug]
-
-    related_snapshots = parent_obj.related_objects(_types=['Snapshot'])
-    related_snapshots = sorted(related_snapshots, key=lambda it: it.id)
-
-    slugs = (sn.revision.content['slug'] for sn in related_snapshots if
-             sn.child_type == parent_obj.assessment_type)
-
-    postfix_parts.extend(slugs)
-    postfix_sting = '_'.join(postfix_parts).lower()
-
-    return postfix_sting
-
   def _build_relationship(self, parent_obj):
     """Build relationship between document and documentable object"""
     from ggrc.models import relationship
@@ -217,7 +200,8 @@ class Document(Roleable, Relatable, mixins.Titled,
     if self.is_with_parent_obj():
       parent = self._get_parent_obj()
       if self.kind == Document.FILE and self.source_gdrive_id:
-        self.add_gdrive_file_folder(parent)
+        parent_folder_id = self._get_folder(parent)
+        self.add_gdrive_file_folder(parent_folder_id)
       self._build_relationship(parent)
       self._parent_obj = None
     elif self.kind == Document.FILE and self.source_gdrive_id and not self.link:
@@ -225,10 +209,9 @@ class Document(Roleable, Relatable, mixins.Titled,
       from ggrc.gdrive.file_actions import get_gdrive_file_link
       self.link = get_gdrive_file_link(self.source_gdrive_id)
 
-  def add_gdrive_file_folder(self, documentable_obj):
+  def add_gdrive_file_folder(self, folder_id):
     """Add file to parent folder if exists"""
 
-    folder_id = self._get_folder(documentable_obj)
     file_id = self.source_gdrive_id
     from ggrc.gdrive import file_actions
     if folder_id:
@@ -263,6 +246,7 @@ class Document(Roleable, Relatable, mixins.Titled,
         "object_id": self.id,
       }])
     )
+    self.log_revision(user_id, "POST", "modified")
     db.session.commit()
 
   def add_document_admin_role(self):
