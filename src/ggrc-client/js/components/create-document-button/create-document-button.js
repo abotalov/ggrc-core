@@ -12,13 +12,14 @@ import {
 import {
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,
+  MAP_OBJECTS,
 } from '../../events/eventTypes';
 import Permission from '../../permission';
 import template from './create-document-button.mustache';
 
 const viewModel = can.Map.extend({
   parentInstance: null,
-  getDocument(file) {
+  mapDocument(file) {
     return this.checkDocumentExists(file)
       .then((documentStatus) => {
         if (documentStatus.status === 'exists') {
@@ -26,7 +27,8 @@ const viewModel = can.Map.extend({
         } else {
           return this.createDocument(file);
         }
-      });
+      })
+      .then((document) => this.refreshPermissionsAndMap(document));
   },
   checkDocumentExists(file) {
     return $.post('/api/is_document_with_gdrive_id_exists', {
@@ -58,6 +60,16 @@ const viewModel = can.Map.extend({
       }, () => {
         this.attr('parentInstance').dispatch(DOCUMENT_CREATE_FAILED);
       });
+  },
+  refreshPermissionsAndMap(document) {
+    return Permission.refresh()
+      .then(function () {
+        this.attr('parentInstance')
+          .dispatch({
+            ...MAP_OBJECTS,
+            objects: [document],
+          });
+      }.bind(this));
   },
   showConfirm() {
     let confirmation = can.Deferred();
@@ -92,11 +104,8 @@ export default can.Component.extend({
         });
     },
     attach(file) {
-      this.viewModel.getDocument(file)
-        .then((document) => {
-          this.element.trigger('modal:success', [document]);
-        })
-        .always(() => {
+      this.viewModel.mapDocument(file)
+        .fail(() => {
           // handler in object-mapper will close mapper permanently
           // if it still exists and removes html from the dom
           if (this.element) {

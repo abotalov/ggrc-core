@@ -158,7 +158,7 @@ const REFRESH_SUB_TREE = {
 
 /**
  * Notifies that new document will be created
- * @event beforeMapping
+ * @event beforeDocumentCreate
  * @type {object}
  * @property {string} type - Event name.
  * @property {string} destinationType - Type of mapped object.
@@ -169,7 +169,7 @@ const BEFORE_DOCUMENT_CREATE = {
 
 /**
  * Notifies that new document creating failed
- * @event beforeMapping
+ * @event documentCreateFailed
  * @type {object}
  * @property {string} type - Event name.
  * @property {string} destinationType - Type of mapped object.
@@ -177,6 +177,16 @@ const BEFORE_DOCUMENT_CREATE = {
 const DOCUMENT_CREATE_FAILED = {
   type: 'documentCreateFailed',
 };
+
+/**
+ * Maps objects to instance
+ * @event mapObjects
+ * @type {object}
+ * @property {string} type - Event name.
+ */
+const MAP_OBJECTS = {
+  type: 'mapObjects',
+}
 
 export {
   REFRESH_SUB_TREE,
@@ -196,4 +206,5 @@ export {
   REFRESH_MAPPING,
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,
+  MAP_OBJECTS,
 };

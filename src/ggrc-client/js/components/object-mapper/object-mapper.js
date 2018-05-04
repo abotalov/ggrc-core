@@ -25,6 +25,7 @@ import {
   BEFORE_MAPPING,
   REFRESH_MAPPING,
   REFRESH_SUB_TREE,
+  MAP_OBJECTS,
 } from '../../events/eventTypes';
 import {backendGdriveClient} from '../../plugins/ggrc-gapi-client';
 
@@ -149,10 +150,11 @@ import {backendGdriveClient} from '../../plugins/ggrc-gapi-client';
     },
 
     events: {
+      [`{parentInstance} ${MAP_OBJECTS.type}`](instance, event) {
+        this.map(event.objects[0]);
+      },
       '.create-control modal:success': function (el, ev, model) {
-        this.viewModel.updateFreezedConfigToLatest();
-        this.viewModel.attr('newEntries').push(model);
-        this.mapObjects(this.viewModel.attr('newEntries'));
+        this.map(model);
       },
       '.create-control modal:added': function (el, ev, model) {
         this.viewModel.attr('newEntries').push(model);
@@ -196,6 +198,11 @@ import {backendGdriveClient} from '../../plugins/ggrc-gapi-client';
         }
 
         self.viewModel.attr('submitCbs').fire();
+      },
+      map(model) {
+        this.viewModel.updateFreezedConfigToLatest();
+        this.viewModel.attr('newEntries').push(model);
+        this.mapObjects(this.viewModel.attr('newEntries'));
       },
       closeModal: function () {
         this.viewModel.attr('is_saving', false);
