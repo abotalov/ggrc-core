@@ -286,7 +286,6 @@ class ProgramsFactory(EntitiesFactory):
     program_obj = self.obj_inst().update_attrs(
         title=self.obj_title, slug=self.obj_slug,
         status=unicode(element.ObjectStates.DRAFT),
-        managers=PeopleFactory.extract_people_emails(self.managers),
         os_state=unicode(element.ReviewStates.UNREVIEWED))
     if is_add_rest_attrs:
       program_obj.update_attrs(
