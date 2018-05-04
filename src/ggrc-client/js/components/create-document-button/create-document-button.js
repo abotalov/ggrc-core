@@ -13,6 +13,7 @@ import {
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,
 } from '../../events/eventTypes';
+import Permission from '../../permission';
 import template from './create-document-button.mustache';
 
 const viewModel = can.Map.extend({
@@ -35,7 +36,10 @@ const viewModel = can.Map.extend({
   useExistingDocument(document) {
     return this.showConfirm()
       .then(() => {
-        return new CMS.Models.Document(document);
+        return new CMS.Models.Document({
+          ...document,
+          type: 'Document',
+        });
       });
   },
   createDocument(file) {
@@ -94,8 +98,10 @@ export default can.Component.extend({
         })
         .always(() => {
           // handler in object-mapper will close mapper permanently
-          // and remove html from the dom
-          this.element.trigger('modal:dismiss');
+          // if it still exists and removes html from the dom
+          if (this.element) {
+            this.element.trigger('modal:dismiss');
+          }
         });
     },
   },
