@@ -68,7 +68,6 @@ _DEFAULT_COLUMN_HANDLERS_DICT = {
     "description": handlers.TextareaColumnHandler,
     "design": handlers.ConclusionColumnHandler,
     "documents_file": document.DocumentFileHandler,
-    "documents_url": document.DocumentUrlHandler,
     "documents_reference_url": document.DocumentReferenceUrlHandler,
     "evidences_file": evidence.EvidenceFileHandler,
     "evidences_url": evidence.EvidenceUrlHandler,

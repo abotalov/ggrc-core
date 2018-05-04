@@ -22,12 +22,13 @@ class TestDocumentQueries(TestCase):
     super(TestDocumentQueries, self).setUp()
     self.api = Api()
 
-  @ddt.data(all_models.Document.FILE, all_models.Document.URL)
+  @ddt.data(all_models.Document.FILE, all_models.Document.REFERENCE_URL)
   def test_filter_document_by_type(self, kind):
     """Test filter documents by document type."""
     data = {
         all_models.Document.FILE: factories.DocumentFileFactory().id,
-        all_models.Document.URL: factories.DocumentUrlFactory().id,
+        all_models.Document.REFERENCE_URL:
+            factories.DocumentReferenceUrlFactory().id,
     }
     query_request_data = [{
         u'fields': [],

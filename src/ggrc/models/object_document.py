@@ -21,8 +21,6 @@ class Documentable(object):
   _fulltext_attrs = [
       MultipleSubpropertyFullTextAttr('documents_file', 'documents_file',
                                       ['title', 'link']),
-      MultipleSubpropertyFullTextAttr('documents_url', 'documents_url',
-                                      ['link']),
       MultipleSubpropertyFullTextAttr('documents_reference_url',
                                       'documents_reference_url',
                                       ['link']),
@@ -91,11 +89,6 @@ class Documentable(object):
             if e.kind == kind]
 
   @property
-  def documents_url(self):
-    """List of documents URL type"""
-    return self.get_documents_by_kind(Document.URL)
-
-  @property
   def documents_file(self):
     """List of documents FILE type"""
     return self.get_documents_by_kind(Document.FILE)
@@ -130,7 +123,6 @@ class Documentable(object):
     # they were mapped to an object. Otherwise python uses cached value,
     # which might not contain newly created documents.
     out_json = super(Documentable, self).log_json()
-    out_json["documents_url"] = self._log_docs(self.documents_url)
     out_json["documents_file"] = self._log_docs(self.documents_file)
     out_json["documents_reference_url"] = self._log_docs(
         self.documents_reference_url)
@@ -145,12 +137,6 @@ class Documentable(object):
 
 class PublicDocumentable(Documentable):
   _aliases = {
-      "documents_url": {
-          "display_name": "Document URL",
-          "type": reflection.AttributeInfo.Type.SPECIAL_MAPPING,
-          "description": "New line separated list of URLs.",
-      },
-
       "documents_file": {
           "display_name": "Document File",
           "type": reflection.AttributeInfo.Type.SPECIAL_MAPPING,

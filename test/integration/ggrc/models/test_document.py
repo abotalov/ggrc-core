@@ -151,7 +151,7 @@ class TestDocument(TestCase):
     }
     if kind is not None:
       data["kind"] = kind
-    kind = kind or all_models.Document.URL
+    kind = kind or all_models.Document.REFERENCE_URL
     resp, doc = self.gen.generate_object(
         all_models.Document,
         data
@@ -164,12 +164,12 @@ class TestDocument(TestCase):
     )
     return (resp, doc)
 
-  def test_create_url(self):
-    """Test create url."""
-    self.create_document_by_type(all_models.Document.URL)
+  def test_create_reference_url(self):
+    """Test create reference url."""
+    self.create_document_by_type(all_models.Document.REFERENCE_URL)
 
-  def test_create_url_default(self):
-    """Test create url(default)."""
+  def test_create_reference_url_default(self):
+    """Test create reference url(default)."""
     self.create_document_by_type(None)
 
   def test_create_evidence(self):
@@ -281,7 +281,7 @@ class TestDocument(TestCase):
       }
       doc2 = {
           "document": {
-              "kind": all_models.Document.URL,
+              "kind": all_models.Document.REFERENCE_URL,
               "link": "some link",
               "title": "some title",
               "context": None,
@@ -292,7 +292,7 @@ class TestDocument(TestCase):
     self.assertEqual(response.status_code, 401)
     self.assertIn('X-Expected-Error', response.headers)
 
-  def test_create_document_by_api(self, kind=all_models.Document.URL):
+  def test_create_document_by_api(self, kind=all_models.Document.REFERENCE_URL):
     """Test crete document via POST"""
     document_data = dict(
         title='Simple title',

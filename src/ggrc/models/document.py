@@ -36,10 +36,9 @@ class Document(Roleable, Relatable, mixins.Titled,
   link = deferred(db.Column(db.String, nullable=False), 'Document')
   description = deferred(db.Column(db.Text, nullable=False, default=u""),
                          'Document')
-  URL = "URL"
   FILE = "FILE"
   REFERENCE_URL = "REFERENCE_URL"
-  VALID_DOCUMENT_KINDS = [URL, FILE, REFERENCE_URL]
+  VALID_DOCUMENT_KINDS = [FILE, REFERENCE_URL]
 
   START_STATE = 'Active'
   DEPRECATED = 'Deprecated'
@@ -47,7 +46,7 @@ class Document(Roleable, Relatable, mixins.Titled,
   VALID_STATES = (START_STATE, DEPRECATED, )
 
   kind = deferred(db.Column(db.Enum(*VALID_DOCUMENT_KINDS),
-                            default=URL,
+                            default=REFERENCE_URL,
                             nullable=False),
                   "Document")
   source_gdrive_id = deferred(db.Column(db.String, nullable=False,

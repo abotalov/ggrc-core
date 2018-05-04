@@ -317,10 +317,6 @@ class EvidenceFileFactory(EvidenceFactory):
   source_gdrive_id = 'source_gdrive_id'
 
 
-class DocumentUrlFactory(DocumentFactory):
-  kind = all_models.Document.URL
-
-
 class DocumentFileFactory(DocumentFactory):
   kind = all_models.Document.FILE
 

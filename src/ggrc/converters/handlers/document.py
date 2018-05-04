@@ -182,35 +182,6 @@ class DocumentFileHandler(DocumentLinkHandler):
     return {d.link: d for d in self.row_converter.obj.documents_file}
 
 
-class DocumentUrlHandler(DocumentLinkHandler):
-  """Handler for URL field on document imports."""
-
-  KIND = all_models.Document.URL
-
-  @staticmethod
-  def _parse_line(line):
-    """Parse a single line and return link and title.
-
-    Args:
-      line: string containing a single line from a cell.
-
-    Returns:
-      tuple containing a link and a title.
-    """
-    return [line.strip()] * 2
-
-  def _get_old_map(self):
-    return {d.link: d for d in self.row_converter.obj.documents_url}
-
-  def get_value(self):
-    """Generate a new line separated string for all document links.
-
-    Returns:
-      string containing all URLs
-    """
-    return "\n".join(doc.link for doc in self.row_converter.obj.documents_url)
-
-
 class DocumentReferenceUrlHandler(DocumentLinkHandler):
   """Handler for REFERENCE URL field on document imports."""
 
