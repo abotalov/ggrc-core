@@ -264,14 +264,14 @@ class Document(Roleable, Relatable, mixins.Titled,
         "object_id": self.id,
       }])
     )
+    db.session.commit()
 
   def add_document_admin_role(self):
     """Check if user has Document Admin role and add that role if not"""
     from ggrc.models import AccessControlRole
     user_id = get_current_user_id()
     doc_admin_role_id = db.session.query(AccessControlRole.id).filter_by(
-      name="Admin", object_type=self.type).one()[0]
-
+        name="Admin", object_type=self.type).one().id
     if not self.is_user_has_admin_role(user_id, doc_admin_role_id):
       self.insert_document_admin_role(user_id, doc_admin_role_id)
 

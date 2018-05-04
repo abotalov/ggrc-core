@@ -2,6 +2,7 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
 """Integration tests for Document"""
+import json
 from mock import mock
 
 from werkzeug.exceptions import Unauthorized
@@ -350,39 +351,28 @@ class TestDocument(TestCase):
     rel_evidences = control.related_objects(_types=[document.type])
     self.assertEqual(document, rel_evidences.pop())
 
-  def test_document_admin_role_propagation(self):
-    """Test map existing document should add doc admin to current user"""
-    document_admin_role = all_models.AccessControlRole.query.filter_by(
-      object_type=all_models.Document.__name__, name="Admin"
-    ).first()
-    with factories.single_commit():
-      user = factories.PersonFactory()
-      doc = factories.DocumentFileFactory()
-      doc_id = doc.id
-      factories.AccessControlListFactory(
-        ac_role=document_admin_role,
-        object=doc,
-        person=user
-      )
-      control = factories.ControlFactory()
+  @mock.patch("ggrc.gdrive.file_actions.get_gdrive_file_link",
+              dummy_gdrive_response_link)
+  def test_document_make_admin_endpoint(self):
+    """Test /api/document/make_admin endpoint
 
+    should add current user as document admin
+    """
+
+    _, editor = self.gen.generate_person(
+      user_role="Creator"
+    )
+
+    doc = factories.DocumentFileFactory(gdrive_id="123")
+    doc_id = doc.id
+    self.api.set_user(editor)
+
+    response = self.api.client.post("/api/document/make_admin",
+                                    data=json.dumps(dict(gdrive_id="123")),
+                                    content_type="application/json")
+    self.assertEqual(response.json["status"], "success")
     doc = all_models.Document.query.filter_by(id=doc_id).one()
     self.assertEquals(len(doc.access_control_list), 1)
-
-    response = self.api.post(all_models.Relationship, {
-      "relationship": {"source": {
-        "id": doc.id,
-        "type": doc.type,
-      }, "destination": {
-        "id": control.id,
-        "type": control.type
-      }, "context": None},
-    })
-    self.assertStatus(response, 201)
-    doc = all_models.Document.query.filter_by(id=doc_id).one()
-    self.assertEquals(len(doc.access_control_list), 2)
-
-    current_user = all_models.Person.query.filter_by(
-      email="user@example.com").one()
-    self.assertIn(current_user.id,
+    control_user = all_models.Person.query.get(editor.id)
+    self.assertIn(control_user.id,
                   [acr.person_id for acr in doc.access_control_list])
