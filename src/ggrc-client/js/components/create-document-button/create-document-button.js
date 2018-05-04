@@ -23,7 +23,7 @@ const viewModel = can.Map.extend({
     return this.checkDocumentExists(file)
       .then((documentStatus) => {
         if (documentStatus.status === 'exists') {
-          return this.useExistingDocument(documentStatus.document, file);
+          return this.useExistingDocument(documentStatus.object);
         } else {
           return this.createDocument(file);
         }
@@ -38,19 +38,16 @@ const viewModel = can.Map.extend({
   /*
    * Adds current user to admins for existing document
    */
-  makeAdmin(file) {
+  makeAdmin(document) {
     return $.post('/api/document/make_admin', {
-      gdrive_id: file.id,
+      gdrive_id: document.gdrive_id,
     });
   },
-  useExistingDocument(document, file) {
+  useExistingDocument(document) {
     return this.showConfirm()
-      .then(() => this.makeAdmin(file))
+      .then(() => this.makeAdmin(document))
       .then(() => {
-        return new CMS.Models.Document({
-          ...document,
-          type: 'Document',
-        });
+        return new CMS.Models.Document(document);
       });
   },
   createDocument(file) {
