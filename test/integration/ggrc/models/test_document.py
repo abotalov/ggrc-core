@@ -17,13 +17,7 @@ from integration.ggrc.models import factories
 
 
 # pylint: disable=unused-argument
-def dummy_gdrive_response(*args, **kwargs):  # noqa
-  return {'webViewLink': 'http://mega.doc',
-          'name': 'test_name',
-          'id': '1234567'}
-
-
-def dummy_gdrive_response_link(*args, **kwargs):  # noqa
+def dummy_gdrive_response_link(*args, **kwargs):
   return 'http://mega.doc'
 
 
@@ -76,62 +70,6 @@ class TestDocument(TestCase):
               'id': control.id,
               'type': 'Program'
           })
-
-  def test_documentable_postfix_one_control(self):
-    """Test documentable postfix for assessment with one control."""
-
-    control = factories.ControlFactory()
-    document = factories.DocumentFileFactory(
-        parent_obj={
-            'id': control.id,
-            'type': 'Control'
-        })
-
-    expected = '_ggrc_control-{}'.format(control.id)
-    # pylint: disable=protected-access
-    result = document._build_file_name_postfix(control)
-    self.assertEqual(expected, result)
-
-  @mock.patch('ggrc.gdrive.file_actions.process_gdrive_file',
-              dummy_gdrive_response)
-  def test_copy_document(self):
-    """Test copy document."""
-    control = factories.ControlFactory()
-    factories.DocumentFileFactory(
-        source_gdrive_id='test_gdrive_id',
-        parent_obj={
-            'id': control.id,
-            'type': 'Control'
-        })
-    self.assertEqual(len(control.documents), 1)
-
-    # data from dummy_gdrive_response
-    self.assertEqual(control.documents_file[0].title, 'test_name')
-    self.assertEqual(control.documents_file[0].gdrive_id, '1234567')
-
-  def test_rename_document(self):
-    """Test rename document."""
-    with mock.patch('ggrc.gdrive.file_actions.process_gdrive_file') as mocked:
-      mocked.return_value = {
-          'webViewLink': 'http://mega.doc',
-          'name': 'new_name',
-          'id': '1234567'
-      }
-      control = factories.ControlFactory()
-      factories.DocumentFileFactory(
-          is_uploaded=True,
-          source_gdrive_id='some link',
-          parent_obj={
-              'id': control.id,
-              'type': 'Control'
-          })
-      folder_id = ''
-      mocked.assert_called_with(folder_id, 'some link',
-                                '_ggrc_control-{}'.format(control.id),
-                                is_uploaded=True,
-                                separator='_ggrc')
-      self.assertEqual(len(control.documents), 1)
-      self.assertEqual(control.documents_file[0].title, 'new_name')
 
   def test_update_title(self):
     """Test update document title."""
@@ -191,7 +129,7 @@ class TestDocument(TestCase):
     resp = self.api.post(all_models.Document, obj_dict)
     self.assert400(resp)
     self.assertEqual('"Invalid value for attribute kind. '
-                     'Expected options are `URL`, `FILE`, '
+                     'Expected options are `FILE`, '
                      '`REFERENCE_URL`"',
                      resp.data)
 
@@ -201,26 +139,20 @@ class TestDocument(TestCase):
     To allow FE ignore the error popup we need to set
     'X-Expected-Error' header
     """
-    # pylint: disable=unused-argument
-    def side_effect_function(*args, **kwargs):
-      raise GdriveUnauthorized("Unable to get valid credentials")
-
-    with mock.patch("ggrc.gdrive.file_actions.process_gdrive_file") as mocked:
-      mocked.side_effect = side_effect_function
-      control = factories.ControlFactory()
-      response = self.api.post(all_models.Document, [{
-          "document": {
-              "kind": all_models.Document.FILE,
-              "source_gdrive_id": "some link",
-              "link": "some link",
-              "title": "some title",
-              "context": None,
-              "parent_obj": {
-                  "id": control.id,
-                  "type": "Control"
-              }
-          }
-      }])
+    control = factories.ControlFactory()
+    response = self.api.post(all_models.Document, [{
+        "document": {
+            "kind": all_models.Document.FILE,
+            "source_gdrive_id": "some link",
+            "link": "some link",
+            "title": "some title",
+            "context": None,
+            "parent_obj": {
+                "id": control.id,
+                "type": "Control"
+            }
+        }
+    }])
     self.assertEqual(response.status_code, 401)
     self.assertIn('X-Expected-Error', response.headers)
 
@@ -234,7 +166,7 @@ class TestDocument(TestCase):
     def side_effect_function(*args, **kwargs):
       raise Unauthorized("Unable to get valid credentials")
 
-    with mock.patch("ggrc.gdrive.file_actions.process_gdrive_file") as mocked:
+    with mock.patch("ggrc.gdrive.file_actions.get_gdrive_file_link") as mocked:
       mocked.side_effect = side_effect_function
       control = factories.ControlFactory()
       response = self.api.post(all_models.Document, [{
@@ -262,7 +194,7 @@ class TestDocument(TestCase):
     def side_effect_function(*args, **kwargs):
       raise GdriveUnauthorized("Unable to get valid credentials")
 
-    with mock.patch("ggrc.gdrive.file_actions.process_gdrive_file") as mocked:
+    with mock.patch("ggrc.gdrive.file_actions.get_gdrive_file_link") as mocked:
       mocked.side_effect = side_effect_function
       control = factories.ControlFactory()
 
@@ -338,10 +270,10 @@ class TestDocument(TestCase):
     self.assertEqual(result.description, 'mega description')
     self.assertEqual(result.status, all_models.Document.START_STATE)
 
-  def test_document_url_type_with_parent(self):
-    """Document of URL type should mapped to parent if parent specified"""
+  def test_document_ref_url_type_with_parent(self):
+    """Document of REFERENCE_URL type mapped to parent if parent specified"""
     control = factories.ControlFactory()
-    document = factories.DocumentUrlFactory(
+    document = factories.DocumentReferenceUrlFactory(
         description='mega description',
         parent_obj={
             'id': control.id,
@@ -376,3 +308,10 @@ class TestDocument(TestCase):
     control_user = all_models.Person.query.get(editor.id)
     self.assertIn(control_user.id,
                   [acr.person_id for acr in doc.access_control_list])
+
+  # def test_doc_with_parent
+#TODO: add tests
+
+# 2) parent, self.kind == Document.FILE and self.source_gdrive_id
+#     - parent folder -> add to folder
+#     - no parent folder -> just take link

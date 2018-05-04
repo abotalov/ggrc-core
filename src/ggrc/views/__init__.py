@@ -11,6 +11,7 @@ import logging
 
 import sqlalchemy
 from sqlalchemy import true
+from sqlalchemy.orm import attributes
 from flask import flash
 from flask import g
 from flask import jsonify
@@ -720,7 +721,12 @@ def is_document_with_gdrive_id_exists():
               "gdrive_id": gdrive_id}
   if doc:
     response["status"] = "exists"
-    response["document"] = {"id": doc.id}
+    response["object"] = {
+      "type": "Document",
+      "id": doc.id,
+      "gdrive_id": gdrive_id
+    }
+    del response["gdrive_id"]
   return jsonify(response)
 
 
@@ -737,5 +743,10 @@ def make_document_admin():
   if doc:
     doc.add_document_admin_role()
     response["status"] = "success"
-    response["document"] = {"id": doc.id}
+    response["object"] = {
+      "type": "Document",
+      "id": doc.id,
+      "gdrive_id": gdrive_id
+    }
+    del response["gdrive_id"]
   return jsonify(response)
