@@ -94,7 +94,6 @@ class Document(Roleable, Relatable, mixins.Titled,
 
   FILE_NAME_SEPARATOR = '_ggrc'
 
-
   @orm.validates('kind')
   def validate_kind(self, key, kind):
     """Returns correct option, otherwise rises an error"""
@@ -242,10 +241,6 @@ class Document(Roleable, Relatable, mixins.Titled,
   def is_with_parent_obj(self):
     return bool(hasattr(self, '_parent_obj') and self._parent_obj)
 
-  def handle_before_flush(self):
-    """Handler that called  before SQLAlchemy flush event"""
-    self._process_gdrive_business_logic()
-
   def is_user_has_admin_role(self, user_id, doc_admin_role_id):
     """Check if user has Document Admin role"""
     from ggrc.models import AccessControlList
@@ -290,4 +285,7 @@ class Document(Roleable, Relatable, mixins.Titled,
   def handle_relationship_created(self, target):
     """Perform actions on relationship created"""
     self.add_folder(target)
-    self.add_document_admin_role()
+
+  def handle_before_flush(self):
+    """Handler that called  before SQLAlchemy flush event"""
+    self._process_gdrive_business_logic()
