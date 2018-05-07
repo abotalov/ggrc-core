@@ -23,10 +23,10 @@ from ggrc.utils import referenced_objects
 
 
 class Document(Roleable, Relatable, mixins.Titled,
-               bfh.BeforeFlushHandleable, mixins.Slugged, Indexed, Statusable,
+               bfh.BeforeFlushHandleable, mixins.Slugged, Statusable,
                mixins.WithLastDeprecatedDate, comment.Commentable,
                wrch.WithRelationshipCreatedHandler,
-               Identifiable, db.Model):
+               Indexed, Identifiable, db.Model):
   """Document model."""
   __tablename__ = 'documents'
 
