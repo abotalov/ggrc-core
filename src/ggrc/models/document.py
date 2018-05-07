@@ -90,21 +90,18 @@ class Document(Roleable, Relatable, mixins.Titled,
 
   ALLOWED_PARENTS = {'Control', 'Issue', 'RiskAssessment'}
 
-  FILE_NAME_SEPARATOR = '_ggrc'
-
   @orm.validates('kind')
   def validate_kind(self, key, kind):
     """Returns correct option, otherwise rises an error"""
     if kind is None:
-      kind = self.URL
+      kind = self.REFERENCE_URL
     if kind not in self.VALID_DOCUMENT_KINDS:
       raise exceptions.ValidationError(
           "Invalid value for attribute {attr}. "
-          "Expected options are `{url}`, `{kind}`, `{reference_url}`".
+          "Expected options are `{file}`, `{reference_url}`".
           format(
               attr=key,
-              url=self.URL,
-              kind=self.FILE,
+              file=self.FILE,
               reference_url=self.REFERENCE_URL
           )
       )
@@ -215,7 +212,7 @@ class Document(Roleable, Relatable, mixins.Titled,
     file_id = self.source_gdrive_id
     from ggrc.gdrive import file_actions
     if folder_id:
-      file_link = file_actions.add_gdrive_file_folder(folder_id, file_id)
+      file_link = file_actions.add_gdrive_file_folder(file_id, folder_id)
     else:
       file_link = file_actions.get_gdrive_file_link(file_id)
     self._update_fields(file_link)
@@ -258,16 +255,13 @@ class Document(Roleable, Relatable, mixins.Titled,
     if not self.is_user_has_admin_role(user_id, doc_admin_role_id):
       self.insert_document_admin_role(user_id, doc_admin_role_id)
 
-  def add_folder(self, target):
-    """Add file to folder of mapped object"""
-    if (self.kind == Document.FILE and
-            target and hasattr(target, 'folder') and target.folder):
-      from ggrc.gdrive import file_actions
-      file_actions.add_gdrive_file_folder(self.gdrive_id, target.folder)
-
   def handle_relationship_created(self, target):
-    """Perform actions on relationship created"""
-    self.add_folder(target)
+    """Add document to parent folder if specified"""
+    if (target.type in self.ALLOWED_PARENTS
+            and self.kind == Document.FILE
+            and self.source_gdrive_id):
+      parent_folder_id = self._get_folder(target)
+      self.add_gdrive_file_folder(parent_folder_id)
 
   def handle_before_flush(self):
     """Handler that called  before SQLAlchemy flush event"""

@@ -299,6 +299,14 @@ class DocumentFactory(ModelFactory):
   link = "some link"
 
 
+class DocumentFileFactory(DocumentFactory):
+  kind = all_models.Document.FILE
+
+
+class DocumentReferenceUrlFactory(DocumentFactory):
+  kind = all_models.Document.REFERENCE_URL
+
+
 class EvidenceFactory(ModelFactory):
 
   class Meta:
@@ -315,14 +323,6 @@ class EvidenceUrlFactory(EvidenceFactory):
 class EvidenceFileFactory(EvidenceFactory):
   kind = all_models.Evidence.FILE
   source_gdrive_id = 'source_gdrive_id'
-
-
-class DocumentFileFactory(DocumentFactory):
-  kind = all_models.Document.FILE
-
-
-class DocumentReferenceUrlFactory(DocumentFactory):
-  kind = all_models.Document.REFERENCE_URL
 
 
 class ObjectiveFactory(TitledFactory):
