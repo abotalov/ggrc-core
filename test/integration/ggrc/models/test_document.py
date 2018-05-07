@@ -224,7 +224,8 @@ class TestDocument(TestCase):
     self.assertEqual(response.status_code, 401)
     self.assertIn('X-Expected-Error', response.headers)
 
-  def test_create_document_by_api(self, kind=all_models.Document.REFERENCE_URL):
+  def test_create_document_by_api(self,
+                                  kind=all_models.Document.REFERENCE_URL):
     """Test crete document via POST"""
     document_data = dict(
         title='Simple title',
@@ -309,9 +310,58 @@ class TestDocument(TestCase):
     self.assertIn(control_user.id,
                   [acr.person_id for acr in doc.access_control_list])
 
-  # def test_doc_with_parent
-#TODO: add tests
+  def test_add_to_parent_folder(self):
+    """If parent has folder => add document to that folder"""
+    method_to_patch = 'ggrc.gdrive.file_actions.add_gdrive_file_folder'
+    with mock.patch(method_to_patch) as mocked:
+      mocked.return_value = 'http://mega.doc'
+      with factories.single_commit():
+        control = factories.ControlFactory(folder="gdrive_folder_id")
+        factories.DocumentFileFactory(
+          source_gdrive_id="source_gdrive_id",
+          parent_obj={
+            "id": control.id,
+            "type": "Control"
+          }
+        )
+    mocked.assert_called_with("source_gdrive_id", "gdrive_folder_id")
 
-# 2) parent, self.kind == Document.FILE and self.source_gdrive_id
-#     - parent folder -> add to folder
-#     - no parent folder -> just take link
+  def test_add_to_parent_folder_relationship(self):
+    """If parent has folder => add document to that folder mapped via rel"""
+    method_to_patch = 'ggrc.gdrive.file_actions.add_gdrive_file_folder'
+    with mock.patch(method_to_patch) as mocked:
+      mocked.return_value = 'http://mega.doc'
+      with factories.single_commit():
+        control = factories.ControlFactory(folder="gdrive_folder_id")
+        control_id = control.id
+        doc = factories.DocumentFileFactory(
+          source_gdrive_id="source_gdrive_id",
+          link='some link'
+        )
+        doc_id = doc.id
+
+      response = self.api.post(all_models.Relationship, {
+        "relationship": {
+          "source": {"id": control_id, "type": control.type},
+          "destination": {"id": doc_id, "type": doc.type},
+          "context": None
+        },
+      })
+
+    self.assertStatus(response, 201)
+    mocked.assert_called_with("source_gdrive_id", "gdrive_folder_id")
+
+  def test_add_to_parent_folder_not_specified(self):
+    """If parent has not folder => just save gdrive link"""
+    with mock.patch('ggrc.gdrive.file_actions.get_gdrive_file_link') as mocked:
+      mocked.return_value = 'http://mega.doc'
+      with factories.single_commit():
+        control = factories.ControlFactory()
+        factories.DocumentFileFactory(
+          source_gdrive_id="source_gdrive_id",
+          parent_obj={
+            "id": control.id,
+            "type": "Control"
+          }
+        )
+    mocked.assert_called_with("source_gdrive_id")
