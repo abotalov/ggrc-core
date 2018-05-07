@@ -483,7 +483,6 @@ class TestGetObjectColumnDefinitions(TestCase):
         "Last Deprecated Date",
         "State",
         "Review State",
-        "Document URL",
         "Document File",
         "Delete",
         "Primary Contacts",

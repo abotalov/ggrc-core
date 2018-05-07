@@ -122,9 +122,9 @@ class TestExportSnapshots(TestCase):
             "person": self._get_cav(control, "person"),
             # Special snapshot export fields
             "Audit": audit.slug,
-            "Document File": u"\n".join(c.slug for c in
+            "Document File": u"\n".join(c.link + " " + c.title for c in
                                         control.documents_file),
-            "Reference URL": u"\n".join(c.slug for c in
+            "Reference URL": u"\n".join(c.link for c in
                                         control.documents_reference_url),
             "Assertions": u"\n".join(c.name for c in control.assertions),
             "Categories": u"\n".join(c.name for c in control.categories),
