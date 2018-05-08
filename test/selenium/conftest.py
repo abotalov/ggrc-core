@@ -15,8 +15,10 @@ from selenium.webdriver.remote.remote_connection import (
     LOGGER as SELENIUM_LOGGER)
 
 from lib import dynamic_fixtures, environment, url
+from lib.constants import users
 from lib.constants.test_runner import DESTRUCTIVE_TEST_METHOD_PREFIX
 from lib.custom_pytest_scheduling import CustomPytestScheduling
+from lib.entities.entities_factory import PeopleFactory
 from lib.page import dashboard
 from lib.service import rest_service
 from lib.utils import conftest_utils, help_utils, selenium_utils
@@ -135,8 +137,16 @@ def selenium(selenium, pytestconfig):
     selenium.set_window_size(
         os.environ["SCREEN_WIDTH"], os.environ["SCREEN_HEIGHT"])
   dynamic_fixtures.dict_executed_fixtures.update({"selenium": selenium})
-  selenium_utils.open_url(selenium, url.Urls().gae_login)
   yield selenium
+
+
+@pytest.fixture(autouse=True)
+def set_current_user():
+  # Set a fake user as `PeopleFactory.superuser` uses
+  class FakeUser(object):
+    email = users.SUPERUSER_EMAIL
+  users._current_user = FakeUser()
+  users.set_current_user(PeopleFactory.superuser)
 
 
 @pytest.fixture(scope="function")
@@ -167,7 +177,7 @@ def chrome_options(chrome_options, pytestconfig):
   return chrome_options
 
 
-# `PeopleFactory.default_user` uses `environment.app_url` and
+# `PeopleFactory.superuser` uses `environment.app_url` and
 # is used in @pytest.mark.parametrize parameters.
 # Parametrize parameters are evaluated before fixtures so
 # `environment.app_url` should be already set.

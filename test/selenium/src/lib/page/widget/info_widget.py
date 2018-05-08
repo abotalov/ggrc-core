@@ -5,6 +5,8 @@
 
 import re
 
+import nerodia
+
 from lib import base
 from lib.constants import (
     locator, objects, element, roles, regex, messages, users)
@@ -12,6 +14,15 @@ from lib.constants.locator import WidgetInfoAssessment
 from lib.element import widget_info, tab_containers, tables
 from lib.page.modal import update_object
 from lib.utils import selenium_utils, string_utils, help_utils
+
+
+class _SharedMethods(object):
+  def __init__(self, browser):
+    self.browser = browser
+
+  @property
+  def assign_folder_el(self):
+    return self.browser.element(class_name="mapped-folder__add-button")
 
 
 class InfoWidget(base.Widget):
@@ -28,6 +39,8 @@ class InfoWidget(base.Widget):
 
   def __init__(self, driver):
     super(InfoWidget, self).__init__(driver)
+    self.browser = nerodia.browser.Browser(browser=self._driver)
+    self.shared_methods = _SharedMethods(self.browser)
     self.child_cls_name = self.__class__.__name__
     self.is_asmts_info_widget = (
         self.child_cls_name.lower() == objects.ASSESSMENTS)
@@ -46,8 +59,9 @@ class InfoWidget(base.Widget):
     self._extend_list_all_scopes(
         ["TITLE", self.state_lbl_txt],
         [self.title.text, self.state_txt])
-    self.info_3bbs_btn = selenium_utils.get_when_visible(
-        self.info_widget_elem, self._locators.BUTTON_3BBS)
+    self.info_3bbs_btn = self.browser.element(class_name="btn-3bbps")
+    self.inline_edit_controls = self.browser.elements(
+        class_name="set-editable-group")
     # for Info Page
     if self.is_info_page:
       self.info_page_footer = base.Label(
@@ -94,6 +108,18 @@ class InfoWidget(base.Widget):
     if not self.is_asmts_info_widget:
       self._extend_list_all_scopes_by_code()
       self._extend_list_all_scopes_by_cas()
+
+  @property
+  def submit_for_review_link(self):
+    return self.browser.link(text="Submit For Review")
+
+  @property
+  def add_reference_url_btn(self):
+    return self.browser.button(class_name="related-urls__toggle")
+
+  @property
+  def comment_add_form_section(self):
+    return self.browser.element(class_name="comment-add-form__section")
 
   def get_state_txt(self):
     """Get object's state text from Info Widget."""
@@ -233,7 +259,7 @@ class InfoWidget(base.Widget):
       for ca_val in _cas_values:
         if ca_val is None:
           cas_values.append(None)
-        elif ca_val == users.DEFAULT_USER_EMAIL:
+        elif ca_val == users.SUPERUSER_EMAIL:
           # Example User
           cas_values.append(
               unicode(objects.get_singular(objects.PEOPLE).title()))
@@ -349,30 +375,41 @@ class Programs(InfoWidget):
     self.show_advanced.toggle()
     self.object_review = base.Label(
         self.info_widget_elem, self._locators.TXT_OBJECT_REVIEW)
-    self.submit_for_review = base.Label(
-        self.info_widget_elem, self._locators.LINK_SUBMIT_FOR_REVIEW)
     self.description = base.Label(
         self.tab_container.active_tab_elem, self._locators.DESCRIPTION)
     self.description_entered = base.Label(
         self.tab_container.active_tab_elem, self._locators.DESCRIPTION_ENTERED)
-    self.notes = (
-        base.Label(self.tab_container.active_tab_elem, self._locators.NOTES))
-    self.notes_entered = base.Label(
-        self.info_widget_elem, self._locators.NOTES_ENTERED)
     self.manager, self.manager_entered = (
         self.get_header_and_value_txt_from_people_scopes(
             self._elements.PROGRAM_MANAGERS.upper()))
-    self.ref_url = base.MultiInputField(
-        self.tab_container.active_tab_elem, self._locators.REF_URL_CSS)
+    self._extend_list_all_scopes(
+        self.manager, self.manager_entered)
     self.code = base.Label(
         self.tab_container.active_tab_elem, self._locators.CODE)
     self.code_entered = base.Label(
         self.tab_container.active_tab_elem, self._locators.CODE_ENTERED)
     self.effective_date = base.Label(
         self.tab_container.active_tab_elem, self._locators.EFFECTIVE_DATE)
-    self.effective_date_entered = base.Label(
-        self.tab_container.active_tab_elem,
+
+  @property
+  def notes_entered(self):
+    return base.Label(self.info_widget_elem, self._locators.NOTES_ENTERED)
+
+  @property
+  def ref_url(self):
+    return base.MultiInputField(
+        self.tab_container.active_tab_elem, self._locators.REF_URL_CSS)
+
+  @property
+  def effective_date_entered(self):
+    return base.Label(self.tab_container.active_tab_elem,
         self._locators.EFFECTIVE_DATE_ENTERED)
+
+  def els_shown_for_editor(self):
+    return [self.submit_for_review_link,
+            self.info_3bbs_btn,
+            self.comment_add_form_section,
+            self.add_reference_url_btn] + self.inline_edit_controls.to_list
 
 
 class Workflows(InfoWidget):
@@ -401,8 +438,12 @@ class Audits(InfoWidget):
     self.audit_captain_lbl_txt, self.audit_captain_txt = (
         self.get_header_and_value_txt_from_people_scopes(
             self._elements.AUDIT_CAPTAINS.upper()))
+    self.auditor_lbl_txt, self.auditor_txt = (
+        self.get_header_and_value_txt_from_people_scopes(
+            self._elements.AUDITORS.upper()))
     self._extend_list_all_scopes(
-        self.audit_captain_lbl_txt, self.audit_captain_txt)
+        [self.audit_captain_lbl_txt, self.auditor_lbl_txt],
+        [self.audit_captain_txt, self.auditor_txt])
 
   def _extend_list_all_scopes_by_review_state(self):
     """Method overriding without action due to Audits don't have
@@ -612,6 +653,14 @@ class Controls(InfoWidget):
     self._extend_list_all_scopes(
         [self.admin_text, self.primary_contact_text],
         [self.admin_entered_text, self.primary_contact_entered_text])
+    self.assign_folder_el = self.shared_methods.assign_folder_el
+
+  def els_shown_for_editor(self):
+    return [self.submit_for_review_link,
+            self.info_3bbs_btn,
+            self.comment_add_form_section,
+            self.add_reference_url_btn,
+            self.assign_folder_el] + self.inline_edit_controls.to_list
 
 
 class Objectives(InfoWidget):

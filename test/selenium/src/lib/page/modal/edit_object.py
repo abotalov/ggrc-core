@@ -1,6 +1,7 @@
 # Copyright (C) 2018 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Modals for edit objects."""
+import time
 
 from lib import decorator
 from lib.constants import locator
@@ -20,6 +21,7 @@ class _EditModal(modal_base.BaseModal):
   @decorator.handle_alert
   def save_and_close(self):
     """Edit object and close Edit modal."""
+    time.sleep(1)
     self.button_save_and_close.click()
     selenium_utils.wait_until_not_present(
         self._driver, self._locator_button_save)

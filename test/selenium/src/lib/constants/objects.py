@@ -24,6 +24,8 @@ SECTIONS = "sections"
 CONTROLS = "controls"
 OBJECTIVES = "objectives"
 PEOPLE = "people"
+ROLES = "roles"
+USER_ROLES = "user_roles"
 ORG_GROUPS = "org_groups"
 VENDORS = "vendors"
 ACCESS_GROUPS = "access_groups"
@@ -88,7 +90,7 @@ def _get_plural(singulars):
   plurals = []
   for name in singulars:
     name = name.lower()
-    if name == "people":
+    if name == "person" or name == "people":
       plural = PEOPLE
     elif name == "policy":
       plural = POLICIES

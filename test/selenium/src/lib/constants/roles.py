@@ -44,6 +44,14 @@ SUPERUSER = "Superuser"
 NO_ACCESS = "No Access"
 
 
+class Roles(object):
+  def roles(cls):
+    """Return roles"""
+    roles_url = "/".join([url.API, "roles"])
+    return RestClient().send_get(roles_url)[
+        "{}_collection".format(url.ROLES)][url.ROLES]
+
+
 class ACLRolesIDsMetaClass(type):
   """A class to set ACL role ids"""
   # pylint: disable=invalid-name
@@ -94,6 +102,10 @@ class ACLRolesIDsMetaClass(type):
   @property
   def AUDIT_CAPTAINS(cls):
     return cls.id_of_role(object_type="Audit", name="Audit Captains")
+
+  @property
+  def AUDITORS(cls):
+    return cls.id_of_role(object_type="Audit", name="Auditors")
 
   @property
   def PROGRAM_MANAGERS(cls):

@@ -14,6 +14,7 @@ import uuid
 import waiting
 
 from lib import base, constants
+from lib.constants import users
 from lib.constants.test import modal_create_new, modal_custom_attribute
 
 
@@ -83,8 +84,8 @@ class ModalNewPrograms(ModalInput):
     modal.enter_description(append_random_string(
         modal_create_new.SHORT_TITLE))
     modal.enter_notes(append_random_string(modal_create_new.SHORT_TITLE))
-    modal.enter_program_ref_url(prepend_random_string(
-        modal_create_new.Programs.PROGRAM_URL))
+    # modal.enter_program_ref_url(prepend_random_string(
+    #     modal_create_new.Programs.PROGRAM_URL))
     if modal.is_create_modal:
       modal.code.enter_text(append_random_string(modal_create_new.SHORT_TITLE))
     ModalNewPrograms.set_start_date(modal, 0)

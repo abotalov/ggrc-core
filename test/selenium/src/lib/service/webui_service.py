@@ -4,16 +4,17 @@
 
 import os
 import re
+import urlparse
 
 from dateutil import parser, tz
 
-from lib import factory, url
+from lib import factory, url, environment
 from lib.constants import objects, messages, element, regex
 from lib.element.tab_containers import DashboardWidget
 from lib.entities.entity import Representation
 from lib.page import dashboard
 from lib.page.widget.info_widget import SnapshotedInfoPanel
-from lib.utils import selenium_utils, file_utils
+from lib.utils import selenium_utils, file_utils, conftest_utils
 from lib.utils.string_utils import StringMethods, Symbols
 
 
@@ -94,6 +95,15 @@ class BaseWebUiService(object):
     return [
         factory_obj.update_attrs(is_allow_none=True, **scope) for
         scope, factory_obj in zip(list_scopes_to_convert, list_factory_objs)]
+
+  def create_obj(self):
+    obj_info_page = conftest_utils.create_obj_via_lhn(self.driver,
+        getattr(element.Lhn, self.obj_name.upper()))
+    scope = obj_info_page.get_info_widget_obj_scope()
+    obj = self._create_list_objs(
+        entity_factory=self.entities_factory_cls, list_scopes=[scope])[0]
+    obj.url = self.driver.current_url
+    return obj
 
   def open_widget_of_mapped_objs(self, src_obj):
     """Navigate to generic widget URL of mapped objects according to URL of

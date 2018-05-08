@@ -11,8 +11,8 @@ from selenium.webdriver.common import action_chains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from lib import constants, exception
-from lib.constants import messages, locator as locators
+from lib import constants, exception, url
+from lib.constants import messages, locator as locators, users
 from lib.constants import value_aliases as alias
 
 LOGGER = logging.getLogger(__name__)
@@ -34,12 +34,24 @@ def open_url(driver, url, is_via_js=False):
   opened yet and wait till the moment when web document will be fully loaded.
   If 'is_via_js' then use JS to perform opening.
   """
+  _login_if_needed(driver)
   if driver.current_url != url:
     if not is_via_js:
       driver.get(url)
     else:
       driver.execute_script("window.open('{}', '_self')".format(url))
     wait_for_doc_is_ready(driver)
+
+
+_ui_logged_in_user = None
+
+
+def _login_if_needed(driver):
+  if _ui_logged_in_user != users.current_user_email():
+    driver.delete_all_cookies()
+    driver.get(url.Urls().gae_login())
+    global _ui_logged_in_user
+    _ui_logged_in_user = users.current_user_email()
 
 
 def switch_to_new_window(driver):
