@@ -19,7 +19,7 @@ describe('CreateDocumentButton component', () => {
   });
 
   describe('viewModel', () => {
-    describe('getDocument() method', () => {
+    describe('mapDocument() method', () => {
       let checkDocumentExistsDfd;
 
       beforeEach(() => {
@@ -30,7 +30,7 @@ describe('CreateDocumentButton component', () => {
 
       it('should check wheteher document already exists', () => {
         let file = {};
-        viewModel.getDocument(file);
+        viewModel.mapDocument(file);
 
         expect(viewModel.checkDocumentExists).toHaveBeenCalledWith(file);
       });
@@ -39,7 +39,7 @@ describe('CreateDocumentButton component', () => {
         let file = {};
         spyOn(viewModel, 'createDocument');
 
-        viewModel.getDocument(file);
+        viewModel.mapDocument(file);
 
         checkDocumentExistsDfd.resolve({
           status: 'not exists',
@@ -54,14 +54,30 @@ describe('CreateDocumentButton component', () => {
         let existingDocument = {};
         spyOn(viewModel, 'useExistingDocument');
 
-        viewModel.getDocument(file);
+        viewModel.mapDocument(file);
 
         checkDocumentExistsDfd.resolve({
           status: 'exists',
-          document: existingDocument,
+          object: existingDocument,
         }).then(() => {
           expect(viewModel.useExistingDocument)
             .toHaveBeenCalledWith(existingDocument);
+          done();
+        });
+      });
+
+      it('should refresh permissions and map document', (done) => {
+        let document = {};
+        spyOn(viewModel, 'refreshPermissionsAndMap');
+        spyOn(viewModel, 'createDocument').and.returnValue(document);
+
+        viewModel.mapDocument({});
+
+        checkDocumentExistsDfd.resolve({
+          status: 'not exists',
+        }).then(() => {
+          expect(viewModel.refreshPermissionsAndMap)
+            .toHaveBeenCalledWith(document);
           done();
         });
       });
@@ -110,6 +126,34 @@ describe('CreateDocumentButton component', () => {
               done();
             });
         });
+    });
+
+    describe('useExistingDocument() method', () => {
+      let showConfirmDfd;
+
+      beforeEach(() => {
+        showConfirmDfd = can.Deferred();
+        spyOn(viewModel, 'showConfirm').and.returnValue(showConfirmDfd);
+      });
+
+      it('should show confirm modal', () => {
+        viewModel.useExistingDocument();
+
+        expect(viewModel.showConfirm).toHaveBeenCalled();
+      });
+
+      it('should add current user to document admins', (done) => {
+        let document = {};
+        spyOn(viewModel, 'makeAdmin');
+
+        viewModel.useExistingDocument(document);
+
+        showConfirmDfd.resolve()
+          .then(() => {
+            expect(viewModel.makeAdmin).toHaveBeenCalledWith(document);
+            done();
+          });
+      });
     });
   });
 
@@ -171,7 +215,7 @@ describe('CreateDocumentButton component', () => {
 
     describe('attach() method', () => {
       let handler;
-      let getDocumentDfd;
+      let mapDocumentDfd;
       let element;
 
       beforeEach(() => {
@@ -184,40 +228,23 @@ describe('CreateDocumentButton component', () => {
           element,
         });
 
-        getDocumentDfd = can.Deferred();
-        spyOn(viewModel, 'getDocument').and
-          .returnValue(getDocumentDfd);
+        mapDocumentDfd = can.Deferred();
+        spyOn(viewModel, 'mapDocument').and
+          .returnValue(mapDocumentDfd);
       });
 
-      it('should call getDocument', () => {
+      it('should call mapDocument', () => {
         let file = {};
         handler(file);
-        expect(viewModel.getDocument).toHaveBeenCalledWith(file);
+        expect(viewModel.mapDocument).toHaveBeenCalledWith(file);
       });
 
-      it(`should trigger modal:success and modal:dismiss events
-        when document is created`,
-        (done) => {
-          let document = {};
-
-          handler({});
-
-          getDocumentDfd.resolve(document)
-            .then((doc) => {
-              expect(element.trigger.calls.argsFor(0))
-                .toEqual(['modal:success', [doc]]);
-              expect(element.trigger.calls.argsFor(1))
-                .toEqual(['modal:dismiss']);
-              done();
-            });
-        });
-
       it(`should trigger modal:dismiss event
-        when document creating is failed`,
+        when document mapping is failed`,
         (done) => {
           handler({});
 
-          getDocumentDfd.reject()
+          mapDocumentDfd.reject()
             .fail(() => {
               expect(element.trigger)
                 .toHaveBeenCalledWith('modal:dismiss');

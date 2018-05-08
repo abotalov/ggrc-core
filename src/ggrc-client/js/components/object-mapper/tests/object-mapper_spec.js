@@ -141,14 +141,14 @@ describe('GGRC.Components.objectMapper', function () {
     });
   });
 
-  describe('".create-control modal:success" event', function () {
+  describe('map() method', function () {
     let spyObj;
 
     beforeEach(function () {
       viewModel.attr({
         newEntries: [],
       });
-      handler = events['.create-control modal:success'];
+      handler = events['map'];
       spyObj = jasmine.createSpy();
     });
 
@@ -161,7 +161,7 @@ describe('GGRC.Components.objectMapper', function () {
       handler.call({
         viewModel: viewModel,
         mapObjects: spyObj,
-      }, {}, {}, 'model');
+      }, 'model');
       expect(viewModel.updateFreezedConfigToLatest).toHaveBeenCalled();
     });
 
@@ -170,7 +170,7 @@ describe('GGRC.Components.objectMapper', function () {
       handler.call({
         viewModel: viewModel,
         mapObjects: spyObj,
-      }, {}, {}, 'model');
+      }, 'model');
       expect(viewModel.attr('newEntries').length).toEqual(1);
       expect(viewModel.attr('newEntries')[0]).toEqual('model');
     });
@@ -179,7 +179,7 @@ describe('GGRC.Components.objectMapper', function () {
       handler.call({
         viewModel: viewModel,
         mapObjects: spyObj,
-      }, {}, {}, 'model');
+      }, 'model');
       expect(spyObj).toHaveBeenCalledWith(viewModel.attr('newEntries'));
     });
   });
