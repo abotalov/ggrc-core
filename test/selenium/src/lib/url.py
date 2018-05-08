@@ -24,9 +24,6 @@ CONTACTS = "contacts"
 QUERY = "query"
 ACCESS_CONTROL_ROLES = "access_control_roles"
 
-DEFAULT_EMAIL_DOMAIN = "example.com"
-GAE_LOGIN = "_ah/login?email={}&action=Login".format(users.DEFAULT_USER_EMAIL)
-
 
 class Widget(object):
   """URL's constants parts for widgets."""
@@ -49,13 +46,16 @@ class Widget(object):
 
 class Urls(object):
   """Provide urls"""
-  # pylint: disable=too-few-public-methods
 
   def __init__(self):
     self.admin_dashboard = environment.app_url + ADMIN_DASHBOARD
     self.dashboard = environment.app_url + DASHBOARD
     self.login = environment.app_url + LOGIN
-    self.gae_login = environment.app_url + GAE_LOGIN
+
+  @staticmethod
+  def gae_login():
+    return environment.app_url +\
+        "_ah/login?email={}&action=Login".format(users.current_user_email())
 
 
 class Utils(object):

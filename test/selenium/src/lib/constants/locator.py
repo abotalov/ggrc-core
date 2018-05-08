@@ -427,9 +427,6 @@ class ModalCreateNewControl(BaseModalCreateNew):
       By.CSS_SELECTOR, '[data-test-id="control_assertions_5d8b7f7a"] label')
   SELECTABLE_ASSERTIONS = (
       By.CSS_SELECTOR, '[data-test-id="control_assertions_5d8b7f7a"] select')
-  ADMIN = (
-      By.CSS_SELECTOR, '[data-test-id="control_owner_587d12d6"] label')
-  BUTTON_ADD_OWNER = (By.CSS_SELECTOR, 'isolate-form .btn')
   REF_URL_CSS = (By.CSS_SELECTOR, '[data-id="reference_url_hidden"]')
   SIGNIFICANCE = (
       By.CSS_SELECTOR, '[data-test-id="control_significance_18f15545"] label')
@@ -448,11 +445,11 @@ class ModalCreateNewControl(BaseModalCreateNew):
   DROPDOWN_STATE = (
       By.CSS_SELECTOR, '[data-test-id="control_state_5d184456"] select')
   UI_NOTES = (By.CSS_SELECTOR, '[data-id="note_hidden"] iframe')
-  EFFECTIVE_DATE = (
+  UI_EFFECTIVE_DATE = (
       By.CSS_SELECTOR,
       '[test-id="control_effective_dates_0376cf90"] '
       '[data-id="effective_date_hidden"] .datepicker__input')
-  DATEPICKER_EFFECTIVE_DATE = (
+  EFFECTIVE_DATE_DATEPICKER = (
       By.CSS_SELECTOR,
       '[test-id="control_effective_dates_0376cf90"] '
       '[data-id="effective_date_hidden"] [data-handler="selectDay"]')
@@ -1175,3 +1172,7 @@ class DashboardWidget(object):
   TAB_CONTAINER_CSS = (By.CSS_SELECTOR, _TAB_CONTAINER)
   TAB_CONTROLLER_CSS = (By.CSS_SELECTOR, ".dashboard-list")
   TAB_CONTENT_CSS = (By.CSS_SELECTOR, _TAB_CONTAINER + " iframe")
+
+
+class ForbiddenPage(object):
+  HEADER = (By.XPATH, "//h1[.='Forbidden']")

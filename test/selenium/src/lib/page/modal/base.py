@@ -134,7 +134,6 @@ class ControlsModal(BaseModal):
         self.modal_elem, self._locators.FREQUENCY)
     self.assertions = base.Label(
         self.modal_elem, self._locators.ASSERTIONS)
-    self.admin = base.Label(self.modal_elem, self._locators.ADMIN)
     self.significance = base.Label(
         self.modal_elem, self._locators.SIGNIFICANCE)
     self.type_or_means = base.Label(
@@ -153,8 +152,8 @@ class ControlsModal(BaseModal):
         self.modal_elem.parent, self._locators.REF_URL_CSS)
     # datepickers
     self.ui_effective_date = base.DatePicker(
-        self.modal_elem, self._locators.EFFECTIVE_DATE,
-        self._locators.DATEPICKER_EFFECTIVE_DATE)
+        self.modal_elem, self._locators.EFFECTIVE_DATE_DATEPICKER,
+        self._locators.UI_EFFECTIVE_DATE)
     # dropdowns
     self.ui_kind_or_nature = base.Dropdown(
         self.modal_elem, self._locators.DROPDOWN_KIND_OR_NATURE)
@@ -170,8 +169,6 @@ class ControlsModal(BaseModal):
     self.selectable_categories = base.Selectable(
         self.modal_elem, self._locators.SELECTABLE_CATEGORIES)
     # buttons
-    self.button_add_owner = base.Button(
-        self.modal_elem, self._locators.BUTTON_ADD_OWNER)
     self.button_hide_all_optional_fields = base.Button(
         self.modal_elem, self._locators.BUTTON_HIDE_ALL_OPTIONAL_FIELDS)
 

@@ -21,7 +21,7 @@ class RestClient(object):
   STATUS_CODES = {'OK': 200,
                   'FAIL': [400, 404, 500]}
 
-  def __init__(self, endpoint):
+  def __init__(self, endpoint=""):
     self.is_api = "" if endpoint == url.QUERY else url.API
     self.endpoint_url = urlparse.urljoin(
         environment.app_url, "/".join([self.is_api, endpoint]))
@@ -29,9 +29,19 @@ class RestClient(object):
     self.session.headers = self.BASIC_HEADERS
     self.login()
 
+  def send_get(self, url, **kwargs):
+    """Send GET request to `url`"""
+    url = urlparse.urljoin(environment.app_url, url)
+    return self.session.get(url, **kwargs).json()
+
+  def send_post(self, url, **kwargs):
+    """Send POST request to `url`"""
+    url = urlparse.urljoin(environment.app_url, url)
+    return self.session.post(url, **kwargs).json()
+
   def login(self):
     """Set dev_appserver_login and session cookies."""
-    self.session.get(url.Urls().gae_login)
+    self.session.get(url.Urls().gae_login())
     self.session.get(url.Urls().login)
 
   def create_object(self, type, **kwargs):

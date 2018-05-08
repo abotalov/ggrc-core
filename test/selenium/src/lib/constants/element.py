@@ -170,7 +170,7 @@ class TransformationSetVisibleFields(CommonModalSetVisibleFields):
   VERIFIED = "Verified"
   STATUS = "Status"
   AUDIT_CAPTAINS = "Audit Captains"
-  MANAGER = "Manager"
+  PROGRAM_MANAGERS = "Program Managers"
   MAPPED_OBJECTS = "Mapped Objects"
   REVIEW_STATE = "Review State"
   CREATORS = roles.CREATORS
