@@ -435,8 +435,6 @@
         GGRC.mustache_path + '/people_roles/option_detail.mustache',
       active_column_view:
         GGRC.mustache_path + '/people_roles/active_column.mustache',
-      object_column_view:
-        GGRC.mustache_path + '/people_roles/object_column.mustache',
       object_detail_view:
         GGRC.mustache_path + '/people_roles/object_detail.mustache',
 

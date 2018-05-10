@@ -61,7 +61,6 @@ import {getRole} from '../plugins/utils/acl-utils';
       access_control_list: getAccessControlList(),
     },
     tree_view_options: {
-      show_view: GGRC.mustache_path + '/documents/tree.mustache',
       add_item_view: GGRC.mustache_path + '/documents/tree_add_item.mustache',
     },
     init: function () {
