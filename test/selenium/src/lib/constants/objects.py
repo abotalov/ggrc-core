@@ -44,6 +44,7 @@ TASK_GROUPS = "task_groups"
 TASK_GROUP_TASKS = "task_group_tasks"
 CYCLE_TASK_GROUP_OBJECT_TASKS = "cycle_task_group_object_tasks"
 CYCLES = "cycles"
+DOCUMENTS = "documents"
 
 ALL_SNAPSHOTABLE_OBJS = (
     ACCESS_GROUPS, CLAUSES, CONTRACTS, CONTROLS, DATA_ASSETS, FACILITIES,
