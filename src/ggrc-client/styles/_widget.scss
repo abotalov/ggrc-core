@@ -192,7 +192,7 @@
     a {
       color: $textGray;
     }
-    .person-list-item {
+    .person-data {
       display: inline-block;
     }
   }
@@ -301,6 +301,10 @@
   font-size:12px;
   font-weight:bold;
   text-transform:uppercase;
+
+  .person-data {
+    display: inline-block;
+  }
 }
 
 .widget {

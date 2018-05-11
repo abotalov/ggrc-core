@@ -7,7 +7,7 @@ import './people-group-modal';
 import './editable-people-group-header';
 import '../autocomplete/autocomplete';
 import '../external-data-autocomplete/external-data-autocomplete';
-import '../object-list-item/person-list-item';
+import '../person/person-data';
 import peopleGroupVM from '../view-models/people-group-vm';
 import template from './editable-people-group.mustache';
 

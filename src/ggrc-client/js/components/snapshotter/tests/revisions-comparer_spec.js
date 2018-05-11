@@ -661,8 +661,8 @@ describe('GGRC.Components.revisionsComparer', function () {
         $blockNotEmpty = $(`<div>
                             <related-people-access-control-group>
                               <object-list>
-                                  <person-list-item>
-                                  </person-list-item>
+                                  <person-data>
+                                  </person-data>
                               </object-list>
                             </related-people-access-control-group>
                           </div>`);

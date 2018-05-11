@@ -20,7 +20,7 @@
       {{/if}}
       {{#if commentAuthor}}
         <div class="comment-object-item__header-author">
-          <person-list-item {person}="commentAuthor"></person-list-item>
+          <person-data {person}="commentAuthor"></person-data>
         </div>
       {{/if}}
       <div class="comment-object-item__header-author-info">{{assignee_types commentAuthorType}} {{date commentCreationDate}}</div>

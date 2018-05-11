@@ -532,8 +532,8 @@ export default can.Component.extend({
         let oldUserIds = {};
         let newUserIds = {};
 
-        let $oldGrantees = $blockOld.find('person-list-item');
-        let $newGrantees = $blockNew.find('person-list-item');
+        let $oldGrantees = $blockOld.find('person-data');
+        let $newGrantees = $blockNew.find('person-data');
 
         if ($oldGrantees.length && !$newGrantees.length ||
           $newGrantees.length && !$oldGrantees.length) {

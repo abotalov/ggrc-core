@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import '../object-list-item/person-list-item';
+import '../person/person-data';
 import viewModel from '../view-models/people-group-vm';
 import template from './deletable-people-group.mustache';
 

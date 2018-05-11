@@ -15,8 +15,7 @@
         <div>
           {{leftRevisionData.description}}
         </div>
-        <person-list-item {person}="leftRevisionData.author">
-        </person-list-item>
+        <person-data {person}="leftRevisionData.author"></person-data>
         <div>
           {{date leftRevisionData.date}}
         </div>
@@ -26,8 +25,7 @@
       <div>
         {{rightRevisionData.description}}
       </div>
-      <person-list-item {person}="rightRevisionData.author">
-      </person-list-item>
+      <person-data {person}="rightRevisionData.author"></person-data>
       <div>
         {{date rightRevisionData.date}}
       </div>

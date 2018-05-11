@@ -4,7 +4,7 @@
 */
 
 import '../form/fields/dropdown-form-field';
-import '../object-list-item/person-list-item';
+import '../person/person-data';
 import template from './readonly-inline-content.mustache';
 
 (function (can, GGRC) {

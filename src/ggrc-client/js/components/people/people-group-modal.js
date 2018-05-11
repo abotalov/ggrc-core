@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import '../object-list-item/person-list-item';
+import '../person/person-data';
 import template from './templates/people-group-modal.mustache';
 
 export default GGRC.Components('peopleGroupModal', {

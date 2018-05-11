@@ -4,7 +4,7 @@
  */
 
 import {NAVIGATE_TO_TAB} from '../../events/eventTypes';
-import '../object-list-item/person-list-item';
+import '../person/person-data';
 import template from './comment-list-item.mustache';
 
 (function (can, GGRC) {

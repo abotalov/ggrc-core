@@ -4,12 +4,12 @@
  */
 
 import RefreshQueue from '../../models/refresh_queue';
-import template from './person-list-item.mustache';
+import template from './person-data.mustache';
 
 (function (can, GGRC, CMS) {
   'use strict';
 
-  let tag = 'person-list-item';
+  let tag = 'person-data';
   /**
    * Person List Item Component
    */
