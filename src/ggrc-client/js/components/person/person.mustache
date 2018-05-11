@@ -5,8 +5,7 @@
 
 <div class="person">
   {{#if personObj}}
-    {{{renderLive '/static/mustache/people/popover.mustache' person=personObj}}}
-
+    <person-data {person}="personObj"></person-data>
     <content/>
 
     {{#if editable}}

@@ -31,7 +31,7 @@
     </div>
     <span class="entry-author">
       Modified by
-      {{#using person=instance.modified_by}}{{>'/static/mustache/people/popover.mustache'}}{{/using}}
+      <person-data {person}="instance.modified_by"></person-data>
       {{#if instance.created_at}}on {{date instance.created_at}}{{/if}}
     </span>
   </div>

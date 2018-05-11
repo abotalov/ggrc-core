@@ -61,15 +61,11 @@
               </div>
               <div class="span4">
                 <h6>Risk Manager</h6>
-                {{#using person=instance.ra_manager}}
-                  {{>'/static/mustache/people/popover.mustache'}}
-                {{/using}}
+                <person-data {person}="instance.ra_manager"></person-data>
               </div>
               <div class="span4">
                 <h6>Risk Counsel</h6>
-                {{#using person=instance.ra_counsel}}
-                  {{>'/static/mustache/people/popover.mustache'}}
-                {{/using}}
+                <person-data {person}="instance.ra_counsel"></person-data>
               </div>
             </div>
 

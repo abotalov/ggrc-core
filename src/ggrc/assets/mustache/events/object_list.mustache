@@ -25,9 +25,7 @@
                     <li>
                       <span class="event-owner">
                         by
-                        {{#using modified_by=modified_by}}
-                          {{{render '/static/mustache/people/popover.mustache' person=modified_by}}}
-                        {{/using}}
+                        <person-data {person}="modified_by"></person-data>
                       </span>
                     </li>
                     <li>

@@ -639,6 +639,10 @@ ul.new-tree {
     .event-owner {
       font-size:13px;
       color:#777;
+
+      .person-data {
+        display: inline-block;
+      }
     }
     .not-mapped {
       font-size:13px;

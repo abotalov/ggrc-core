@@ -11,10 +11,8 @@
       <span class="name">
         {{ name }}
       </span>
-      {{{render '/static/mustache/people/popover.mustache' person=this}}}
+      <person-data {person}="this"></person-data>
     </h3>
   </div>
 
 </div>
-
-
