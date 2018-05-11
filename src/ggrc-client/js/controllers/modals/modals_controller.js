@@ -23,7 +23,7 @@ import '../../components/dropdown/dropdown';
 import '../../components/modal_wrappers/assessment_template_form';
 import '../../components/autocomplete/autocomplete';
 import '../../components/external-data-autocomplete/external-data-autocomplete';
-import '../../components/person/person';
+import '../../components/person/person-data';
 import '../../components/rich_text/rich_text';
 import '../../components/modal_wrappers/checkboxes_to_list';
 import '../../components/modal-connector';

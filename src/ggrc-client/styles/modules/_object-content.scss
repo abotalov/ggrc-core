@@ -34,7 +34,7 @@
     }
   }
   .person-info-list {
-    .person {
+    .person-data {
       line-height: 22px;
       font-style: italic;
     }
@@ -68,12 +68,6 @@
         padding-left:10px;
         padding-right:10px;
       }
-    }
-  }
-  &.person-info {
-    padding: 5px 0 0 0;
-    > div {
-      overflow: hidden;
     }
   }
   .multi-type-label {

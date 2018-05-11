@@ -146,10 +146,12 @@
               {{/instance.computed_errors.assigneesList}}
 
               {{#each instance.assigneesList}}
-                <person-info
-                  editable="true"
-                  person-id="{{@key}}"
-                  can-person-remove="instance.assigneeRemoved"></person-info>
+                <person-data {person-id}="{{@key}}">
+                  <a href="javascript://" class="unmap" title="Remove"
+                    ($click)="instance.removeAssignee(person)">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                </person-data>
               {{/each}}
             {{/if}}
           </div>
@@ -195,10 +197,12 @@
               {{/instance.computed_errors.verifiersList}}
 
               {{#each instance.verifiersList}}
-                <person-info
-                  editable="true"
-                  person-id="{{@key}}"
-                  can-person-remove="instance.verifierRemoved"></person-info>
+                <person-data {person-id}="{{@key}}">
+                  <a href="javascript://" class="unmap" title="Remove"
+                    ($click)="instance.removeVerifier(person)">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                </person-data>
               {{/each}}
             {{/if}}
           </div>

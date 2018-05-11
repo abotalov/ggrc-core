@@ -18,7 +18,7 @@ import '../../components/read-more/read-more';
 import '../../components/object-list/object-list';
 import '../../components/show-more/show-more';
 import '../../components/autocomplete/autocomplete';
-import '../../components/person/person';
+import '../../components/person/person-data';
 import '../../components/link_to_clipboard';
 import '../../components/mapped_tree_view';
 import '../../components/reusable_objects';

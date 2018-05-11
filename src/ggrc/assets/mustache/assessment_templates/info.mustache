@@ -67,7 +67,7 @@
                     <ul class="person-info-list">
                       {{#each default_people.assignees}}
                         <li>
-                          <person-info editable="false" person-id="{{.}}"></person-info>
+                          <person-data {person-id}="{{.}}"></person-data>
                         </li>
                       {{/each}}
                     </ul>
@@ -90,7 +90,7 @@
                     <ul class="person-info-list">
                       {{#each default_people.verifiers}}
                         <li>
-                          <person-info editable="false" person-id="{{.}}"></person-info>
+                          <person-data {person-id}="{{.}}"></person-data>
                         </li>
                       {{/each}}
                     </ul>

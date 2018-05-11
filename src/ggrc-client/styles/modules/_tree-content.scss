@@ -452,6 +452,10 @@ ul.new-tree {
     .task-comments & {
       max-height: none;
       overflow-y: visible;
+
+      .person-data {
+        display: inline-block;
+      }
     }
     & .tier-2-info {
       padding: 14px 10px 0 10px;

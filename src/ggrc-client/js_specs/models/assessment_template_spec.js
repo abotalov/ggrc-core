@@ -188,22 +188,12 @@ describe('can.Model.AssessmentTemplate', function () {
     });
   });
 
-  describe('assigneeRemoved() method', function () {
-    let context;
-    let $element;
-    let eventObj;
-
-    beforeEach(function () {
-      context = {};
-      $element = $('<div></div>');
-      eventObj = $.Event();
-    });
-
+  describe('removeAssignee() method', function () {
     it('removes the new assignee\'s ID from the assignees list', function () {
       instance.attr('assigneesList', {'7': true, '42': true, '3': true});
-      eventObj.person = {id: 42};
+      let person = {id: 42};
 
-      instance.assigneeRemoved(context, $element, eventObj);
+      instance.removeAssignee(person);
 
       expect(
         instance.attr('assigneesList').attr()
@@ -212,9 +202,9 @@ describe('can.Model.AssessmentTemplate', function () {
 
     it('silently ignores removing non-existing entries', function () {
       instance.attr('assigneesList', {'7': true});
-      eventObj.person = {id: 50};
+      let person = {id: 50};
 
-      instance.assigneeRemoved(context, $element, eventObj);
+      instance.removeAssignee(person);
       // there should have been no error
 
       expect(instance.attr('assigneesList').attr()).toEqual({'7': true});
@@ -254,22 +244,12 @@ describe('can.Model.AssessmentTemplate', function () {
     });
   });
 
-  describe('verifierRemoved() method', function () {
-    let context;
-    let $element;
-    let eventObj;
-
-    beforeEach(function () {
-      context = {};
-      $element = $('<div></div>');
-      eventObj = $.Event();
-    });
-
+  describe('removeVerifier() method', function () {
     it('removes the new verifier\'s ID from the verifiers list', function () {
       instance.attr('verifiersList', {'7': true, '42': true, '3': true});
-      eventObj.person = {id: 42};
+      let person = {id: 42};
 
-      instance.verifierRemoved(context, $element, eventObj);
+      instance.removeVerifier(person);
 
       expect(
         instance.attr('verifiersList').attr()
@@ -278,9 +258,9 @@ describe('can.Model.AssessmentTemplate', function () {
 
     it('silently ignores removing non-existing entries', function () {
       instance.attr('verifiersList', {'7': true});
-      eventObj.person = {id: 50};
+      let person = {id: 50};
 
-      instance.verifierRemoved(context, $element, eventObj);
+      instance.removeVerifier(person);
       // there should have been no error
 
       expect(instance.attr('verifiersList').attr()).toEqual({'7': true});

@@ -320,15 +320,11 @@ import {getRole} from '../plugins/utils/acl-utils';
     },
 
     /**
-     * Event handler when a user clicks to remove an assignee from the
-     * assignees list. It removes the corresponding assignee ID from the list.
+     * Removes user from assignees list
      *
-     * @param {can.Map} context - the Mustache context of the `$el`
-     * @param {jQuery.Element} $el - the source of the event `ev`
-     * @param {jQuery.Event} ev - the event that was triggered
+     * @param {can.Map} user - user which should be removed
      */
-    assigneeRemoved: function (context, $el, ev) {
-      let user = ev.person;
+    removeAssignee: function (user) {
       this.assigneesList.removeAttr(String(user.id));
     },
 
@@ -346,15 +342,11 @@ import {getRole} from '../plugins/utils/acl-utils';
     },
 
     /**
-     * Event handler when a user clicks to remove a verifier from the verifiers
-     * list. It removes the corresponding verifier ID from the list.
+     * Removes user from verifiers list
      *
-     * @param {can.Map} context - the Mustache context of the `$el`
-     * @param {jQuery.Element} $el - the source of the event `ev`
-     * @param {jQuery.Event} ev - the event that was triggered
+     * @param {can.Map} user - user which should be removed
      */
-    verifierRemoved: function (context, $el, ev) {
-      let user = ev.person;
+    removeVerifier: function (user) {
       this.verifiersList.removeAttr(String(user.id));
     },
 
