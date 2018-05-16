@@ -93,7 +93,7 @@ class AdminWidgetEvents(object):
  at Admin Dashboard.
  """
   WIDGET_HEADER = "Events"
-  TREE_VIEW_ROW_REGEXP = r"^.+\s(by.+)\son\s" + \
+  TREE_VIEW_ROW_REGEXP = r"^.+\s(by\s.+)\son\s" + \
       r"(\d{2}/\d{2}/\d{4}\s\d{2}:\d{2}:\d{2}\s[A,P]M)"
 
 
