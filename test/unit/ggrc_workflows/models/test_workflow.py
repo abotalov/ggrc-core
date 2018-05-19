@@ -35,6 +35,7 @@ class TestWorkflowState(unittest.TestCase):
   )
   @ddt.unpack
   def test_get_state(self, task_states, result):
+    """Test get state for {0}."""
     self.assertEqual(
         result,
         workflow.WorkflowState._get_state([
@@ -83,10 +84,10 @@ class TestWorkflowState(unittest.TestCase):
       (date(2017, 1, 3), date(2016, 12, 30), 2, workflow.Workflow.DAY_UNIT),
       (date(2017, 1, 4), date(2016, 12, 30), 3, workflow.Workflow.DAY_UNIT),
       # ------------------
-
   )
   @ddt.unpack
   def test_calc_repeated_dates(self, expected, setup_date, repeat_every, unit):
+    """Test calculate repeated dates for repeat every {2} {3}."""
     self.assertEqual(
         expected,
         workflow.Workflow(
@@ -108,6 +109,7 @@ class TestWorkflowState(unittest.TestCase):
   )
   @ddt.unpack
   def test_calc_one_time_dates(self, expected, setup_date):
+    """Calculate one time dates for {1}."""
     self.assertEqual(
         expected,
         workflow.Workflow().calc_next_adjusted_date(setup_date)

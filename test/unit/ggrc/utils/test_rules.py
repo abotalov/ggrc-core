@@ -127,6 +127,7 @@ class TestMappingRules(BaseTestMappingRules):
         ("Vendor", all_rules))
   @unpack
   def test_field(self, field, rules):
+    """Test mapping rules for {0}."""
     self.assertRules(field, *rules)
 
 
@@ -237,6 +238,8 @@ class TestUnMappingRules(BaseTestMappingRules):
         ("Vendor", all_rules))
   @unpack
   def test_field(self, field, rules):
+    """Test unmapping rules for {0}."""
+    self.assertRules(field, *rules)
     self.assertRules(field, *rules)
 
 
@@ -291,4 +294,5 @@ class TestSnapshotMappingRules(BaseTestMappingRules):
         ("Vendor", all_rules))
   @unpack
   def test_field(self, field, rules):
+    """Test snapshot mapping rules for {0}."""
     self.assertRules(field, *rules)

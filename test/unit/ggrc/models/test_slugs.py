@@ -55,6 +55,7 @@ class TestSlugPrefix(unittest.TestCase):
 
   @ddt.data(*all_models.all_models)
   def test_slug_prefix(self, model):
+    """Test slug prefix for model {}."""
     if model.__name__ not in self.EXPECTED_PREFIXES:
       # No slug prefix defined at all
       self.assertIsNone(getattr(model, "generate_slug_prefix", None))
