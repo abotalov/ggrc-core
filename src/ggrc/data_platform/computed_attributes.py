@@ -523,11 +523,11 @@ def get_attributes_data(computed_values):
     definition_id = attr.attribute_definition.attribute_definition_id
     for obj, computed_value in objects.iteritems():
       data.append({
-          "object_type": unicode(obj[0]),
+          "object_type": obj[0],
           "object_id": obj[1],
-          "source_type": unicode(aggregate_type),
+          "source_type": aggregate_type,
           "source_id": computed_value["source_id"],
-          "source_attr": unicode(aggregate_field),
+          "source_attr": aggregate_field,
           "value_datetime": computed_value["value_datetime"],
           "value_string": computed_value["value_string"] or "",
           "value_integer": computed_value["value_integer"],

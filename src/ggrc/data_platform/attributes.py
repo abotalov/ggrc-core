@@ -17,7 +17,7 @@ class Attributes(base.Base, db.Model):
   attribute_id = db.Column(db.Integer, primary_key=True)
   # object id should eventually be a foreign key to objects table
   object_id = db.Column(db.Integer)
-  object_type = db.Column(db.Unicode(250))
+  object_type = db.Column(db.String)
   attribute_definition_id = db.Column(
       db.Integer,
       db.ForeignKey('attribute_definitions.attribute_definition_id')
@@ -35,9 +35,9 @@ class Attributes(base.Base, db.Model):
   value_datetime = db.Column(db.DateTime)
 
   # ggrc specific code, needs to be added back to DP.
-  source_type = db.Column(db.Unicode(250))
+  source_type = db.Column(db.String)
   source_id = db.Column(db.Integer)
-  source_attr = db.Column(db.Unicode(250))
+  source_attr = db.Column(db.String)
 
   namespace_id = db.Column(
       db.Integer, db.ForeignKey('namespaces.namespace_id'), nullable=True)
