@@ -24,8 +24,6 @@ from ggrc.models import all_models
 from ggrc.access_control import roleable
 
 from integration.ggrc.models.model_factory import ModelFactory
-from integration.ggrc_basic_permissions.models \
-    import factories as rbac_factories
 
 
 def random_str(length=8, prefix="", chars=None):
@@ -211,12 +209,6 @@ class AuditFactory(TitledFactory):
     """Fix context related_object when audit is created"""
     instance = super(AuditFactory, cls)._create(target_class, *args, **kwargs)
     instance.context.related_object = instance
-
-    rbac_factories.ContextImplicationFactory(
-        context=instance.context,
-        source_context=instance.program.context,
-        context_scope="Audit",
-        source_context_scope="Program")
 
     if getattr(db.session, "single_commit", True):
       db.session.commit()

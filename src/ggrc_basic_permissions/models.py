@@ -168,49 +168,5 @@ class UserRole(Base, db.Model):
         self.person.display_name, self.role.display_name, context_related)
 
 
-class ContextImplication(Base, db.Model):
-  '''A roles implication between two contexts. An implication may be scoped
-  with additional scoping properties on the target and source contexts. The
-  meaning of the scoping properties is determined by the module that
-  contributed the implication. For example, an implication may be scoped based
-  on the related objects of the contexts such as from a Program context to
-  an Audit context.
-  '''
-  __tablename__ = 'context_implications'
-
-  context_id = db.Column(
-      db.Integer(), db.ForeignKey('contexts.id'), nullable=True)
-  source_context_id = db.Column(
-      db.Integer(), db.ForeignKey('contexts.id'), nullable=True)
-  context_scope = db.Column(db.String, nullable=True)
-  source_context_scope = db.Column(db.String, nullable=True)
-
-  context = db.relationship(
-      'Context',
-      uselist=False,
-      foreign_keys=[context_id],
-  )
-  source_context = db.relationship(
-      'Context',
-      uselist=False,
-      foreign_keys=[source_context_id],
-  )
-
-  def _display_name(self):
-    if self.source_context:
-      source_context_display_name = self.source_context.display_name
-    else:
-      source_context_display_name = 'Default Context'
-    if self.context:
-      context_display_name = self.context.display_name
-    else:
-      context_display_name = 'Default Context'
-    return u'{source_context} -> {context}'.format(
-        source_context=source_context_display_name,
-        context=context_display_name,
-    )
-
-
 all_models.register_model(Role)
 all_models.register_model(UserRole)
-all_models.register_model(ContextImplication)

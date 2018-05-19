@@ -25,11 +25,3 @@ class UserRoleFactory(ModelFactory):
 
   class Meta:
     model = models.UserRole
-
-
-class ContextImplicationFactory(ModelFactory):
-  # pylint: disable=too-few-public-methods,missing-docstring,old-style-class
-  # pylint: disable=no-init
-
-  class Meta:
-    model = models.ContextImplication

@@ -27,7 +27,6 @@ from ggrc.utils import benchmark
 from ggrc_basic_permissions import basic_roles
 from ggrc_basic_permissions.contributed_roles import BasicRoleDeclarations
 from ggrc_basic_permissions.converters.handlers import COLUMN_HANDLERS
-from ggrc_basic_permissions.models import ContextImplication
 from ggrc_basic_permissions.models import Role
 from ggrc_basic_permissions.models import UserRole
 
@@ -494,33 +493,6 @@ def handle_program_post(sender, obj=None, src=None, service=None):
   db.session.add(user_role)
   db.session.flush()
 
-  # Create the context implication for Program roles to default context
-  db.session.add(ContextImplication(
-      source_context=context,
-      context=None,
-      source_context_scope='Program',
-      context_scope=None,
-      modified_by=get_current_user()))
-
-  if not src.get('private'):
-    # Add role implication - all users can read a public program
-    add_public_program_context_implication(context)
-
-
-def add_public_program_context_implication(context, check_exists=False):
-  if check_exists and db.session.query(ContextImplication)\
-      .filter(
-          sa.and_(ContextImplication.context_id == context.id,
-                  ContextImplication.source_context_id.is_(None))).count() > 0:
-    return
-  db.session.add(ContextImplication(
-      source_context=None,
-      context=context,
-      source_context_scope=None,
-      context_scope='Program',
-      modified_by=get_current_user(),
-  ))
-
 
 def create_audit_context(audit):
   # Create an audit context
@@ -532,30 +504,13 @@ def create_audit_context(audit):
   )
   context.modified_by = get_current_user()
   db.session.add(context)
-  db.session.flush()
 
-  # Create the program -> audit implication
-  db.session.add(ContextImplication(
-      source_context=audit.context,
-      context=context,
-      source_context_scope='Program',
-      context_scope='Audit',
-      modified_by=get_current_user(),
-  ))
+  db.session.flush()
 
   db.session.add(audit)
 
-  # Create the role implication for Auditor from Audit for default context
-  db.session.add(ContextImplication(
-      source_context=context,
-      context=None,
-      source_context_scope='Audit',
-      context_scope=None,
-      modified_by=get_current_user(),
-  ))
   db.session.flush()
 
-  # Place the audit in the audit context
   audit.context = context
 
 
@@ -576,16 +531,6 @@ def handle_resource_deleted(sender, obj=None, service=None):
     db.session.query(UserRole) \
         .filter(UserRole.context_id == obj.context_id) \
         .delete()
-    db.session.query(ContextImplication) \
-        .filter(
-            sa.or_(ContextImplication.context_id == obj.context_id,
-                   ContextImplication.source_context_id == obj.context_id))\
-        .delete()
-    # Deleting the context itself is problematic, because unattached objects
-    #   may still exist and cause a database error.  Instead of implicitly
-    #   cascading to delete those, just leave the `Context` object in place.
-    #   It and its objects will be visible *only* to Admin users.
-    # db.session.delete(obj.context)
 
 
 def contributed_services():
