@@ -449,9 +449,6 @@ db.Model) ] \`\`\`
 -  ROLE_DECLARATIONS: at module level, subclass ``RoleDeclarations``,
    overriding ``roles()``, and set this property to an instance of the
    subclass.
--  ROLE_IMPLICATIONS: at module level, subclass
-   ``DeclarativeRoleImplications``, overriding ``implications``, and set
-   this property to an instance of the subclass.
 
 Modals
 ~~~~~~

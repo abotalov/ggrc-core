@@ -35,7 +35,7 @@ from ggrc_workflows.roles import (
 )
 from ggrc_basic_permissions.models import ContextImplication
 from ggrc_basic_permissions.contributed_roles import (
-    RoleContributions, RoleDeclarations, DeclarativeRoleImplications
+    RoleContributions, RoleDeclarations
 )
 
 
@@ -845,25 +845,8 @@ class WorkflowRoleDeclarations(RoleDeclarations):
     }
 
 
-class WorkflowRoleImplications(DeclarativeRoleImplications):
-  # (Source Context Type, Context Type)
-  #   -> Source Role -> Implied Role for Context
-  implications = {
-      (None, 'Workflow'): {
-          'ProgramCreator': ['BasicWorkflowReader'],
-          'Editor': ['WorkflowEditor'],
-          'Reader': ['BasicWorkflowReader'],
-          'Creator': ['WorkflowBasicReader'],
-      },
-      ('Workflow', None): {
-          'WorkflowEditor': ['WorkflowBasicReader'],
-      },
-  }
-
-
 ROLE_CONTRIBUTIONS = WorkflowRoleContributions()
 ROLE_DECLARATIONS = WorkflowRoleDeclarations()
-ROLE_IMPLICATIONS = WorkflowRoleImplications()
 
 contributed_notifications = notification.contributed_notifications
 contributed_importables = IMPORTABLE
