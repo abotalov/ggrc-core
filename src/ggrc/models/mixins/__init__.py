@@ -270,7 +270,7 @@ class WithLastDeprecatedDate(object):
     if hasattr(super(WithLastDeprecatedDate, self), "validate_status"):
       value = super(WithLastDeprecatedDate, self).validate_status(key, value)
     if value != self.status and value == self.AUTO_SETUP_STATUS:
-      self.last_deprecated_date = datetime.datetime.now()
+      self.last_deprecated_date = datetime.date.today()
     return value
 
 
