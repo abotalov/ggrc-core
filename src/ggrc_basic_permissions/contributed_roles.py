@@ -2,12 +2,7 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
 from ggrc.extensions import get_extension_modules
-from ggrc_basic_permissions.roles import (
-    Auditor, AuditorProgramReader, AuditorReader, Editor,
-    ProgramAuditEditor, ProgramAuditOwner, ProgramAuditReader,
-    ProgramBasicReader, ProgramCreator, ProgramEditor, ProgramMappingEditor,
-    ProgramOwner, ProgramReader, Reader, Creator, gGRC_Admin
-)
+from ggrc_basic_permissions.roles import Editor, Reader, Creator, gGRC_Admin
 
 
 DECLARED_ROLE = "CODE DECLARED ROLE"
@@ -100,20 +95,8 @@ class BasicRoleDeclarations(RoleDeclarations):
 
   def roles(self):
     return {
-        'AuditorReader': AuditorReader,
         'Reader': Reader,
         'Creator': Creator,
-        'ProgramCreator': ProgramCreator,
         'Editor': Editor,
-        'ProgramBasicReader': ProgramBasicReader,
-        'ProgramMappingEditor': ProgramMappingEditor,
-        'ProgramOwner': ProgramOwner,
-        'ProgramEditor': ProgramEditor,
-        'ProgramReader': ProgramReader,
-        'AuditorProgramReader': AuditorProgramReader,
-        'ProgramAuditOwner': ProgramAuditOwner,
-        'ProgramAuditEditor': ProgramAuditEditor,
-        'ProgramAuditReader': ProgramAuditReader,
-        'Auditor': Auditor,
         'Administrator': gGRC_Admin,
     }

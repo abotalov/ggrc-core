@@ -24,7 +24,6 @@ from ggrc.cache import utils as cache_utils
 from ggrc.services import signals
 from ggrc.services.registry import service
 from ggrc.utils import benchmark
-from ggrc_basic_permissions import basic_roles
 from ggrc_basic_permissions.contributed_roles import BasicRoleDeclarations
 from ggrc_basic_permissions.converters.handlers import COLUMN_HANDLERS
 from ggrc_basic_permissions.models import Role
@@ -479,18 +478,6 @@ def handle_program_post(sender, obj=None, src=None, service=None):
   db.session.flush()
   obj.contexts.append(context)
   obj.context = context
-
-  # add a user_roles mapping assigning the user creating the program
-  # the ProgramOwner role in the program's context.
-  program_owner_role = basic_roles.program_owner()
-  user_role = UserRole(
-      person=get_current_user(),
-      role=program_owner_role,
-      context=context,
-      modified_by=get_current_user())
-  # pass along a temporary attribute for logging the events.
-  user_role._display_related_title = obj.title
-  db.session.add(user_role)
   db.session.flush()
 
 
