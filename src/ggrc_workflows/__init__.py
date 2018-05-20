@@ -29,14 +29,7 @@ from ggrc_workflows.notification import pusher
 from ggrc_workflows.converters import IMPORTABLE, EXPORTABLE
 from ggrc_workflows.converters.handlers import COLUMN_HANDLERS
 from ggrc_workflows.services.common import Signals
-from ggrc_workflows.roles import (
-    WorkflowOwner, WorkflowMember, BasicWorkflowReader, WorkflowBasicReader,
-    WorkflowEditor
-)
-from ggrc_basic_permissions.contributed_roles import (
-    RoleContributions, RoleDeclarations
-)
-
+from ggrc_basic_permissions.contributed_roles import RoleContributions
 
 # pylint: disable=invalid-name
 logger = getLogger(__name__)
@@ -807,21 +800,7 @@ class WorkflowRoleContributions(RoleContributions):
   }
 
 
-class WorkflowRoleDeclarations(RoleDeclarations):
-
-  def roles(self):
-    return {
-        # TODO: remove owner and member roles on Worklow ACl cleanup migration
-        'WorkflowOwner': WorkflowOwner,
-        'WorkflowEditor': WorkflowEditor,
-        'WorkflowMember': WorkflowMember,
-        'BasicWorkflowReader': BasicWorkflowReader,
-        'WorkflowBasicReader': WorkflowBasicReader,
-    }
-
-
 ROLE_CONTRIBUTIONS = WorkflowRoleContributions()
-ROLE_DECLARATIONS = WorkflowRoleDeclarations()
 
 contributed_notifications = notification.contributed_notifications
 contributed_importables = IMPORTABLE
