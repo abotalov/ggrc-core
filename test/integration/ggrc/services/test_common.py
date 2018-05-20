@@ -10,7 +10,6 @@ from wsgiref.handlers import format_date_time
 
 import mock
 import ddt
-from sqlalchemy import and_
 
 from integration.ggrc.models import factories
 from integration.ggrc.services import TestCase
@@ -18,7 +17,6 @@ from integration.ggrc import api_helper
 from integration.ggrc.api_helper import Api
 from integration.ggrc.generator import ObjectGenerator
 from ggrc.models import all_models
-from ggrc import db
 
 
 COLLECTION_ALLOWED = ["HEAD", "GET", "POST", "OPTIONS", "PATCH"]
@@ -455,30 +453,13 @@ class TestFilteringByRequest(TestCase):
     users = (
         ("creator", "Creator"),
         ("admin", "Administrator"),
-        ("john", "WorkflowOwner")
+        ("john", None),
     )
     self.users = {}
     for (name, role) in users:
       _, user = self.object_generator.generate_person(
           data={"name": name}, user_role=role)
       self.users[name] = user
-    context = (
-        db.session.query(all_models.Context).filter(
-            all_models.Context.id != 0
-        ).first()
-    )
-    user_role = (
-        db.session.query(all_models.UserRole).join(all_models.Person).
-        filter(
-            and_(
-                all_models.UserRole.person_id == all_models.Person.id,
-                all_models.Person.name == "john"
-            )
-        ).first()
-    )
-    user_role.context_id = context.id
-    db.session.commit()
-    db.session.flush()
 
   def test_no_role_users_filtering(self):
     """Test 'No Role' users filtering"""
