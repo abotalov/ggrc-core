@@ -33,4 +33,5 @@ class Notifiable(object):
         Notification,
         primaryjoin=join_function,
         backref="{}_notifiable".format(cls.__name__),
+        cascade="all, delete-orphan",
     )
