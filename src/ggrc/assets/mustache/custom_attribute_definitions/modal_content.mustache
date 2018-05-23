@@ -9,11 +9,16 @@
   <input type="hidden" name="definition_type" value="{{definition_type}}">
   <div class="row-fluid">
     <div class="span6 {{#instance.computed_errors.title}}field-failure{{/instance.computed_errors.title}}">
-      <label>Attribute title
-        <span class="required">*</span>
-        <i class="fa fa-question-circle" rel="tooltip" title="Give new {{model.model_plural}} a name."></i>
-      </label>
-      <input tabindex="1" class="input-block-level" placeholder="Enter Title" name="title" type="text" value="{{title}}" autofocus>
+      <input-filter
+        name="title"
+        {(value)}="title"
+        placeholder="Enter Title"
+        label="Attribute title"
+        {required}="true"
+        tooltip-title="Give new {{model.model_plural}} a name."
+        exclude-symbols="*"
+        {tabindex}="1"
+        {autofocus}="true"></input-filter>
     </div>
     <div class="span4">
       <label>

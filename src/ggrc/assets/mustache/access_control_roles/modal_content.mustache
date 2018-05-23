@@ -10,21 +10,16 @@
 
   <div class="row-fluid">
     <div class="span6 {{#instance.computed_errors.name}}field-failure{{/instance.computed_errors.name}}">
-      <label>Role name
-        <span class="required">*</span>
-        <i
-          class="fa fa-question-circle"
-          rel="tooltip"
-          title="Set a name for the {{class.title_singular}}."></i>
-      </label>
-      <input
-        type="text"
+      <input-filter
         name="name"
-        value="{{name}}"
+        {(value)}="name"
         placeholder="Enter Name"
-        class="input-block-level"
-        tabindex="1"
-        autofocus>
+        label="Role name"
+        {required}="true"
+        tooltip-title="Set a name for the {{class.title_singular}}."
+        exclude-symbols="*"
+        {tabindex}="1"
+        {autofocus}="true"></input-filter>
     </div>
 
     <div class="span2">
