@@ -1,0 +1,21 @@
+{{!
+  Copyright (C) 2018 Google Inc.
+  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<label>{{label}}
+  {{#required}}
+  <span class="required">*</span>
+  {{/required}}
+  {{#tooltipTitle}}
+    <i class="fa fa-question-circle" rel="tooltip" title="{{tooltipTitle}}"></i>
+  {{/tooltipTitle}}
+</label>
+<input type="text"
+       name="{{name}}"
+       class="input-filter input-block-level"
+       placeholder="{{placeholder}}"
+       {($value)}="value"
+       tabindex="{{tabindex}}"
+       {{#autofocus}}autofocus{{/autofocus}}
+/>
