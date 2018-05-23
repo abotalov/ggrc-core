@@ -79,12 +79,7 @@ class AdminWidgetRoles(object):
   ROLE_SCOPES_LIST = [ROLE_SCOPE_ADMINISTRATOR,
                       ROLE_SCOPE_CREATOR,
                       ROLE_SCOPE_EDITOR,
-                      ROLE_SCOPE_PROGRAM_EDITOR,
-                      ROLE_SCOPE_PROGRAM_MANAGER,
-                      ROLE_SCOPE_PROGRAM_READER,
-                      ROLE_SCOPE_READER,
-                      ROLE_SCOPE_WORKFLOW_MEMBER,
-                      ROLE_SCOPE_WORKFLOW_MANAGER]
+                      ROLE_SCOPE_READER]
   ROLE_SCOPES_DICT = dict(ROLE_SCOPES_LIST)
 
 
