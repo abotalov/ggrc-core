@@ -32,8 +32,6 @@ class Symbols(object):
         symbol for symbol in string.punctuation.encode("string-escape")
         if symbol not in self.exclude_chars)
     self.standard_chars = string.letters + self.special_chars + string.digits
-    # * is disallowed (GGRC-4954)
-    self.standard_chars = self.standard_chars.replace("*", "")
 
 
 class StringMethods(object):
@@ -41,9 +39,10 @@ class StringMethods(object):
   RANDOM_STR_LENGTH = 5
   RANDOM_UUID_LENGTH = 13
   RANDOM_STR_LISTS_COUNT = 3
+  ALLOWED_CHARS = Symbols().standard_chars
 
   @staticmethod
-  def random_string(size=RANDOM_UUID_LENGTH, chars=Symbols().standard_chars):
+  def random_string(size=RANDOM_UUID_LENGTH, chars=ALLOWED_CHARS):
     """Return string with corresponding size that filled by values from
     selected chars.
     """
@@ -57,7 +56,7 @@ class StringMethods(object):
   @classmethod
   def random_list_strings(
       cls, list_len=RANDOM_STR_LISTS_COUNT, item_size=RANDOM_STR_LENGTH,
-      chars=Symbols().standard_chars
+      chars=ALLOWED_CHARS
   ):
     """Return list of random strings separated by comma."""
     return Symbols.COMMA.join(

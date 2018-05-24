@@ -52,12 +52,15 @@ class EntitiesFactory(object):
         is_allow_none=False, **attrs)
 
   @classmethod
-  def generate_string(cls, first_part):
-    """Generate string in unicode format according object type and random data.
+  def generate_string(cls, first_part,
+                      allowed_chars=StringMethods.ALLOWED_CHARS):
+    """Generate random string in unicode format according to object type.
+    Symbols allowed in random part may be specified by
+    `allowed_chars` argument.
     """
     return unicode("{first_part}_{uuid}_{rand_str}".format(
         first_part=first_part, uuid=StringMethods.random_uuid(),
-        rand_str=StringMethods.random_string()))
+        rand_str=StringMethods.random_string(chars=allowed_chars)))
 
   @classmethod
   def generate_slug(cls):
@@ -209,7 +212,7 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
     N'Dashboard'.
     """
     return self.obj_inst().update_attrs(
-        title=self.generate_string(value_aliases.DASHBOARD),
+        title=self._generate_ca_title(value_aliases.DASHBOARD),
         attribute_type=AdminWidgetCustomAttributes.TEXT,
         definition_type=definition_type, mandatory=False)
 
@@ -227,7 +230,7 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
     ca_obj_attr_type = unicode(random.choice(
         AdminWidgetCustomAttributes.ALL_CA_TYPES))
     ca_obj = self.obj_inst().update_attrs(
-        title=self.generate_string(ca_obj_attr_type),
+        title=self._generate_ca_title(ca_obj_attr_type),
         attribute_type=ca_obj_attr_type,
         multi_choice_options=(
             StringMethods.random_list_strings()
@@ -250,7 +253,7 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
     """
     # fix generated data
     if attrs.get("attribute_type"):
-      obj.title = self.generate_string(attrs["attribute_type"])
+      obj.title = self._generate_ca_title(attrs["attribute_type"])
     if (obj.multi_choice_options and
             obj.attribute_type == AdminWidgetCustomAttributes.DROPDOWN and
             attrs.get("attribute_type") !=
@@ -271,6 +274,14 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
             obj.multi_choice_options):
       obj.multi_choice_options = StringMethods.random_list_strings()
     return obj.update_attrs(**attrs)
+
+  def _generate_ca_title(self, first_part):
+    """Generate title of custom attribute
+    (same as usual title but without a star as it's disallowed, see GGRC-4954)
+    """
+    chars = StringMethods.ALLOWED_CHARS.replace(string_utils.Symbols.STAR,
+                                                string_utils.Symbols.BLANK)
+    return self.generate_string(first_part, allowed_chars=chars)
 
 
 class ProgramsFactory(EntitiesFactory):
