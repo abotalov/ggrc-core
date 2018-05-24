@@ -493,7 +493,8 @@ class ModalCustomAttribute(object):
   """Locators for generic custom attributes modal in Admin Dashboard."""
   MODAL_CSS = (By.CSS_SELECTOR, Common.MODAL_CONFIRM)
   MODAL_TITLE_LBL_CSS = (By.CSS_SELECTOR, Common.MODAL_HEADER + " h2")
-  ATTR_TITLE_UI_CSS = (By.CSS_SELECTOR, Common.MODAL_BODY + ' [name="title"]')
+  ATTR_TITLE_UI_CSS = (
+      By.CSS_SELECTOR, Common.MODAL_BODY + ' input[name="title"]')
   SAVE_AND_CLOSE_BTN_CSS = (
       By.CSS_SELECTOR,
       Common.MODAL_FOOTER + ' .confirm-buttons [data-toggle="modal-submit"]')
