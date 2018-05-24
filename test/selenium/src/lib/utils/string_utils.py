@@ -32,6 +32,8 @@ class Symbols(object):
         symbol for symbol in string.punctuation.encode("string-escape")
         if symbol not in self.exclude_chars)
     self.standard_chars = string.letters + self.special_chars + string.digits
+    # * is disallowed (GGRC-4954)
+    self.standard_chars = self.standard_chars.replace("*", "")
 
 
 class StringMethods(object):
