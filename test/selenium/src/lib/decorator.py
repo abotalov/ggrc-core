@@ -3,6 +3,7 @@
 """Decorators."""
 # pylint: disable=protected-access
 
+import functools
 import logging
 import time
 from functools import wraps
@@ -70,6 +71,20 @@ def lazy_property(fun):
       setattr(self, prop_name, fun(self))
     return getattr(self, prop_name)
   return lazy
+
+
+def memoize(func):
+  """Decorator for memoization of function results"""
+  cache = func.cache = {}
+
+  @functools.wraps(func)
+  def memoizer(*args, **kwargs):
+    """Call a function and put its result into the cache"""
+    key = str(args) + str(kwargs)
+    if key not in cache:
+      cache[key] = func(*args, **kwargs)
+    return cache[key]
+  return memoizer
 
 
 def track_time(fun):

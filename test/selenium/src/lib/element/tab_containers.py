@@ -2,8 +2,8 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Module of classes inherited from AbstractTabContainer control."""
 
-from lib import base
-from lib.constants import element, locator, value_aliases, users
+from lib import base, users
+from lib.constants import element, locator, value_aliases
 from lib.element.tables import (AssessmentRelatedAsmtsTable,
                                 AssessmentRelatedIssuesTable)
 from lib.utils import selenium_utils
@@ -68,7 +68,7 @@ class TabContainer(base.AbstractTabContainer):
               "orignal_value_is_valid": orignal_value_is_valid,
               "new_value_is_valid": new_value_is_valid,
               "person_is_valid": (
-                  person_element.text == users.DEFAULT_USER_EMAIL)
+                  person_element.text == users.SUPERUSER_EMAIL)
               }
     selenium_utils.wait_until_not_present(
         _driver, locator.Common.SPINNER_CSS)

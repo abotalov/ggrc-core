@@ -6,6 +6,7 @@
 
 import random
 
+import nerodia
 import pytest
 from selenium import webdriver
 from selenium.common import exceptions
@@ -349,14 +350,22 @@ class DropdownStatic(Element):
       exception.ElementNotFound(val)
 
 
-class Component(InstanceRepresentation):
+class WithBrowser(InstanceRepresentation):
+  """Class to contain a driver and browser instances"""
+
+  def __init__(self, driver):
+    """Args: driver"""
+    super(WithBrowser, self).__init__()
+    self._driver = driver
+    self._browser = nerodia.browser.Browser(browser=self._driver)
+
+
+class Component(WithBrowser):
   """Component class is container for elements."""
 
   def __init__(self, driver):
-    """
-    Args: driver (CustomDriver)
-    """
-    self._driver = driver
+    """Args: driver"""
+    super(Component, self).__init__(driver)
     if driver.title:  # only Login page doesn't have title and jQuery
       selenium_utils.wait_for_js_to_load(driver)
 

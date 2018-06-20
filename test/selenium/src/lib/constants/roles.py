@@ -2,7 +2,7 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Constants for roles."""
 from lib import url
-from lib.decorator import lazy_property
+from lib.decorator import lazy_property, memoize
 from lib.service.rest.client import RestClient
 
 
@@ -42,6 +42,14 @@ PRIVATE_PROGRAM = "Private Program"
 WORKFLOW = "Workflow"
 SUPERUSER = "Superuser"
 NO_ACCESS = "No Access"
+
+
+@memoize
+def global_roles():
+  """Get global roles as array of dicts"""
+  global_roles_url = "/".join([url.API, url.GLOBAL_ROLES])
+  return RestClient().send_get(global_roles_url)[
+      "{}_collection".format(url.GLOBAL_ROLES)][url.GLOBAL_ROLES]
 
 
 class ACLRolesIDsMetaClass(type):
@@ -94,6 +102,10 @@ class ACLRolesIDsMetaClass(type):
   @property
   def AUDIT_CAPTAINS(cls):
     return cls.id_of_role(object_type="Audit", name="Audit Captains")
+
+  @property
+  def AUDITORS(cls):
+    return cls.id_of_role(object_type="Audit", name="Auditors")
 
   @property
   def PROGRAM_MANAGERS(cls):

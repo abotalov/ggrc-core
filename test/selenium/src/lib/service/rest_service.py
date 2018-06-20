@@ -158,6 +158,10 @@ class BaseRestService(object):
         obj.audit = kwargs["audit"]
     return obj
 
+  def create_obj(self, factory_params=None, **attrs_for_template):
+    return self.create_objs(1, factory_params=factory_params,
+                            **attrs_for_template)[0]
+
   def create_objs(self, count, factory_params=None, **attrs_for_template):
     """Create new objects via REST API and return list of created objects with
     filtered attributes.
@@ -248,6 +252,16 @@ class CustomAttributeDefinitionsService(BaseRestService):
     return [self.create_objs(1, CustomAttributeDefinitionsFactory().
                              create_dashboard_ca(obj_type.lower()).__dict__)[0]
             for _ in xrange(count)]
+
+
+class PeopleService(BaseRestService):
+  def __init__(self):
+    super(PeopleService, self).__init__(url.PEOPLE)
+
+
+class UserRolesService(BaseRestService):
+  def __init__(self):
+    super(UserRolesService, self).__init__(url.USER_ROLES)
 
 
 class RelationshipsService(HelpRestService):

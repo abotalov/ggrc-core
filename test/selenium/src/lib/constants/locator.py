@@ -417,11 +417,12 @@ class ModalCreateNewControl(BaseModalCreateNew):
       By.CSS_SELECTOR, '[data-test-id="control_description-label_9cc51ca3"]')
   UI_DESCRIPTION = (
       By.CSS_SELECTOR,
-      '[data-test-id="control_description-text_9cc51ca3"] iframe')
+      '[data-test-id="control_description-text_9cc51ca3"] .ql-editor')
   TEST_PLAN = (
       By.CSS_SELECTOR, '[data-test-id="control_test_plan_d8b5a2f4"] label')
   UI_TEST_PLAN = (
-      By.CSS_SELECTOR, '[data-test-id="control_test_plan_d8b5a2f4"] iframe')
+      By.CSS_SELECTOR, '[data-test-id="control_test_plan_d8b5a2f4"] '
+                       '.ql-editor')
   NOTES = (By.CSS_SELECTOR, '[data-id="note_hidden"] label')
   KIND_OR_NATURE = (
       By.CSS_SELECTOR, '[data-test-id="control_kind_nature_dadc232f"] label')
@@ -437,8 +438,6 @@ class ModalCreateNewControl(BaseModalCreateNew):
       By.CSS_SELECTOR, '[data-test-id="control_frequency_fb20318a"] select')
   ASSERTIONS = (
       By.CSS_SELECTOR, '[data-test-id="control_assertions_5d8b7f7a"] label')
-  SELECTABLE_ASSERTIONS = (
-      By.CSS_SELECTOR, '[data-test-id="control_assertions_5d8b7f7a"] select')
   ADMIN = (
       By.CSS_SELECTOR, '[data-test-id="control_owner_587d12d6"] label')
   BUTTON_ADD_OWNER = (By.CSS_SELECTOR, 'isolate-form .btn')
@@ -453,18 +452,16 @@ class ModalCreateNewControl(BaseModalCreateNew):
       By.CSS_SELECTOR, '[data-test-id="control_type_means_2ffa1b64"] select')
   CATEGORIES = (
       By.CSS_SELECTOR, '[data-test-id="control_categories_1eb33246"] label')
-  SELECTABLE_CATEGORIES = (
-      By.CSS_SELECTOR, '[data-test-id="control_categories_1eb33246"] select')
   STATE = (
       By.CSS_SELECTOR, '[data-test-id="control_state_5d184456"] label')
   DROPDOWN_STATE = (
       By.CSS_SELECTOR, '[data-test-id="control_state_5d184456"] select')
-  UI_NOTES = (By.CSS_SELECTOR, '[data-id="note_hidden"] iframe')
-  EFFECTIVE_DATE = (
+  UI_NOTES = (By.CSS_SELECTOR, '[data-id="note_hidden"] .ql-editor')
+  UI_EFFECTIVE_DATE = (
       By.CSS_SELECTOR,
       '[test-id="control_effective_dates_0376cf90"] '
       '[data-id="effective_date_hidden"] .datepicker__input')
-  DATEPICKER_EFFECTIVE_DATE = (
+  EFFECTIVE_DATE_DATEPICKER = (
       By.CSS_SELECTOR,
       '[test-id="control_effective_dates_0376cf90"] '
       '[data-id="effective_date_hidden"] [data-handler="selectDay"]')
@@ -729,7 +726,8 @@ class CommonWidgetInfo(object):
       By.CSS_SELECTOR, _PEOPLE_ITEM + " editable-people-group-header")
   PEOPLE_VALUE_CSS = (By.CSS_SELECTOR, _PEOPLE_ITEM + " object-list")
   # user input elements
-  BUTTON_3BBS = (By.XPATH, _INFO_WIDGET_XPATH + "//*[@data-toggle='dropdown']")
+  BUTTON_3BBS_XPATH = _INFO_WIDGET_XPATH + "//*[@data-toggle='dropdown']"
+  BUTTON_3BBS = (By.XPATH, BUTTON_3BBS_XPATH)
   # controllers
   TAB_CONTAINER_CSS = (By.CSS_SELECTOR, "tab-container")
 

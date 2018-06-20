@@ -19,7 +19,7 @@ import urlparse
 import _pytest
 import requests
 
-from lib import environment, decorator, url as url_module
+from lib import environment, decorator, url as url_module, users
 from lib.service.rest_service import client
 
 
@@ -57,7 +57,7 @@ def add_user(url_origin):
   environment.app_url = url_origin
   environment.app_url = urlparse.urljoin(environment.app_url, "/")
   session = requests.Session()
-  session.get(url_module.Urls().gae_login)
+  session.get(url_module.Urls().gae_login(users.FakeSuperUser()))
   session.get(url_module.Urls().login)
 
 

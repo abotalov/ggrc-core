@@ -172,7 +172,8 @@ class TransformationSetVisibleFields(CommonModalSetVisibleFields):
   VERIFIED = "Verified"
   STATUS = "Status"
   AUDIT_CAPTAINS = "Audit Captains"
-  MANAGER = "Manager"
+  AUDITORS = "Auditors"
+  PROGRAM_MANAGERS = "Program Managers"
   MAPPED_OBJECTS = "Mapped Objects"
   REVIEW_STATE = "Review State"
   CREATORS = roles.CREATORS
@@ -427,7 +428,7 @@ class ProgramModalSetVisibleFields(CommonModalSetVisibleFields):
   MODAL_HEADER = CommonModalSetVisibleFields.MODAL_HEADER_FORMAT.format(
       CommonProgram.PROGRAM)
   REVIEW_STATE = TransformationSetVisibleFields.REVIEW_STATE
-  MANAGER = CommonProgram.MANAGER
+  MANAGER = CommonProgram.PROGRAM_MANAGERS
   EFFECTIVE_DATE = Base.EFFECTIVE_DATE
   PRIMARY_CONTACTS = TransformationSetVisibleFields.PRIMARY_CONTACTS
   SECONDARY_CONTACTS = TransformationSetVisibleFields.SECONDARY_CONTACTS

@@ -7,17 +7,19 @@ import re
 
 from selenium.webdriver.common.by import By
 
-from lib import base
+from lib import base, users
 from lib.constants import (
-    locator, objects, element, roles, regex, messages, users)
+    locator, objects, element, roles, regex, messages)
 from lib.constants.locator import WidgetInfoAssessment, WidgetInfoControl
 from lib.element import widget_info, tab_containers, tables
 from lib.page.modal import update_object
 from lib.page.modal.set_value_for_asmt_ca import SetValueForAsmtDropdown
+from lib.page.widget.page_mixins import (WithAssignFolder, WithObjectReview,
+                                         WithPageElements)
 from lib.utils import selenium_utils, string_utils, help_utils
 
 
-class InfoWidget(base.Widget):
+class InfoWidget(WithPageElements, base.Widget):
   """Abstract class of common info for Info pages and Info panels.
   For labels (headers) Will be used actual unicode elements from UI or pseudo
   string elements from 'lib.element' module in upper case.
@@ -28,6 +30,8 @@ class InfoWidget(base.Widget):
   _elements = element.Common
   dropdown_settings_cls = widget_info.CommonInfoDropdownSettings
   locator_headers_and_values = None
+  _reference_url_label = "Reference URL"
+  _evidence_url_label = "Evidence URL"
 
   def __init__(self, driver):
     super(InfoWidget, self).__init__(driver)
@@ -49,8 +53,10 @@ class InfoWidget(base.Widget):
     self._extend_list_all_scopes(
         ["TITLE", self.state_lbl_txt],
         [self.title.text, self.state_txt])
-    self.info_3bbs_btn = selenium_utils.get_when_visible(
-        self.info_widget_elem, self._locators.BUTTON_3BBS)
+    self.info_3bbs_btn = self._browser.element(
+        xpath=self._locators.BUTTON_3BBS_XPATH)
+    self.inline_edit_controls = self._browser.elements(
+        class_name="set-editable-group")
     # for Info Page
     if self.is_info_page:
       self.info_page_footer = base.Label(
@@ -97,6 +103,7 @@ class InfoWidget(base.Widget):
     if not self.is_asmts_info_widget:
       self._extend_list_all_scopes_by_code()
       self._extend_list_all_scopes_by_cas()
+    self.comment_area = self._comment_area()
 
   def get_state_txt(self):
     """Get object's state text from Info Widget."""
@@ -239,7 +246,7 @@ class InfoWidget(base.Widget):
       for ca_val in _cas_values:
         if ca_val is None:
           cas_values.append(None)
-        elif ca_val == users.DEFAULT_USER_EMAIL:
+        elif ca_val == users.SUPERUSER_EMAIL:
           # Example User
           cas_values.append(
               unicode(objects.get_singular(objects.PEOPLE).title()))
@@ -390,7 +397,7 @@ class SnapshotedInfoPanel(InfoPanel):
         self.info_widget_elem, self.locator_link_get_latest_ver)
 
 
-class Programs(InfoWidget):
+class Programs(WithObjectReview, InfoWidget):
   """Model for program object Info pages and Info panels."""
   # pylint: disable=too-many-instance-attributes
   _locators = locator.WidgetInfoProgram
@@ -404,32 +411,39 @@ class Programs(InfoWidget):
         self.tab_container.active_tab_elem,
         self._locators.TOGGLE_SHOW_ADVANCED)
     self.show_advanced.toggle()
-    self.object_review = base.Label(
-        self.info_widget_elem, self._locators.TXT_OBJECT_REVIEW)
-    self.submit_for_review = base.Label(
-        self.info_widget_elem, self._locators.LINK_SUBMIT_FOR_REVIEW)
     self.description = base.Label(
         self.tab_container.active_tab_elem, self._locators.DESCRIPTION)
     self.description_entered = base.Label(
         self.tab_container.active_tab_elem, self._locators.DESCRIPTION_ENTERED)
-    self.notes = (
-        base.Label(self.tab_container.active_tab_elem, self._locators.NOTES))
-    self.notes_entered = base.Label(
-        self.info_widget_elem, self._locators.NOTES_ENTERED)
     self.manager, self.manager_entered = (
         self.get_header_and_value_txt_from_people_scopes(
             self._elements.PROGRAM_MANAGERS.upper()))
-    self.ref_url = base.MultiInputField(
-        self.tab_container.active_tab_elem, self._locators.REF_URL_CSS)
+    self._extend_list_all_scopes(
+        self.manager, self.manager_entered)
     self.code = base.Label(
         self.tab_container.active_tab_elem, self._locators.CODE)
     self.code_entered = base.Label(
         self.tab_container.active_tab_elem, self._locators.CODE_ENTERED)
     self.effective_date = base.Label(
         self.tab_container.active_tab_elem, self._locators.EFFECTIVE_DATE)
-    self.effective_date_entered = base.Label(
+    self.reference_urls = self._related_urls(self._reference_url_label)
+
+  @property
+  def effective_date_entered(self):
+    return base.Label(
         self.tab_container.active_tab_elem,
         self._locators.EFFECTIVE_DATE_ENTERED)
+
+  @property
+  def notes_entered(self):
+    return base.Label(self.info_widget_elem, self._locators.NOTES_ENTERED)
+
+  def els_shown_for_editor(self):
+    """Elements shown for user with edit permissions"""
+    return [self.submit_for_review_link,
+            self.info_3bbs_btn,
+            self.comment_area.add_section,
+            self.reference_urls.add_button] + list(self.inline_edit_controls)
 
 
 class Workflows(InfoWidget):
@@ -446,7 +460,7 @@ class Workflows(InfoWidget):
     pass
 
 
-class Audits(InfoWidget):
+class Audits(WithAssignFolder, InfoWidget):
   """Model for Audit object Info pages and Info panels."""
   # pylint: disable=too-many-instance-attributes
   _locators = locator.WidgetInfoAudit
@@ -458,14 +472,24 @@ class Audits(InfoWidget):
     self.audit_captain_lbl_txt, self.audit_captain_txt = (
         self.get_header_and_value_txt_from_people_scopes(
             self._elements.AUDIT_CAPTAINS.upper()))
+    self.auditor_lbl_txt, self.auditor_txt = (
+        self.get_header_and_value_txt_from_people_scopes(
+            self._elements.AUDITORS.upper()))
     self._extend_list_all_scopes(
-        self.audit_captain_lbl_txt, self.audit_captain_txt)
+        [self.audit_captain_lbl_txt, self.auditor_lbl_txt],
+        [self.audit_captain_txt, self.auditor_txt])
+    self.evidence_urls = self._related_urls(self._evidence_url_label)
 
   def _extend_list_all_scopes_by_review_state(self):
     """Method overriding without action due to Audits don't have
     'review states'.
     """
     pass
+
+  def els_shown_for_editor(self):
+    """Elements shown for user with edit permissions"""
+    return [self.evidence_urls.add_button,
+            self.assign_folder_button] + list(self.inline_edit_controls)
 
 
 class Assessments(InfoWidget):
@@ -674,7 +698,7 @@ class Requirements(InfoWidget):
     super(Requirements, self).__init__(driver)
 
 
-class Controls(InfoWidget):
+class Controls(WithAssignFolder, WithObjectReview, InfoWidget):
   """Model for Control object Info pages and Info panels."""
   # pylint: disable=too-many-instance-attributes
   _locators = locator.WidgetInfoControl
@@ -689,6 +713,7 @@ class Controls(InfoWidget):
     self.primary_contact_text, self.primary_contact_entered_text = (
         self.get_header_and_value_txt_from_people_scopes(
             self._elements.PRIMARY_CONTACTS.upper()))
+    self.reference_urls = self._related_urls(self._reference_url_label)
     self._extend_list_all_scopes(
         [self.admin_text, self.primary_contact_text],
         [self.admin_entered_text, self.primary_contact_entered_text])
@@ -761,6 +786,14 @@ class Controls(InfoWidget):
     """Click save and close on decline popup."""
     self._driver.find_element(
         *WidgetInfoControl.SAVE_AND_CLOSE_BTN).click()
+
+  def els_shown_for_editor(self):
+    """Elements shown for user with edit permissions"""
+    return [self.submit_for_review_link,
+            self.info_3bbs_btn,
+            self.comment_area.add_section,
+            self.reference_urls.add_button,
+            self.assign_folder_button] + list(self.inline_edit_controls)
 
 
 class Objectives(InfoWidget):
