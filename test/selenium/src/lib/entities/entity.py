@@ -82,9 +82,10 @@ class Representation(object):
         els.STATE: "status"
     }
     ui_remap_items = {
-        els.MANAGER: "managers", els.VERIFIED: "verified",
+        els.PROGRAM_MANAGERS: "managers", els.VERIFIED: "verified",
         els.STATUS: "status", els.LAST_UPDATED: "updated_at",
         els.AUDIT_CAPTAINS: "audit_captains", els.CAS: "custom_attributes",
+        els.AUDITORS: "auditors",
         els.MAPPED_OBJECTS: "mapped_objects", els.ASSIGNEES: "assignees",
         els.CREATORS: "creators", els.VERIFIERS: "verifiers",
         els.COMMENTS_HEADER: "comments", els.CREATED_AT: "created_at",
@@ -649,10 +650,23 @@ class PersonEntity(Entity):
         "slug", "title", "admins", "primary_contacts", "secondary_contacts",
         "status", "os_state", "comments")
     self.set_attrs(
-        "name", "email", "company", "system_wide_role", **attrs)
+        "name", "id", "type", "email", "company", "system_wide_role", **attrs)
 
   def __lt__(self, other):
     return self.email < other.email
+
+
+class UserRoleEntity(Entity):
+  """Class that represents model for user role entity"""
+
+  def __init__(self):
+    super(UserRoleEntity, self).__init__()
+    self.delete_attrs(
+        "slug", "title", "href", "url", "admins",
+        "primary_contacts", "secondary_contacts", "status", "os_state",
+        "comments", "custom_attribute_definitions", "custom_attribute_values",
+        "custom_attributes")
+    self.set_attrs("person", "role")
 
 
 class CustomAttributeDefinitionEntity(Representation):

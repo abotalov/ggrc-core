@@ -5,6 +5,9 @@ Reasons for a facade:
 * It is not very convenient to use
 * More high level functions are often needed
 """
+
+from lib import factory
+from lib.constants import roles
 from lib.constants.element import AdminWidgetCustomAttributes
 from lib.entities.entities_factory import CustomAttributeDefinitionsFactory
 from lib.entities.entity import Representation
@@ -12,38 +15,50 @@ from lib.service import rest_service
 from lib.utils.string_utils import StringMethods
 
 
-def create_program():
+def create_program(**attrs):
   """Create a program"""
-  return rest_service.ProgramsService().create_objs(count=1)[0]
+  factory_params, attrs_remainder = _split_attrs(attrs)
+  return rest_service.ProgramsService().create_obj(
+      factory_params=factory_params, **attrs_remainder)
 
 
-def create_objective(program=None):
-  """Create an objecive (optionally map to a `program`)."""
-  objective = rest_service.ObjectivesService().create_objs(count=1)[0]
+def create_core_grc_object(obj_name, program, **attrs):
+  """Create a Core GRC object (AccessGroup, Regulation, Objective, Control,
+  Risk, Clause, Contract, Policy, Standard, System, Thread or Vendor) with
+  `program` and `attrs`.
+  Optionally map this object to program.
+  """
+  factory_params, attrs_remainder = _split_attrs(attrs, ["program"])
+  obj = factory.get_cls_rest_service(object_name=obj_name)().create_obj(
+      factory_params=factory_params, **attrs_remainder)
   if program:
-    map_objs(program, objective)
-  return objective
+    map_objs(program, obj)
+  return obj
 
 
-def create_control(program=None):
+def create_objective(program=None, **attrs):
+  """Create an objective (optionally map to a `program`)."""
+  return create_core_grc_object("Objectives", program, **attrs)
+
+
+def create_control(program=None, **attrs):
   """Create a control (optionally map to a `program`)"""
-  control = rest_service.ControlsService().create_objs(count=1)[0]
-  if program:
-    map_objs(program, control)
-  return control
+  return create_core_grc_object("Controls", program, **attrs)
 
 
-def create_audit(program):
+def create_audit(program, **attrs):
   """Create an audit within a `program`"""
-  return rest_service.AuditsService().create_objs(
-      count=1, program=program.__dict__)[0]
+  factory_params, attrs_remainder = _split_attrs(attrs)
+  return rest_service.AuditsService().create_obj(
+      factory_params=factory_params,
+      program=program.__dict__,
+      **attrs_remainder)
 
 
 def create_asmt_template(audit, **attrs):
   """Create assessment template."""
   attrs["audit"] = audit.__dict__
-  return rest_service.AssessmentTemplatesService().create_objs(
-      count=1, **attrs)[0]
+  return rest_service.AssessmentTemplatesService().create_obj(**attrs)
 
 
 def create_asmt_template_w_dropdown(audit, dropdown_types_list):
@@ -91,15 +106,13 @@ def create_asmt_from_template_rest(
 def create_assessment(audit, **attrs):
   """Create an assessment within an audit `audit`"""
   attrs["audit"] = audit.__dict__
-  return rest_service.AssessmentsService().create_objs(
-      count=1, **attrs)[0]
+  return rest_service.AssessmentsService().create_obj(**attrs)
 
 
 def create_assessment_template(audit, **attrs):
   """Create an assessment template"""
   attrs["audit"] = audit.__dict__
-  return rest_service.AssessmentTemplatesService().create_objs(
-      count=1, **attrs)[0]
+  return rest_service.AssessmentTemplatesService().create_obj(**attrs)
 
 
 def create_assessment_from_template(audit, template, **attrs):
@@ -110,10 +123,24 @@ def create_assessment_from_template(audit, template, **attrs):
 
 def create_issue(program=None):
   """Create a issue (optionally map to a `program`)"""
-  issue = rest_service.IssuesService().create_objs(count=1)[0]
+  issue = rest_service.IssuesService().create_obj()
   if program:
     map_objs(program, issue)
   return issue
+
+
+def create_user():
+  """Create a user"""
+  return rest_service.PeopleService().create_obj()
+
+
+def create_user_with_role(role_name):
+  """Create user a role `role_name`"""
+  user = create_user()
+  role = next(role for role in roles.global_roles()
+              if role["name"] == role_name)
+  rest_service.UserRolesService().create_obj(person=user.__dict__, role=role)
+  return user
 
 
 def map_objs(src_obj, dest_obj):
@@ -134,3 +161,21 @@ def map_to_snapshot(src_obj, obj, parent_obj):
   """
   snapshot = get_snapshot(obj, parent_obj)
   map_objs(src_obj, snapshot)
+
+
+def _split_attrs(attrs, keys_not_for_factory=None):
+  """Split `attrs` dictionary into two parts:
+  * Dict with keys that are in `keys_for_factory`
+  * Remainder dict with keys not in `keys_for_factory`
+  """
+  if keys_not_for_factory is None:
+    keys_not_for_factory = []
+  attrs_remainder = {}
+  factory_params = {}
+  for key, value in attrs.items():
+    if key in keys_not_for_factory:
+      d = attrs_remainder
+    else:
+      d = factory_params
+    d[key] = value
+  return factory_params, attrs_remainder

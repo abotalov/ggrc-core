@@ -11,8 +11,8 @@ import re
 
 import pytest
 
-from lib import base, constants, url
-from lib.constants import objects, messages, users, roles
+from lib import base, constants, url, users
+from lib.constants import objects, messages, roles
 from lib.constants.element import AdminWidgetCustomAttributes
 from lib.entities import entities_factory
 from lib.page import dashboard

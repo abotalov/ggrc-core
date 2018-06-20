@@ -14,9 +14,10 @@ from pytest_selenium import pytest_selenium
 from selenium.webdriver.remote.remote_connection import (
     LOGGER as SELENIUM_LOGGER)
 
-from lib import dynamic_fixtures, environment, url
+from lib import dynamic_fixtures, environment, url, users
 from lib.constants.test_runner import DESTRUCTIVE_TEST_METHOD_PREFIX
 from lib.custom_pytest_scheduling import CustomPytestScheduling
+from lib.entities import entities_factory
 from lib.page import dashboard
 from lib.service import rest_service
 from lib.utils import conftest_utils, help_utils, selenium_utils
@@ -135,8 +136,23 @@ def selenium(selenium, pytestconfig):
     selenium.set_window_size(
         os.environ["SCREEN_WIDTH"], os.environ["SCREEN_HEIGHT"])
   dynamic_fixtures.dict_executed_fixtures.update({"selenium": selenium})
-  selenium_utils.open_url(selenium, url.Urls().gae_login)
   yield selenium
+
+
+@pytest.fixture(autouse=True)
+def set_superuser_as_current_user():
+  """Set super user as a current user"""
+  # pylint: disable=protected-access
+  users._current_user = users.FakeSuperUser()
+  users.set_current_user(entities_factory.PeopleFactory.superuser)
+
+
+@pytest.fixture(autouse=True)
+def reset_logged_in_users():
+  """Reset cache of logged in users.
+  This cache is used to check if user has already logged in.
+  """
+  users.reset_logged_in_users()
 
 
 @pytest.fixture(scope="function")
@@ -167,12 +183,13 @@ def chrome_options(chrome_options, pytestconfig):
   return chrome_options
 
 
-# `PeopleFactory.default_user` uses `environment.app_url` and
-# is used in @pytest.mark.parametrize parameters.
+# `PeopleFactory.superuser` uses `environment.app_url` and `current user`.
+# It is used in @pytest.mark.parametrize parameters.
 # Parametrize parameters are evaluated before fixtures so
-# `environment.app_url` should be already set.
+# `environment.app_url` and `current user` should be already set.
 environment.app_url = os.environ["DEV_URL"]
 environment.app_url = urlparse.urljoin(environment.app_url, "/")
+users.set_current_user(users.FakeSuperUser())
 
 
 @pytest.fixture(scope="function")

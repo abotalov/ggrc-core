@@ -2,6 +2,7 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
 inflection==0.3.1
+nerodia==0.8.0
 pytest==3.5.0
 pytest-cov==2.5.1
 pytest-env==0.6.2

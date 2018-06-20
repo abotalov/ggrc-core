@@ -8,9 +8,8 @@
 import copy
 import random
 
-from lib import factory, url as url_module
-from lib.constants import (
-    element, objects, roles, value_aliases, messages, users)
+from lib import factory, users
+from lib.constants import element, objects, roles, value_aliases, messages
 from lib.constants.element import AdminWidgetCustomAttributes
 from lib.decorator import lazy_property
 from lib.entities.entity import (
@@ -68,7 +67,7 @@ class EntitiesFactory(object):
     return unicode("{slug}".format(slug=StringMethods.random_uuid()))
 
   @classmethod
-  def generate_email(cls, domain=url_module.DEFAULT_EMAIL_DOMAIN):
+  def generate_email(cls, domain=users.DEFAULT_EMAIL_DOMAIN):
     """Generate email in unicode format according to domain."""
     return unicode("{mail_name}@{domain}".format(
         mail_name=StringMethods.random_uuid(), domain=domain))
@@ -84,11 +83,11 @@ class PeopleFactory(EntitiesFactory):
     # pylint: disable=no-self-use
 
     @lazy_property
-    def default_user(cls):
+    def superuser(cls):
       """Return Person instance for default system superuser."""
       from lib.service import rest_service
       return rest_service.ObjectsInfoService().get_person(
-          users.DEFAULT_USER_EMAIL)
+          users.SUPERUSER_EMAIL)
 
   @staticmethod
   def extract_people_emails(people):
@@ -121,6 +120,17 @@ class PeopleFactory(EntitiesFactory):
     return person_obj
 
 
+class UserRolesFactory(EntitiesFactory):
+  """Factory class for user roles"""
+
+  def __init__(self):
+    super(UserRolesFactory, self).__init__(objects.USER_ROLES)
+
+  def _create_random_obj(self, is_add_rest_attrs):
+    """Create user role entity"""
+    return self.obj_inst()
+
+
 class CommentsFactory(EntitiesFactory):
   """Factory class for Comments entities."""
 
@@ -132,7 +142,7 @@ class CommentsFactory(EntitiesFactory):
     'is_add_rest_attrs' then add attributes for REST."""
     comment_obj = self.obj_inst().update_attrs(
         description=self.obj_title,
-        modified_by=PeopleFactory.default_user.name)
+        modified_by=users.current_user().name)
     if is_add_rest_attrs:
       comment_obj.update_attrs(
           assignee_type=",".join((
@@ -181,7 +191,7 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
             ca_value = unicode(
                 random.choice(ca["multi_choice_options"].split(",")))
           if ca_attr_type == AdminWidgetCustomAttributes.PERSON:
-            person_id = PeopleFactory.default_user.id
+            person_id = users.current_user().id
             ca_value = "Person:{}".format(person_id)
         else:
           ca_value = (
@@ -293,13 +303,14 @@ class ProgramsFactory(EntitiesFactory):
 
   def __init__(self):
     super(ProgramsFactory, self).__init__(objects.PROGRAMS)
-    self.managers = [PeopleFactory.default_user]
+    self.managers = [users.current_user()]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Program entity with randomly and predictably filled fields, if
     'is_add_rest_attrs' then add attributes for REST."""
     program_obj = self.obj_inst().update_attrs(
         title=self.obj_title, slug=self.obj_slug,
+        managers=PeopleFactory.extract_people_emails(self.managers),
         status=unicode(element.ObjectStates.DRAFT),
         os_state=unicode(element.ReviewStates.UNREVIEWED))
     if is_add_rest_attrs:
@@ -318,7 +329,7 @@ class ControlsFactory(EntitiesFactory):
   """Factory class for Controls entities."""
   def __init__(self):
     super(ControlsFactory, self).__init__(objects.CONTROLS)
-    self.admins = [PeopleFactory.default_user]
+    self.admins = [users.current_user()]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Control entity with randomly and predictably filled fields, if
@@ -344,7 +355,7 @@ class ObjectivesFactory(EntitiesFactory):
   """Factory class for Objectives entities."""
   def __init__(self):
     super(ObjectivesFactory, self).__init__(objects.OBJECTIVES)
-    self.admins = [PeopleFactory.default_user]
+    self.admins = [users.current_user()]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Objective entity with randomly and predictably filled fields, if
@@ -370,7 +381,7 @@ class AuditsFactory(EntitiesFactory):
   """Factory class for Audit entity."""
   def __init__(self):
     super(AuditsFactory, self).__init__(objects.AUDITS)
-    self.admins = [PeopleFactory.default_user]
+    self.admins = [users.current_user()]
 
   @staticmethod
   def clone(audit, count_to_clone=1):
@@ -383,6 +394,22 @@ class AuditsFactory(EntitiesFactory):
         title=unicode(audit.title + " - copy " + str(num)), slug=None,
         created_at=None, updated_at=None, href=None, url=None, id=None)
         for num in xrange(1, count_to_clone + 1)]
+
+  def create(self, is_add_rest_attrs=False, **attrs):
+    """Create random Audit object's instance, if 'is_add_rest_attrs' then
+    add attributes for REST, if 'attrs' then update attributes accordingly.
+    """
+    audit_obj = self._create_random_obj(
+        is_add_rest_attrs=is_add_rest_attrs).update_attrs(
+        is_allow_none=False, **attrs)
+    if getattr(audit_obj, "auditors"):
+      audit_obj.update_attrs(
+          auditors=PeopleFactory.extract_people_emails(attrs["auditors"]),
+          access_control_list=string_utils.StringMethods.
+          convert_list_elements_to_list(
+              audit_obj.access_control_list + [PeopleFactory.get_acl_members(
+                  roles.ACLRolesIDs.AUDITORS, attrs["auditors"])]))
+    return audit_obj
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Audit entity with randomly and predictably filled fields, if
@@ -448,9 +475,9 @@ class AssessmentsFactory(EntitiesFactory):
 
   def __init__(self):
     super(AssessmentsFactory, self).__init__(objects.ASSESSMENTS)
-    default_user = PeopleFactory.default_user
-    self.admins = [default_user]
-    self.assignees = [default_user]
+    current_user = users.current_user()
+    self.admins = [current_user]
+    self.assignees = [current_user]
 
   def obj_inst(self):
     """Create Assessment object's instance and set values for attributes:
@@ -552,7 +579,7 @@ class IssuesFactory(EntitiesFactory):
 
   def __init__(self):
     super(IssuesFactory, self).__init__(objects.ISSUES)
-    self.admins = [PeopleFactory.default_user]
+    self.admins = [users.current_user()]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Issue entity with randomly and predictably filled fields, if
