@@ -72,6 +72,21 @@ class EntitiesFactory(object):
     return unicode("{mail_name}@{domain}".format(
         mail_name=StringMethods.random_uuid(), domain=domain))
 
+  def _set_acl(self, obj, acr_name, person_list, role_id):
+    """To be invoked in `create` method to set `access_control_list`
+    and `acr_name`.
+    """
+    if not hasattr(obj, "access_control_list"):
+      obj.access_control_list = []
+    attrs_to_set = {
+      acr_name: PeopleFactory.extract_people_emails(person_list),
+      "access_control_list": string_utils.StringMethods.
+      convert_list_elements_to_list(
+          obj.access_control_list +
+          [PeopleFactory.get_acl_members(role_id, person_list)])
+    }
+    obj.update_attrs(**attrs_to_set)
+
 
 class PeopleFactory(EntitiesFactory):
   """Factory class for Persons entities."""
@@ -303,25 +318,43 @@ class ProgramsFactory(EntitiesFactory):
 
   def __init__(self):
     super(ProgramsFactory, self).__init__(objects.PROGRAMS)
-    self.managers = [users.current_user()]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Program entity with randomly and predictably filled fields, if
     'is_add_rest_attrs' then add attributes for REST."""
     program_obj = self.obj_inst().update_attrs(
         title=self.obj_title, slug=self.obj_slug,
-        managers=PeopleFactory.extract_people_emails(self.managers),
         status=unicode(element.ObjectStates.DRAFT),
         os_state=unicode(element.ReviewStates.UNREVIEWED))
     if is_add_rest_attrs:
       program_obj.update_attrs(
           recipients=",".join((
               unicode(roles.ADMIN), unicode(roles.PRIMARY_CONTACTS),
-              unicode(roles.SECONDARY_CONTACTS))),
-          access_control_list=string_utils.StringMethods.
-          convert_list_elements_to_list(
-              [PeopleFactory.get_acl_members(
-                  roles.ACLRolesIDs.PROGRAM_MANAGERS, self.managers)]))
+              unicode(roles.SECONDARY_CONTACTS))))
+    return program_obj
+
+  def create(self, is_add_rest_attrs=False, **attrs):
+    """Create random Assessment object's instance, if 'is_add_rest_attrs' then
+    add attributes for REST, if 'attrs' then update attributes accordingly.
+    """
+    program_obj = self._create_random_obj(
+        is_add_rest_attrs=is_add_rest_attrs).update_attrs(
+        is_allow_none=False, **attrs)
+    if "managers" in attrs:
+      managers = attrs["managers"]
+    else:
+      managers = [users.current_user()]
+    self._set_acl(
+        program_obj, "managers", managers,
+        roles.ACLRolesIDs.PROGRAM_MANAGERS)
+    if "editors" in attrs:
+      self._set_acl(
+          program_obj, "editors", attrs["editors"],
+          roles.ACLRolesIDs.PROGRAM_EDITORS)
+    if "readers" in attrs:
+      self._set_acl(
+          program_obj, "readers", attrs["readers"],
+          roles.ACLRolesIDs.PROGRAM_READERS)
     return program_obj
 
 
@@ -329,7 +362,6 @@ class ControlsFactory(EntitiesFactory):
   """Factory class for Controls entities."""
   def __init__(self):
     super(ControlsFactory, self).__init__(objects.CONTROLS)
-    self.admins = [users.current_user()]
 
   def _create_random_obj(self, is_add_rest_attrs):
     """Create Control entity with randomly and predictably filled fields, if
@@ -337,18 +369,33 @@ class ControlsFactory(EntitiesFactory):
     control_obj = self.obj_inst().update_attrs(
         title=self.obj_title, slug=self.obj_slug,
         status=unicode(element.ObjectStates.DRAFT),
-        admins=PeopleFactory.extract_people_emails(self.admins),
         os_state=unicode(element.ReviewStates.UNREVIEWED))
     if is_add_rest_attrs:
       control_obj.update_attrs(
           recipients=",".join((
               unicode(roles.ADMIN), unicode(roles.PRIMARY_CONTACTS),
-              unicode(roles.SECONDARY_CONTACTS))),
-          access_control_list=string_utils.StringMethods.
-          convert_list_elements_to_list(
-              [PeopleFactory.get_acl_members(
-                  roles.ACLRolesIDs.CONTROL_ADMINS, self.admins)]))
+              unicode(roles.SECONDARY_CONTACTS))))
     return control_obj
+
+  def create(self, is_add_rest_attrs=False, **attrs):
+    """Create random Assessment object's instance, if 'is_add_rest_attrs' then
+    add attributes for REST, if 'attrs' then update attributes accordingly.
+    """
+    obj = self._create_random_obj(
+        is_add_rest_attrs=is_add_rest_attrs).update_attrs(
+        is_allow_none=False, **attrs)
+    if "admins" in attrs:
+      admins = attrs["admins"]
+    else:
+      admins = [users.current_user()]
+    self._set_acl(
+        obj, "admins", admins,
+        roles.ACLRolesIDs.CONTROL_ADMINS)
+    if "primary_contacts" in attrs:
+      self._set_acl(
+          obj, "primary_contacts", attrs["primary_contacts"],
+          roles.ACLRolesIDs.CONTROL_PRIMARY_CONTACTS)
+    return obj
 
 
 class ObjectivesFactory(EntitiesFactory):
@@ -540,15 +587,10 @@ class AssessmentsFactory(EntitiesFactory):
     asmt_obj = self._create_random_obj(
         is_add_rest_attrs=is_add_rest_attrs).update_attrs(
         is_allow_none=False, **attrs)
-    # todo: add global logic to update attrs 'ACLs to People', 'People to ACLs'
-    if getattr(asmt_obj, "verifiers"):
-      asmt_obj.update_attrs(
-          verifiers=PeopleFactory.extract_people_emails(attrs["verifiers"]),
-          access_control_list=string_utils.StringMethods.
-          convert_list_elements_to_list(
-              asmt_obj.access_control_list + [PeopleFactory.get_acl_members(
-                  roles.ACLRolesIDs.ASSESSMENT_VERIFIERS,
-                  attrs["verifiers"])]))
+    if hasattr(attrs, "verifiers"):
+      self._set_acl(
+          asmt_obj, "verifiers", attrs["verifiers"],
+          roles.ACLRolesIDs.ASSESSMENT_VERIFIERS)
     return asmt_obj
 
   def _create_random_obj(self, is_add_rest_attrs):
