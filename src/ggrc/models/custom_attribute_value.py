@@ -402,3 +402,12 @@ class CustomAttributeValue(base.ContextRBAC, Base, Indexed, db.Model):
         (make_flags(mask)
          for mask in cad.multi_choice_mandatory.split(",")),
     ))
+
+  def log_json_base(self):
+    res = super(CustomAttributeValue, self).log_json_base()
+
+    if self.attribute_object_id is not None and \
+       self._attribute_object_attr is not None:
+      res["attribute_object"] = self.attribute_object
+
+    return res
