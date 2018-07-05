@@ -98,13 +98,18 @@ class RelatedAssessmentsResource(common.Resource):
           order_by,
           models.Assessment,
       )
-    total = query.count()
+
     if limit:
-      query = pagination.apply_limit(query, limit)
+      objs = pagination.apply_limit(query, limit).all()
+      total = query.count()
+    else:
+      objs = query.all()
+      total = len(objs)
+
     # note that using pagination.get_total_count here would return wrong counts
     # due to query being an eager query.
 
-    return query.all(), total
+    return objs, total
 
   @classmethod
   def _get_evidences(cls, assessments):
