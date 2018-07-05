@@ -692,34 +692,37 @@ class TestSnapshotIndexing(TestCase, WithQueryApi):
 
   def test_person_ca(self):
     """Control Snapshots are filtered and sorted by Person CA."""
-    program = factories.ProgramFactory()
-    person1 = factories.PersonFactory(name="Ann", email="email1@example.com")
-    person2 = factories.PersonFactory(name="Bob", email="email2@example.com")
-    control1 = factories.ControlFactory()
-    control2 = factories.ControlFactory()
-    cad = factories.CustomAttributeDefinitionFactory(
-        definition_type="control",
-        definition_id=None,
-        attribute_type="Map:Person",
-        title="Global Person CA",
-    )
-    factories.CustomAttributeValueFactory(
-        attributable=control1,
-        custom_attribute=cad,
-        attribute_value="Person",
-        attribute_object_id=person2.id
-    )
-    factories.CustomAttributeValueFactory(
-        attributable=control2,
-        custom_attribute=cad,
-        attribute_value="Person",
-        attribute_object_id=person1.id
-    )
-    control1_id = control1.id
-    control2_id = control2.id
+    with factories.single_commit():
+      program = factories.ProgramFactory()
+      person1 = factories.PersonFactory(name="Ann", email="email1@example.com")
+      person2 = factories.PersonFactory(name="Bob", email="email2@example.com")
 
-    factories.RelationshipFactory(source=program, destination=control1)
-    factories.RelationshipFactory(source=program, destination=control2)
+    with factories.single_commit():
+      control1 = factories.ControlFactory()
+      control2 = factories.ControlFactory()
+      cad = factories.CustomAttributeDefinitionFactory(
+          definition_type="control",
+          definition_id=None,
+          attribute_type="Map:Person",
+          title="Global Person CA",
+      )
+      factories.CustomAttributeValueFactory(
+          attributable=control1,
+          custom_attribute=cad,
+          attribute_value=person2.type,
+          attribute_object_id=person2.id,
+      )
+      factories.CustomAttributeValueFactory(
+          attributable=control2,
+          custom_attribute=cad,
+          attribute_value=person1.type,
+          attribute_object_id=person1.id,
+      )
+      control1_id = control1.id
+      control2_id = control2.id
+
+      factories.RelationshipFactory(source=program, destination=control1)
+      factories.RelationshipFactory(source=program, destination=control2)
 
     self._create_audit(program=program, title="test_person_ca")
 
@@ -730,8 +733,8 @@ class TestSnapshotIndexing(TestCase, WithQueryApi):
         ),
         "Snapshot", "values",
     )
-    self.assertSetEqual({c["child_id"] for c in controls_user1},
-                        {control2_id})
+    self.assertItemsEqual([c["child_id"] for c in controls_user1],
+                          [control2_id])
 
     controls_user2 = self._get_first_result_set(
         self._make_snapshot_query_dict(

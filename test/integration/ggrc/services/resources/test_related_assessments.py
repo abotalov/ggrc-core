@@ -170,3 +170,40 @@ class TestRelatedAssessments(TestCase):
         response["data"][0]["viewLink"],
         assessment_self_link,
     )
+
+  def test_cav(self):
+    """Test that cav with type "Map:Person" contain attribute_object"""
+
+    with factories.single_commit():
+      person = factories.PersonFactory()
+      person_id = person.id
+
+      cad = factories.CustomAttributeDefinitionFactory(
+          definition_type="assessment",
+          attribute_type="Map:Person"
+      )
+      cav = factories.CustomAttributeValueFactory(
+          custom_attribute=cad,
+          attributable=self.assessment1,
+          attribute_value="Person"
+      )
+      cav.attribute_object = person
+
+    response = self._get_related_assessments(self.assessment2).json
+    data_json = response["data"]
+
+    self.assertEqual(len(data_json), 1)
+
+    related_assessment_json = data_json[0]
+    cavs_json = related_assessment_json["custom_attribute_values"]
+
+    self.assertEqual(len(cavs_json), 1)
+
+    cav_json = cavs_json[0]
+
+    attribute_object_json = cav_json["attribute_object"]
+
+    self.assertEqual(attribute_object_json, {
+        u"type": u"Person",
+        u"id": person_id
+    })

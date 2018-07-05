@@ -88,7 +88,9 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     for value in self.row_converter.obj.custom_attribute_values:
       if value.custom_attribute_id == definition.id:
         if value.custom_attribute.attribute_type.startswith("Map:"):
-          if value.attribute_object_id:
+          # pylint: disable=protected-access
+          if value.attribute_object_id is not None and \
+             value._attribute_object_attr is not None:
             obj = value.attribute_object
             return getattr(obj, "email", getattr(obj, "slug", None))
         elif value.custom_attribute.attribute_type == _types.CHECKBOX:
