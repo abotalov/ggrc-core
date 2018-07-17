@@ -20,8 +20,7 @@
         {{#if_equals reviewTask.status 'Declined'}}
             <div>Review was declined on {{#date instance.created_at}}{{/date}}.</div>
         {{/if_equals}}
-
-        <div {{#reviewTask}}{{data 'model'}}{{/reviewTask}} {{ (el) -> el.ggrc_controllers_quick_form({instance : el.data("model")}) }}>
+        <div>
           <button class="btn btn-mini btn-green change-task-status"
             ($click)="onApprove()"
             {{#if isSaving}}disabled{{/if}}

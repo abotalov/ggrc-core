@@ -6,6 +6,5 @@
 import './modals_controller';
 import './archive_modal_controller';
 import './delete_modal_controller';
-import './quick_form_controller';
 import './gapi-modal';
 import './approval-workflow-modal';
