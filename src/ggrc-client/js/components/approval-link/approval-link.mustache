@@ -22,12 +22,8 @@
         {{/if_equals}}
 
         <div {{#reviewTask}}{{data 'model'}}{{/reviewTask}} {{ (el) -> el.ggrc_controllers_quick_form({instance : el.data("model")}) }}>
-          <button
-              class="btn btn-mini btn-green change-task-status {{instance._disabled}} {{#if instance.snapshot}}disabled{{else}}{{#if instance.isRevision}}disabled{{/if}}{{/if}}"
-              data-name="status"
-              data-value="Verified"
-              data-object-id="{{instance.id}}"
-              data-object-type="{{instance.class.shortName}}"
+          <button class="btn btn-mini btn-green change-task-status {{instance._disabled}} {{#if instance.snapshot}}disabled{{else}}{{#if instance.isRevision}}disabled{{/if}}{{/if}}"
+            ($click)="onApprove()"
           >
             Approve
           </button>
