@@ -93,21 +93,6 @@
         margin: 8px 6px 0 28px;
         display: flex;
         justify-content: flex-start;
-
-        .ggrc_controllers_quick_form {
-          display: flex;
-          box-sizing: border-box;
-          flex-direction: row-reverse;
-
-          > * {
-            text-align: center;
-            margin: 0 0 0 12px;
-          }
-
-          .btn-primary {
-            border: 1px solid #0055cc;
-          }
-        }
       }
     }
   }
