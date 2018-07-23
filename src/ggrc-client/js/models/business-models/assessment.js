@@ -296,7 +296,7 @@ export default Cacheable('CMS.Models.Assessment', {
     }
   },
   isDirty: function (checkAssociations) {
-    this._transformBackupProperty(['design', 'operationally', '_disabled']);
+    this._transformBackupProperty(['design', 'operationally']);
     return this._super(checkAssociations);
   },
   form_preload: function (newObjectForm) {
