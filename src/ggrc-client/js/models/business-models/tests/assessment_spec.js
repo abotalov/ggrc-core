@@ -110,7 +110,7 @@ describe('Assessment model', function () {
       function () {
         assessment.isDirty();
         expect(assessment._transformBackupProperty)
-          .toHaveBeenCalledWith(['design', 'operationally', '_disabled']);
+          .toHaveBeenCalledWith(['design', 'operationally']);
       });
     it('returns result of inherited function, true if instance is dirty',
       function () {
