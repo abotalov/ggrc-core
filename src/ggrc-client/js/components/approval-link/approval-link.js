@@ -5,7 +5,6 @@
 
 import '../person/person-data';
 import '../review-link/review-link';
-import {isNull, isUndefined} from 'lodash';
 import {REFRESH_APPROVAL} from '../../events/eventTypes';
 
 import {
@@ -86,14 +85,7 @@ export default can.Component.extend({
             .attr('status', 'Verified')
             .save()
         )
-        .then(() => {
-          const instance = this.attr('instance');
-          const modelType = instance.attr('class').shortName;
-          const id = instance.attr('id');
-          if (modelType && !isNull(id) && !isUndefined(id)) {
-            return CMS.Models[modelType].findOne({id});
-          }
-        })
+        .then(() => this.attr('instance').refresh())
         .always(() => {
           this.attr('isSaving', false);
         });
