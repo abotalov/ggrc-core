@@ -42,6 +42,7 @@ export default can.Component.extend({
         },
       },
     },
+    isSaving: false,
     instance: null,
     reviewTask: null,
     isInitializing: true,
@@ -77,7 +78,7 @@ export default can.Component.extend({
     },
     onApprove() {
       const reviewTask = this.attr('reviewTask');
-      reviewTask.attr('_disabled', 'disabled');
+      this.attr('isSaving', true);
       reviewTask
         .refresh()
         .then((refreshedReviewTask) =>
@@ -93,8 +94,8 @@ export default can.Component.extend({
             return CMS.Models[modelType].findOne({id});
           }
         })
-        .then(() => {
-          reviewTask.attr('_disabled', '');
+        .always(() => {
+          this.attr('isSaving', false);
         });
     },
   },
