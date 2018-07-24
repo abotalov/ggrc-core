@@ -197,6 +197,7 @@ class CustomAttributable(object):
     Args:
       values: List of dictionaries that represent custom attribute values.
     """
+    from ggrc.utils import referenced_objects
     from ggrc.models.custom_attribute_value import CustomAttributeValue
 
     for value in values:
@@ -215,12 +216,35 @@ class CustomAttributable(object):
       elif "custom_attribute_id" in value:
         # this is automatically appended to self._custom_attribute_values
         # on attributable=self
-        CustomAttributeValue(
-            attributable=self,
-            custom_attribute_id=value.get("custom_attribute_id"),
-            attribute_value=value.get("attribute_value"),
-            attribute_object_id=value.get("attribute_object_id"),
+        custom_attribute_id = value.get("custom_attribute_id")
+        custom_attribute = referenced_objects.get(
+            "CustomAttributeDefinition", custom_attribute_id
         )
+        attribute_object = value.get("attribute_object")
+
+        if isinstance(attribute_object, dict):
+          attribute_object_type = attribute_object.get("type")
+          attribute_object_id = attribute_object.get("id")
+
+          attribute_object = referenced_objects.get(
+              attribute_object_type, attribute_object_id
+          )
+
+          CustomAttributeValue(
+              attributable=self,
+              custom_attribute=custom_attribute,
+              custom_attribute_id=custom_attribute_id,
+              attribute_value=value.get("attribute_value"),
+              attribute_object=attribute_object
+          )
+        else:
+          CustomAttributeValue(
+              attributable=self,
+              custom_attribute=custom_attribute,
+              custom_attribute_id=custom_attribute_id,
+              attribute_value=value.get("attribute_value"),
+              attribute_object_id=value.get("attribute_object_id"),
+          )
       elif "href" in value:
         # Ignore setting of custom attribute stubs. Getting here means that the
         # front-end is not using the API correctly and needs to be updated.
