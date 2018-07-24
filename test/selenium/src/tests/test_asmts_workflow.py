@@ -81,13 +81,13 @@ def _create_mapped_asmt(audit, assessment_type, objs_to_map):
   return assessment
 
 
-def _create_asmt_template(audit, assessment_type, custom_attributes):
-  """Create assessment with assessment type=`assessment_type` and
-  map it to snapshots of `objs_to_map`"""
+def _create_asmt_template(audit, assessment_type, cads):
+  """Create assessment template with assessment type=`assessment_type` and
+  `cads` custom attribute definitions"""
   custom_attr_rest = (
       CustomAttributeDefinitionsFactory.
-      generate_ca_defenitions_for_asmt_tmpls(custom_attributes))
-  assessment_template = rest_facade.create_assessment_template(
+      generate_ca_defenitions_for_asmt_tmpls(cads))
+  assessment_template = rest_facade.create_asmt_template(
       audit, assessment_type=assessment_type,
       custom_attribute_definitions=custom_attr_rest)
   return assessment_template
@@ -513,10 +513,11 @@ class TestAssessmentsWorkflow(base.Test):
         is_add_rest_attrs=True,
         attribute_type=AdminWidgetCustomAttributes.DATE)
     assessment_template = _create_asmt_template(
-        audit=audit, assessment_type="Control", custom_attributes=[cad])
-    exp_asmt = rest_facade.create_assessment_from_template(
-        audit=audit, template=assessment_template,
-        control_snapshots=[control_mapped_to_program])
+        audit=audit, assessment_type="Control", cads=[cad])
+    exp_asmt = rest_facade.create_asmt_from_template_rest(
+        audit=audit, control=control_mapped_to_program,
+        asmt_template=assessment_template)
+    exp_asmt.update_attrs(mapped_objects=[control_mapped_to_program])
     asmts_ui_service = webui_service.AssessmentsService(selenium)
     asmts_ui_service.open_info_page_of_obj_fill_lca(exp_asmt)
 
