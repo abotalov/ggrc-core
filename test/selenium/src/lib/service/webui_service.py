@@ -8,6 +8,7 @@ from dateutil import parser, tz
 
 from lib import factory, url
 from lib.constants import objects, messages, element, regex
+from lib.constants.element import AdminWidgetCustomAttributes
 from lib.constants.locator import WidgetInfoAssessment
 from lib.element.tab_containers import DashboardWidget
 from lib.entities.entity import Representation
@@ -428,12 +429,24 @@ class BaseWebUiService(object):
     related_asmts_table = obj_page.show_related_assessments()
     return related_asmts_table.get_related_titles(asmt_type=obj.type)
 
-  def open_info_page_of_obj_fill_lca(self, obj):
+  def open_info_page_of_obj_fill_lca(self, obj, cad, values):
     """Open obj Info Page. Populate local custom attributes with random values.
     Only Date population implemented.
     """
-    ca_values = self.open_info_page_of_obj(obj).fill_lcas_attr_values()
-    updated_attrs = self.set_custom_attr_values(obj, ca_values)
+    val_dict = self.open_info_page_of_obj(obj).fill_cas_attr_values(
+        cad, values, True)
+    updated_attrs = self.set_custom_attr_values(obj, val_dict)
+    obj.update_attrs(custom_attribute_values=updated_attrs)
+    return obj
+
+  def open_info_page_of_obj_fill_gca(self, obj, gca, gca_values):
+    """Open obj Info Page. Populate global custom attributes with random values.
+    Only Date population implemented.
+    """
+    widget = self.open_info_page_of_obj(obj)
+    widget.open_info_3bbs().select_edit()
+    val_dict = widget.fill_cas_attr_values(gca, gca_values, False)
+    updated_attrs = self.set_custom_attr_values(obj, val_dict)
     obj.update_attrs(custom_attribute_values=updated_attrs)
     return obj
 
@@ -710,6 +723,15 @@ class AssessmentsService(BaseWebUiService):
     mapped_titles = modal_edit.get_mapped_snapshots_titles()
     modal_edit.save_and_close()
     return mapped_titles
+
+  def populate_cas(self, asmt, asmt_templ, ca_type, **kwargs):
+    """Populate custom attributes with values."""
+    if ca_type == AdminWidgetCustomAttributes.DROPDOWN:
+      return self.choose_and_fill_dropdown_lca(asmt, **kwargs)
+    elif ca_type == AdminWidgetCustomAttributes.TEXT:
+      return self.populate_text(asmt, asmt_templ, **kwargs)
+    else:
+      raise NotImplementedError
 
   def choose_and_fill_dropdown_lca(self, asmt, dropdown, **kwargs):
     """Fill dropdown LCA for Assessment."""

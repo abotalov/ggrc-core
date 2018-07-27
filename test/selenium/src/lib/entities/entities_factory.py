@@ -7,6 +7,7 @@
 
 import copy
 import random
+import datetime
 
 from lib import factory, users
 from lib.constants import (
@@ -166,7 +167,7 @@ class CommentsFactory(EntitiesFactory):
     'is_add_rest_attrs' then add attributes for REST."""
     comment_obj = self.obj_inst().update_attrs(
         description=self.obj_title,
-        modified_by=users.current_user().name)
+        modified_by=users.current_user().email)
     if is_add_rest_attrs:
       comment_obj.update_attrs(
           assignee_type=",".join((
@@ -183,7 +184,8 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
         objects.CUSTOM_ATTRIBUTES)
 
   @classmethod
-  def generate_ca_values(cls, list_ca_def_objs, is_none_values=False):
+  def generate_ca_values(cls, list_ca_def_objs, is_none_values=False,
+                         is_for_rest=True):
     """Generate dictionary of CA random values from exist list CA definitions
     objects according to CA 'id', 'attribute_type' and 'multi_choice_options'
     for Dropdown. Return dictionary of CA items that ready to use via REST API:
@@ -194,7 +196,7 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
     {'attribute_type': 'Dropdown', 'id': 2, 'multi_choice_options': 'a,b,c'}]
     :return {"1": "text_example", "2": "b"}
     """
-    def generate_ca_value(cls, ca):
+    def generate_ca_value(cls, ca, is_for_rest=True):
       """Generate CA value according to CA 'id', 'attribute_type' and
       'multi_choice_options' for Dropdown.
       """
@@ -208,22 +210,31 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
                               AdminWidgetCustomAttributes.RICH_TEXT):
             ca_value = cls.generate_string(ca_attr_type)
           if ca_attr_type == AdminWidgetCustomAttributes.DATE:
-            ca_value = unicode(ca["created_at"][:10])
+            selected_date = (
+                ca["created_at"] if ca["created_at"]
+                else str(datetime.datetime.now())
+            )
+            ca_value = unicode(selected_date[:10])
           if ca_attr_type == AdminWidgetCustomAttributes.CHECKBOX:
             ca_value = random.choice((True, False))
           if ca_attr_type == AdminWidgetCustomAttributes.DROPDOWN:
             ca_value = unicode(
                 random.choice(ca["multi_choice_options"].split(",")))
           if ca_attr_type == AdminWidgetCustomAttributes.PERSON:
-            person_id = users.current_user().id
-            ca_value = "Person:{}".format(person_id)
+            user = users.current_user()
+            if is_for_rest:
+              ca_value = "Person:{}".format(user)
+            else:
+              ca_value = user.email
+
         else:
           ca_value = (
               None if ca_attr_type != AdminWidgetCustomAttributes.CHECKBOX
               else u"0")
       return {ca["id"]: ca_value}
     return {
-        k: v for _ in [generate_ca_value(cls, ca) for ca in list_ca_def_objs]
+        k: v for _ in [generate_ca_value(cls, ca, is_for_rest)
+                       for ca in list_ca_def_objs]
         for k, v in _.items()}
 
   @staticmethod
@@ -320,6 +331,18 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
     chars = StringMethods.ALLOWED_CHARS.replace(string_utils.Symbols.STAR,
                                                 string_utils.Symbols.BLANK)
     return self.generate_string(first_part, allowed_chars=chars)
+
+  @staticmethod
+  def define_cads_by_name(attrs):
+    """Defines custom attr definition by HTML"""
+    cad = []
+    for attr in attrs:
+      entity = CustomAttributeDefinitionEntity(title=attr)
+      for attr_type in AdminWidgetCustomAttributes.ALL_CA_TYPES:
+        if attr.upper().startswith(attr_type.upper()):
+          entity.attribute_type = attr_type
+      cad.append(entity)
+    return cad
 
 
 class ProgramsFactory(EntitiesFactory):
@@ -465,6 +488,69 @@ class AssessmentTemplatesFactory(EntitiesFactory):
               (roles.SECONDARY_CONTACTS, elements.SECONDARY_CONTACTS),
               (roles.OTHER, elements.OTHERS)]])
     return asmt_tmpl_obj
+
+  # def generate_cas_def(self, *args):
+  #   pass
+
+
+class AsmtTemplateWithDropdown(AssessmentTemplatesFactory):
+  """Class for assesment template with Dropdown option"""
+
+  @classmethod
+  def generate_cas_def(self, **kwargs):
+    """Create assessment template with dropdown custom attribute."""
+    multi_choice_opts = {"file": "2", "url": "4", "comment": "1",
+                         "file_url": "6", "url_comment": "5",
+                         "file_comment": "3", "file_url_comment": "7",
+                         "nothing": "0"}
+    dropdown_types_list = kwargs['dropdown_types_list']
+    cas_type = AdminWidgetCustomAttributes.DROPDOWN
+    ca_def_factory = CustomAttributeDefinitionsFactory()
+    cas_attr_defs = [ca_def_factory.create(
+        title=(ca_def_factory.generate_ca_title(cas_type)),
+        attribute_type=cas_type,
+        definition_type=cas_type,
+        multi_choice_mandatory=(",".join(
+            multi_choice_opts[dropdown_type]
+            for dropdown_type in dropdown_types_list)),
+        multi_choice_options=(
+            StringMethods.random_list_strings(
+                list_len=len(dropdown_types_list))))]
+    cas_attr_defs = ca_def_factory.generate_ca_defenitions_for_asmt_tmpls(
+        cas_attr_defs)
+    return cas_attr_defs
+
+
+class AsmtTemplateWithAttr(AssessmentTemplatesFactory):
+  """Class for assesment template with text option"""
+
+  @classmethod
+  def generate_cas_def(self, **kwargs):
+    """Generates custom attribute definition for known type."""
+    cas_type = kwargs["cad_type"]
+    ca_def_factory = CustomAttributeDefinitionsFactory()
+    cas_attr_defs = [ca_def_factory.create(
+        title=(ca_def_factory.generate_ca_title(cas_type)),
+        attribute_type=cas_type, definition_type=cas_type)]
+    cas_attr_defs = ca_def_factory.generate_ca_defenitions_for_asmt_tmpls(
+        cas_attr_defs)
+    return cas_attr_defs
+
+
+class AsmtTemplateManager(object):
+  """Assessment template manager, that conduct the way custom attribute
+  definition is generated."""
+
+  @classmethod
+  def generate_cas_definitions(self, **kwargs):
+    """Factory defines template to be created based on its type."""
+    if kwargs["cad_type"]:
+      if kwargs["cad_type"] == AdminWidgetCustomAttributes.DROPDOWN:
+        return AsmtTemplateWithDropdown().generate_cas_def(**kwargs)
+      else:
+        return AsmtTemplateWithAttr().generate_cas_def(**kwargs)
+    else:
+      raise NotImplementedError
 
 
 class AssessmentsFactory(EntitiesFactory):

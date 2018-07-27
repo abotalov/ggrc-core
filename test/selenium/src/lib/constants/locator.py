@@ -484,6 +484,10 @@ class ModalCreateNewAsmt(BaseModalCreateNew, CommonAssessment):
                       BaseModalCreateNew.MODAL + CommonAssessment.MAP_OBJS_BTN)
 
 
+class ModalEditAsmt(BaseModalCreateNew, CommonAssessment):
+  """Locators for Edit  Assessment modals."""
+
+
 class ModalCreateNewAsmtTmpl(BaseModalCreateNew):
   """Locators for Create new Assessment Template modals."""
   ASSIGNEE_DROPDOWN = (
@@ -849,6 +853,9 @@ class WidgetInfoAssessment(WidgetInfoPanel, CommonAssessment):
       By.CSS_SELECTOR,
       WIDGET + " assessment-custom-attributes inline-edit-control")
   CAS_CHECKBOXES = (By.CSS_SELECTOR, '[class*="wrapper"] [type="checkbox"]')
+  CAS_TEXTS = (By.CSS_SELECTOR, '[class*="wrapper"] [class="text-field"]')
+  CAS_RICH_TEXTS = (By.CSS_SELECTOR,
+                    '[class*="wrapper"] [class*="rich-text__content"] div')
   # Assessment Attributes tab
   # comments section
   COMMENTS_CSS = (By.CSS_SELECTOR, ".assessment-comments")
@@ -870,6 +877,8 @@ class WidgetInfoAssessment(WidgetInfoPanel, CommonAssessment):
   ICON_VERIFIED = (By.CSS_SELECTOR, "i.verified-icon")
   EVIDENCE_URLS_CSS = (By.CSS_SELECTOR,
                        ".action-toolbar document-object-list-item a")
+  WIDGET_SAVED_STATUS = (
+      By.XPATH, "//*[contains(@class, 'assessment-controls')]//loading-status")
 
 
 class TabContainer(object):

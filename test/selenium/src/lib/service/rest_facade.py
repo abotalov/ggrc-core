@@ -5,6 +5,7 @@ Reasons for a facade:
 * It is not very convenient to use
 * More high level functions are often needed
 """
+from lib.entities.entities_factory import AsmtTemplateManager
 
 from lib import factory
 from lib.constants import roles
@@ -34,13 +35,6 @@ def create_audit(program, **attrs):
   """Create an audit within a `program`"""
   return rest_service.AuditsService().create_obj(
       program=program.__dict__,
-      factory_params=attrs)
-
-
-def create_asmt_template(audit, **attrs):
-  """Create assessment template."""
-  return rest_service.AssessmentTemplatesService().create_obj(
-      audit=audit.__dict__,
       factory_params=attrs)
 
 
@@ -86,25 +80,33 @@ def create_asmt_from_template_rest(
   return assessments[0]
 
 
-def create_assessment(audit, **attrs):
+def create_asmt(audit, **attrs):
   """Create an assessment within an audit `audit`"""
   attrs["audit"] = audit.__dict__
-  return rest_service.AssessmentsService().create_obj(
-      audit=audit.__dict__,
-      factory_params=attrs)
+  return rest_service.AssessmentsService().create_objs(
+      count=1, **attrs)[0]
 
 
-def create_assessment_template(audit, **attrs):
-  """Create an assessment template"""
-  return rest_service.AssessmentTemplatesService().create_obj(
-      audit=audit.__dict__,
-      factory_params=attrs)
+def create_asmt_template(audit, cad_type=None, **attrs):
+  """Create assessment template."""
+  attrs["audit"] = audit.__dict__
+  cad = None
+  if cad_type:
+    attrs["cad_type"] = cad_type
+    cad = AsmtTemplateManager().generate_cas_definitions(**attrs)
+    attrs["custom_attribute_definitions"] = cad
+  return rest_service.AssessmentTemplatesService().create_objs(
+      count=1, **attrs)[0]
 
 
-def create_assessment_from_template(audit, template, **attrs):
-  """Create an assessment from template"""
+def create_asmt_from_template(audit, asmt_template, control, **attrs):
+  """Create an assessment from template
+  :param control_snapshots: Should be list of control snapshots"""
+  control_snapshots = [
+      Representation.convert_repr_to_snapshot(objs=control, parent_obj=audit)]
   return rest_service.AssessmentsFromTemplateService().create_assessments(
-      audit=audit, template=template, **attrs)[0]
+      audit=audit, template=asmt_template, control_snapshots=control_snapshots,
+      **attrs)[0]
 
 
 def create_issue(program=None):
