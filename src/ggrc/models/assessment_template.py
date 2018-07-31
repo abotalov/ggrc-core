@@ -204,6 +204,7 @@ class AssessmentTemplate(assessment.AuditRelationship, relationship.Relatable,
         "procedure_description": self.procedure_description,
         "default_people": self.default_people,
         "modified_by": login.get_current_user(),
+        "status": self.status,
     }
     assessment_template_copy = AssessmentTemplate(**data)
     db.session.add(assessment_template_copy)
