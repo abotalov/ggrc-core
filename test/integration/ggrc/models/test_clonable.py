@@ -80,7 +80,8 @@ class TestClonable(SnapshotterBaseTestCase):
         "test_plan_procedure",
         "procedure_description",
         "default_people",
-        "title"
+        "title",
+        "status",
     ]
     # Check that fields in copy template is same as in source
     self.assertEqual(
