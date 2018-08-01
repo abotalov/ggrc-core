@@ -140,18 +140,34 @@ def check_assessment_template(row_converter):
       "default_assignees": "assignees",
       "default_verifier": "verifiers",
   }
+  key_map_inverse = {
+      "assignees": "default_assignees",
+      "verifiers": "default_verifier",
+  }
+  default_empty_value = "--"
+
   default_people = {}
   for key, value in key_map.iteritems():
-    default_people[value] = getattr(row_converter.obj, key, '')
+    default_people[value] = getattr(row_converter.obj, key, "")
 
   if not row_converter.obj.default_people:
     row_converter.obj.default_people = default_people
     return
 
   for key, value in default_people.iteritems():
-    previous_value = row_converter.obj.default_people.get(key, '')
-    if previous_value and not value:
+    header = row_converter.headers.get(key_map_inverse[key], None)
+    previous_value = row_converter.obj.default_people.get(key, "")
+    if not header:
       default_people[key] = previous_value
+      continue
+
+    index = row_converter.headers.keys().index(key_map_inverse[key])
+    raw_value = row_converter.row[index]
+
+    if raw_value == default_empty_value:
+      default_people[key] = None
+    elif not value:
+      default_people[key] = None if row_converter.is_new else previous_value
 
   row_converter.obj.default_people = default_people
 

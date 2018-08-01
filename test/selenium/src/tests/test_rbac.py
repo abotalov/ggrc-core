@@ -88,7 +88,8 @@ class TestAuditorRole(base.Test):
     """Objects structure:
     Program
     -> Control
-    -> Audit (Auditor is a user with global creator role)"""
+    -> Audit (Auditor is a user with global creator role)
+    """
     editor = rest_facade.create_user_with_role(roles.EDITOR)
     creator = rest_facade.create_user_with_role(roles.CREATOR)
     users.set_current_user(editor)

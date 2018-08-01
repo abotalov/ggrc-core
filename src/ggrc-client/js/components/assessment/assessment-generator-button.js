@@ -7,6 +7,7 @@ import tracker from '../../tracker';
 import RefreshQueue from '../../models/refresh_queue';
 import template from './templates/generate_assessments_button.mustache';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
+import BackgroundTask from '../../models/service-models/background-task';
 
 export default can.Component.extend({
   tag: 'assessment-generator-button',
@@ -24,7 +25,7 @@ export default can.Component.extend({
         tracker.USER_JOURNEY_KEYS.LOADING,
         tracker.USER_ACTIONS.ASSESSMENT.OPEN_ASMT_GEN_MODAL);
 
-      import(/*webpackChunkName: "mapper"*/ '../../controllers/mapper/mapper')
+      import(/* webpackChunkName: "mapper" */ '../../controllers/mapper/mapper')
         .then((mapper) => {
           mapper.ObjectGenerator.launch(el, {
             object: 'Audit',
@@ -68,7 +69,7 @@ export default can.Component.extend({
       if (count >= wait.length) {
         count = wait.length - 1;
       }
-      CMS.Models.BackgroundTask.findOne({id: id})
+      BackgroundTask.findOne({id: id})
         .then(function (task) {
           let status = {[task.status]: true};
           this.showFlash(status);
@@ -94,7 +95,7 @@ export default can.Component.extend({
           return this.generateModel(item, id, options.type);
         }.bind(this));
         this._results = results;
-        $.when.apply($, results)
+        $.when(...results)
           .then(function () {
             let tasks = arguments;
             let ids;

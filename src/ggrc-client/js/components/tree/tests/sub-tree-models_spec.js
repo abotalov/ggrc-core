@@ -10,7 +10,7 @@ import {
   getWidgetConfig,
 } from '../../../plugins/utils/object-versions-utils';
 
-describe('GGRC.Components.subTreeModels', function () {
+describe('sub-tree-models component', function () {
   let vm;
   let originalInit;
 

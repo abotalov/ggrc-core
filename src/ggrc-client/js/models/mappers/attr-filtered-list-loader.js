@@ -3,6 +3,8 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+ import Relationship from '../join-models/relationship';
+
 (function (GGRC, can) {
   GGRC.ListLoaders.StubFilteredListLoader(
     'GGRC.ListLoaders.AttrFilteredListLoader', {}, {
@@ -14,7 +16,7 @@
           }
           return _.any(binding.mappings, function (mapping) {
             let instance = mapping.instance;
-            if (instance instanceof CMS.Models.Relationship) {
+            if (instance instanceof Relationship) {
               if (_.exists(instance, 'attrs') &&
                   instance.attrs[prop] && (!value ||
                 _.contains(instance.attrs[prop].split(','), value))) {
@@ -37,13 +39,13 @@
           }));
         }
 
-        CMS.Models.Relationship.bind('updated', function (ev, model) {
+        Relationship.bind('updated', function (ev, model) {
           let value;
           let needle;
           let active;
           let activeInList;
           let contains;
-          if (!(model instanceof CMS.Models.Relationship)) {
+          if (!(model instanceof Relationship)) {
             return;
           }
           value = can.getObject('attrs.' + this.prop_name, model);

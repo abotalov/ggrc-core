@@ -3,24 +3,22 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-(function (can) {
-  'use strict';
+import {notifierXHR} from '../../plugins/utils/notifiers-utils';
 
-  GGRC.Components('inlineFormControl', {
-    tag: 'inline-form-control',
-    viewModel: {
-      deferredSave: null,
-      instance: null,
+export default can.Component.extend({
+  tag: 'inline-form-control',
+  viewModel: {
+    deferredSave: null,
+    instance: null,
 
-      saveInlineForm: function (args) {
-        let self = this;
+    saveInlineForm: function (args) {
+      let self = this;
 
-        this.attr('deferredSave').push(function () {
-          self.attr('instance.' + args.propName, args.value);
-        }).fail(function (instance, xhr) {
-          GGRC.Errors.notifierXHR('error')(xhr);
-        });
-      },
+      this.attr('deferredSave').push(function () {
+        self.attr('instance.' + args.propName, args.value);
+      }).fail(function (instance, xhr) {
+        notifierXHR('error')(xhr);
+      });
     },
-  });
-})(window.can);
+  },
+});

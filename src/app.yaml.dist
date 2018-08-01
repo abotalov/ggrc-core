@@ -11,7 +11,6 @@ instance_class: {INSTANCE_CLASS}
 {SCALING}
 
 handlers:
-{STATIC_SERVING}
 
   - url: /login
     script: ggrc.app.app.wsgi_app
@@ -44,6 +43,11 @@ handlers:
   - url: /maintenance/.*
     script: ggrc.maintenance.maintenance_app.wsgi_app
     secure: always
+
+  - url: /static
+    static_dir: ggrc/static
+    http_headers:
+      Access-Control-Allow-Origin: "*"
 
   - url: /.*
     script: ggrc.app.app.wsgi_app

@@ -7,38 +7,34 @@ import '../object-list-item/business-object-list-item';
 import '../read-more/read-more';
 import RefreshQueue from '../../models/refresh_queue';
 
-(function (can, GGRC) {
-  'use strict';
+const tag = 'object-list-item-updater';
 
-  let tag = 'object-list-item-updater';
+export default can.Component.extend({
+  tag,
+  viewModel: {
+    define: {
+      targetInstance: {
+        set: function (value) {
+          this.attr('instanceUpdated', false);
 
-  GGRC.Components('objectListItemUpdater', {
-    tag: tag,
-    viewModel: {
-      define: {
-        targetInstance: {
-          set: function (value) {
-            this.attr('instanceUpdated', false);
+          if (value.isNeedRefresh) {
+            this.updateInstance(value);
+            return;
+          }
 
-            if (value.isNeedRefresh) {
-              this.updateInstance(value);
-              return;
-            }
-
-            this.attr('instance', value);
-            this.attr('instanceUpdated', true);
-          },
+          this.attr('instance', value);
+          this.attr('instanceUpdated', true);
         },
       },
-      instance: {},
-      instanceUpdated: false,
-      updateInstance: function (instance) {
-        new RefreshQueue().enqueue(instance)
-          .trigger().then(function (refreshedInstances) {
-            this.attr('instance', refreshedInstances[0]);
-            this.attr('instanceUpdated', true);
-          }.bind(this));
-      },
     },
-  });
-})(window.can, window.GGRC);
+    instance: {},
+    instanceUpdated: false,
+    updateInstance: function (instance) {
+      new RefreshQueue().enqueue(instance)
+        .trigger().then(function (refreshedInstances) {
+          this.attr('instance', refreshedInstances[0]);
+          this.attr('instanceUpdated', true);
+        }.bind(this));
+    },
+  },
+});

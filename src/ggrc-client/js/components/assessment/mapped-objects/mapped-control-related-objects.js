@@ -6,30 +6,26 @@
 import '../../collapsible-panel/collapsible-panel';
 import template from './mapped-control-related-objects.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  let tag = 'assessment-mapped-control-related-objects';
-  /**
-   * ViewModel for Assessment Mapped Controls Related Objectives and Regulations.
-   * @type {can.Map}
-   */
-  let viewModel = can.Map.extend({
-    define: {
-      items: {
-        value: [],
-      },
+const tag = 'assessment-mapped-control-related-objects';
+/**
+ * ViewModel for Assessment Mapped Controls Related Objectives and Regulations.
+ * @type {can.Map}
+ */
+let viewModel = can.Map.extend({
+  define: {
+    items: {
+      value: [],
     },
-    titleText: '@',
-    type: '@',
-  });
-  /**
-   * Specific Wrapper Component to present Controls only inner popover data.
-   * Should Load on expand Related Objectives and Regulations
-   */
-  GGRC.Components('assessmentMappedControlsPopover', {
-    tag: tag,
-    template: template,
-    viewModel: viewModel,
-  });
-})(window.can, window.GGRC);
+  },
+  titleText: '@',
+  type: '@',
+});
+/**
+ * Specific Wrapper Component to present Controls only inner popover data.
+ * Should Load on expand Related Objectives and Regulations
+ */
+export default can.Component.extend({
+  tag,
+  template,
+  viewModel,
+});

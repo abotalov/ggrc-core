@@ -6,7 +6,7 @@
 import updateService from '../../../plugins/utils/bulk-update-service';
 import {getComponentVM} from '../../../../js_specs/spec_helpers';
 import Component from '../bulk-update-button';
-
+import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 
 describe('bulk-update-button component', function () {
   let viewModel;
@@ -65,7 +65,7 @@ describe('bulk-update-button component', function () {
       updateDfd = can.Deferred();
 
       spyOn(can, 'trigger');
-      spyOn(GGRC.Errors, 'notifier');
+      spyOn(NotifiersUtils, 'notifier');
       spyOn(updateService, 'update')
         .and.returnValue(updateDfd);
 
@@ -80,7 +80,7 @@ describe('bulk-update-button component', function () {
     });
 
     it('shows notification about bulk progress', function () {
-      expect(GGRC.Errors.notifier)
+      expect(NotifiersUtils.notifier)
         .toHaveBeenCalledWith('progress',
           'Some Model update is in progress. This may take several minutes.');
     });
@@ -90,7 +90,7 @@ describe('bulk-update-button component', function () {
 
       expect(viewModel.getResultNotification)
         .toHaveBeenCalledWith(viewModel.attr('model'), 1);
-      expect(GGRC.Errors.notifier)
+      expect(NotifiersUtils.notifier)
         .toHaveBeenCalledWith('info', resMessage);
     });
 
@@ -116,7 +116,7 @@ describe('bulk-update-button component', function () {
 
       expect(viewModel.getResultNotification)
         .not.toHaveBeenCalled();
-      expect(GGRC.Errors.notifier)
+      expect(NotifiersUtils.notifier)
         .not.toHaveBeenCalledWith('info', jasmine.any(String));
     });
   });

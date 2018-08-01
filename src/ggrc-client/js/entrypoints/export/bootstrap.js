@@ -4,6 +4,9 @@
 */
 
 import {initWidgets} from '../../plugins/utils/current-page-utils';
+import {gapiClient} from '../../plugins/ggrc-gapi-client';
+
+gapiClient.loadGapiClient();
 
 $('#csv_export')
   .html(can.view.mustache('<csv-export filename="Export Objects"/>'));

@@ -4,8 +4,9 @@
 */
 
 import '../release-notes-modal/release-notes-modal';
-
 import template from './release-notes-menu-item.mustache';
+import {loadUserProfile, updateUserProfile} from '../../plugins/utils/user-utils';
+import {getUtcDate} from '../../plugins/utils/date-util';
 
 const viewModel = can.Map.extend({
   define: {
@@ -25,13 +26,15 @@ const viewModel = can.Map.extend({
 
 const events = {
   async inserted(el) {
-    const displayPrefs = await CMS.Models.DisplayPrefs.getSingleton();
+    let profile = await loadUserProfile();
+    const lastSeenDate = getUtcDate(profile.last_seen_whats_new);
+    const releaseNotesDate = getUtcDate(RELEASE_NOTES_DATE);
 
-    const savedVersion = displayPrefs.getReleaseNotesDate();
-
-    if (RELEASE_NOTES_DATE !== savedVersion) {
-      displayPrefs.setReleaseNotesDate(RELEASE_NOTES_DATE);
-      this.viewModel.open();
+    if (releaseNotesDate !== lastSeenDate) {
+      profile.last_seen_whats_new = releaseNotesDate;
+      updateUserProfile(profile).then(() => {
+        this.viewModel.open();
+      });
     }
   },
 };

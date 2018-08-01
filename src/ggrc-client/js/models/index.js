@@ -4,14 +4,9 @@
 */
 
 import './mappers';
-import './mixins';
-import './cacheable';
 import './save_queue';
 import './models-extensions';
 
 import './business-models';
-import './custom-attributes';
-import './custom-roles';
 import './join-models';
-import './local-storage';
 import './service-models';

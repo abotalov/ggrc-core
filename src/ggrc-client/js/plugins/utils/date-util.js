@@ -16,6 +16,7 @@ const DATE_FORMAT = {
   MOMENT_DISPLAY_FMT: 'MM/DD/YYYY',
   PICKER_ISO_DATE: 'yy-mm-dd',
   PICKER_DISPLAY_FMT: 'mm/dd/yy',
+  ISO_SHORT: 'YYYY-MM-DDTHH:mm:ss',
 };
 
 /**
@@ -57,8 +58,20 @@ function getDate(date, format = DATE_FORMAT.MOMENT_ISO_DATE) {
   return null;
 }
 
+/**
+ * Convert given Date to UTC string.
+ *
+ * @param {Date|string} date - Date or string in ISO date format
+ * @param {string} format - date format string ('YYYY-MM-DDTHH:mm:ss' default value)
+ * @return {string} - formatted date string in UTC
+ */
+function getUtcDate(date, format = DATE_FORMAT.ISO_SHORT) {
+  return moment.utc(date).format(format);
+}
+
 export {
   DATE_FORMAT,
   getClosestWeekday,
   getDate,
+  getUtcDate,
 };

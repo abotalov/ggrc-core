@@ -19,7 +19,7 @@ from lib.utils import string_utils
 class TestControlsWorkflow(base.Test):
   """Test class for control scenario tests"""
   info_service = rest_service.ObjectsInfoService
-  usr_email = PeopleFactory.default_user.name
+  usr_email = PeopleFactory.superuser.name
   rand_msg = string_utils.StringMethods.random_string()
 
   def _assert_control(self, actual_control, new_control_rest):

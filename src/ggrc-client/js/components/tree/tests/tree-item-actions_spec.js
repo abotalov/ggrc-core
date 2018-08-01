@@ -4,13 +4,14 @@
 */
 
 import Component from '../tree-item-actions';
+import {getComponentVM} from '../../../../js_specs/spec_helpers';
 import Permission from '../../../permission';
 
-describe('GGRC.Components.treeItemActions', function () {
+describe('tree-item-actions component', function () {
   let viewModel;
 
   beforeEach(() => {
-    viewModel = Component.prototype.viewModel();
+    viewModel = getComponentVM(Component);
     viewModel.attr('instance', new can.Map());
   });
 

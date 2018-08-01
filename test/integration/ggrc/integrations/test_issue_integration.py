@@ -102,8 +102,8 @@ class TestIssueIntegration(ggrc.TestCase):
       ({"issue_tracker": {"issue_severity": "S2", "enabled": True}},
        {"severity": "S2"}),
       ({"issue_tracker": {"enabled": False}},
-       {"comment": "GGRC object has been deleted. GGRC changes "
-                   "will no longer be tracked within this bug."}),
+       {"comment": "Changes to this GGRC object will no longer be "
+                   "tracked within this bug."}),
   )
   @ddt.unpack
   @mock.patch("ggrc.integrations.issues.Client.update_issue")

@@ -5,41 +5,37 @@
 
 import template from './checkbox-form-field.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  GGRC.Components('checkboxFormField', {
-    tag: 'checkbox-form-field',
-    template: template,
-    viewModel: {
-      define: {
-        inputValue: {
-          set(newValue) {
-            this.attr('_value', newValue);
-            this.valueChanged(newValue);
-          },
-          get() {
-            return this.attr('_value');
-          },
+export default can.Component.extend({
+  tag: 'checkbox-form-field',
+  template,
+  viewModel: {
+    define: {
+      inputValue: {
+        set(newValue) {
+          this.attr('_value', newValue);
+          this.valueChanged(newValue);
         },
-        value: {
-          set(newValue) {
-            this.attr('_value', newValue);
-          },
-          get() {
-            return this.attr('_value');
-          },
+        get() {
+          return this.attr('_value');
         },
       },
-      _value: false,
-      fieldId: null,
-      valueChanged: function (newValue) {
-        this.dispatch({
-          type: 'valueChanged',
-          fieldId: this.fieldId,
-          value: newValue,
-        });
+      value: {
+        set(newValue) {
+          this.attr('_value', newValue);
+        },
+        get() {
+          return this.attr('_value');
+        },
       },
     },
-  });
-})(window.can, window.GGRC);
+    _value: false,
+    fieldId: null,
+    valueChanged: function (newValue) {
+      this.dispatch({
+        type: 'valueChanged',
+        fieldId: this.fieldId,
+        value: newValue,
+      });
+    },
+  },
+});

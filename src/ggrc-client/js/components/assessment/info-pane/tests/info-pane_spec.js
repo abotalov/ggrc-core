@@ -18,6 +18,7 @@ import * as caUtils from '../../../../plugins/utils/ca-utils';
 import * as DeferredTransactionUtil from '../../../../plugins/utils/deferred-transaction-utils';
 import Permission from '../../../../permission';
 import {CUSTOM_ATTRIBUTE_TYPE} from '../../../../plugins/utils/custom-attribute/custom-attribute-config';
+import * as NotifiersUtils from '../../../../plugins/utils/notifiers-utils';
 
 describe('assessment-info-pane component', () => {
   let vm;
@@ -1075,7 +1076,7 @@ describe('assessment-info-pane component', () => {
       });
 
       spyOn(vm, 'addAction');
-      spyOn(GGRC.Errors, 'notifier');
+      spyOn(NotifiersUtils, 'notifier');
       spyOn(vm, 'refreshCounts');
     });
 
@@ -1144,7 +1145,7 @@ describe('assessment-info-pane component', () => {
       it('shows error', function (done) {
         vm.removeRelatedItem(item, type);
         dfd.fail(() => {
-          expect(GGRC.Errors.notifier).toHaveBeenCalledWith(
+          expect(NotifiersUtils.notifier).toHaveBeenCalledWith(
             'error',
             'Unable to remove URL.'
           );

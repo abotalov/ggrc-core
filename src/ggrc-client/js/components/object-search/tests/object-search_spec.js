@@ -3,15 +3,18 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
+import Component from '../object-search';
 import Mappings from '../../../models/mappers/mappings';
 
-describe('GGRC.Components.objectSearch', function () {
+describe('object-search component', function () {
   'use strict';
 
   let viewModel;
+  let parentViewModel;
 
   beforeEach(function () {
-    viewModel = new GGRC.Components.getViewModel('objectSearch')();
+    parentViewModel = new can.Map();
+    viewModel = new Component.prototype.viewModel({}, parentViewModel)();
   });
 
   describe('availableTypes() method', function () {

@@ -29,9 +29,13 @@ class BaseIssueTrackerParamsBuilder(object):
       "Use the following link to find the {model} - {link}."
   )
 
-  DISABLE_TMPL = (
+  DELETE_TMPL = (
       u"GGRC object has been deleted. GGRC changes will "
       "no longer be tracked within this bug."
+  )
+
+  DISABLE_TMPL = (
+      u"Changes to this GGRC object will no longer be tracked within this bug."
   )
 
   ENABLE_TMPL = (
@@ -94,18 +98,18 @@ class IssueParamsBuilder(BaseIssueTrackerParamsBuilder):
 
   ASSIGNED_ISSUE_STATUS = "ASSIGNED"
 
-  DESCRIPTION_TMPL = "Following is the issue Description from GGRC: {}"
+  DESCRIPTION_TMPL = u"Following is the issue Description from GGRC: {}"
   REMEDIATION_PLAN_TMPL = (
-      "Following is the issue Remediation Plan from GGRC: {}"
+      u"Following is the issue Remediation Plan from GGRC: {}"
   )
   UPDATE_DESCRIPTION_TMPL = (
-      "Issue Description has been updated.\n{}"
+      u"Issue Description has been updated.\n{}"
   )
   UPDATE_REMEDIATION_PLAN_TMPL = (
-      "Issue Remediation Plan has been updated.\n{}"
+      u"Issue Remediation Plan has been updated.\n{}"
   )
   EXCLUDE_REPORTER_EMAIL_ERROR_MSG = (
-      "Issue tracker integration is not activated because the reporter "
+      u"Issue tracker integration is not activated because the reporter "
       "is an Global auditor."
   )
 
@@ -158,7 +162,7 @@ class IssueParamsBuilder(BaseIssueTrackerParamsBuilder):
 
   def build_delete_issue_tracker_params(self):
     """Build delete issue query for issue tracker."""
-    self.params.add_comment(self.DISABLE_TMPL.format(model="Issue"))
+    self.params.add_comment(self.DELETE_TMPL.format(model="Issue"))
 
     return self.params
 

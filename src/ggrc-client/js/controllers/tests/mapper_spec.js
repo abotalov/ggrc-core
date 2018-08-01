@@ -7,6 +7,7 @@ import {
   ObjectMapper as Ctrl,
   ObjectSearch,
 } from '../mapper/mapper';
+import * as NotifiersUtils from '../../plugins/utils/notifiers-utils';
 
 describe('ObjectMapper', function () {
   'use strict';
@@ -54,7 +55,7 @@ describe('ObjectMapper', function () {
         join_option_type: 'Type',
       };
       method = Ctrl.openMapper.bind(fakeCtrlInst);
-      spyOn(GGRC.Errors, 'notifier');
+      spyOn(NotifiersUtils, 'notifier');
     });
 
     it('interrupts own work if disableMapper param is true', function () {

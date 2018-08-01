@@ -14,37 +14,33 @@ import ObjectOperationsBaseVM from '../view-models/object-operations-base-vm';
 import template from './object-search.mustache';
 import Mappings from '../../models/mappers/mappings';
 
-(function (can, $) {
-  'use strict';
-
-  GGRC.Components('objectSearch', {
-    tag: 'object-search',
-    template: template,
-    viewModel: function () {
-      return ObjectOperationsBaseVM.extend({
-        object: 'MultitypeSearch',
-        type: 'Control',
-        availableTypes: function () {
-          let types = Mappings.getMappingTypes(
-            this.attr('object'),
-            ['TaskGroupTask', 'TaskGroup', 'CycleTaskGroupObjectTask'],
-            []);
-          return types;
-        },
-        resultsRequested: false,
-        onSubmit: function () {
-          this.attr('resultsRequested', true);
-          this._super();
-        },
-      });
-    },
-    helpers: {
-      displayCount: function (countObserver) {
-        let count = countObserver();
-        if (count) {
-          return '(' + count + ')';
-        }
+export default can.Component.extend({
+  tag: 'object-search',
+  template,
+  viewModel: function () {
+    return ObjectOperationsBaseVM.extend({
+      object: 'MultitypeSearch',
+      type: 'Control',
+      availableTypes: function () {
+        let types = Mappings.getMappingTypes(
+          this.attr('object'),
+          ['TaskGroupTask', 'TaskGroup', 'CycleTaskGroupObjectTask'],
+          []);
+        return types;
       },
+      resultsRequested: false,
+      onSubmit: function () {
+        this.attr('resultsRequested', true);
+        this._super();
+      },
+    });
+  },
+  helpers: {
+    displayCount: function (countObserver) {
+      let count = countObserver();
+      if (count) {
+        return '(' + count + ')';
+      }
     },
-  });
-})(window.can, window.can.$);
+  },
+});

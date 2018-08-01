@@ -20,6 +20,7 @@ from google.appengine.ext import testbed
 
 from ggrc import db
 from ggrc.app import app
+from ggrc import settings
 from ggrc.converters.import_helper import read_csv_file
 from ggrc.views.converters import check_import_file
 from ggrc.models import Revision, all_models
@@ -272,7 +273,7 @@ class TestCase(BaseTestCase, object):
 
     # root_path must be set the the location of queue.yaml.
     # Otherwise, only the 'default' queue will be available.
-    cls.testbed.init_taskqueue_stub()
+    cls.testbed.init_taskqueue_stub(root_path=settings.BASE_DIR)
     cls.taskqueue_stub = cls.testbed.get_stub(testbed.TASKQUEUE_SERVICE_NAME)
 
   @classmethod

@@ -540,29 +540,4 @@ describe('GGRC Utils CurrentPage', function () {
         });
     });
   });
-
-  describe('cacheCurrentUser() method', function () {
-    let currentUser;
-
-    beforeAll(() => {
-      currentUser = GGRC.current_user;
-    });
-
-    afterAll(() => {
-      GGRC.current_user = currentUser;
-    });
-
-    it('should add current user to cache', function () {
-      GGRC.current_user = {
-        name: 'TestCurrentUser',
-        id: 0,
-      };
-
-      CurrentPageUtils.cacheCurrentUser();
-
-      let currenUserFromCache = CMS.Models.Person.findInCacheById(0);
-
-      expect(currenUserFromCache.name).toBe('TestCurrentUser');
-    });
-  });
 });

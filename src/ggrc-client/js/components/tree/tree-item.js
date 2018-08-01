@@ -9,65 +9,61 @@ import './tree-item-custom-attribute';
 import BaseTreeItemVM from './tree-item-base-vm';
 import template from './templates/tree-item.mustache';
 
-(function (can, GGRC) {
-  'use strict';
+let viewModel = BaseTreeItemVM.extend({
+  define: {
+    extraClasses: {
+      type: String,
+      get: function () {
+        let classes = [];
+        let instance = this.attr('instance');
 
-  let viewModel = BaseTreeItemVM.extend({
-    define: {
-      extraClasses: {
-        type: String,
-        get: function () {
-          let classes = [];
-          let instance = this.attr('instance');
+        if (instance.snapshot) {
+          classes.push('snapshot');
+        }
 
-          if (instance.snapshot) {
-            classes.push('snapshot');
-          }
+        if (instance.workflow_state) {
+          classes.push('t-' + instance.workflow_state);
+        }
 
-          if (instance.workflow_state) {
-            classes.push('t-' + instance.workflow_state);
-          }
+        if (this.attr('expanded')) {
+          classes.push('open-item');
+        }
 
-          if (this.attr('expanded')) {
-            classes.push('open-item');
-          }
-
-          return classes.join(' ');
-        },
-      },
-      selectableSize: {
-        type: Number,
-        get: function () {
-          let attrCount = this.attr('selectedColumns').length;
-          let result = 3;
-
-          if (attrCount < 4) {
-            result = 1;
-          } else if (attrCount < 7) {
-            result = 2;
-          }
-
-          return result;
-        },
+        return classes.join(' ');
       },
     },
-    selectedColumns: [],
-    mandatory: [],
-    disableConfiguration: null,
-    itemSelector: '.tree-item-content',
-  });
+    selectableSize: {
+      type: Number,
+      get: function () {
+        let attrCount = this.attr('selectedColumns').length;
+        let result = 3;
 
-  /**
-   *
-   */
-  GGRC.Components('treeItem', {
-    tag: 'tree-item',
-    template: template,
-    viewModel: viewModel,
-    events: {
-      inserted: function () {
-        this.viewModel.attr('$el', this.element.find('.tree-item-wrapper'));
+        if (attrCount < 4) {
+          result = 1;
+        } else if (attrCount < 7) {
+          result = 2;
+        }
+
+        return result;
       },
     },
-  });
-})(window.can, window.GGRC);
+  },
+  selectedColumns: [],
+  mandatory: [],
+  disableConfiguration: null,
+  itemSelector: '.tree-item-content',
+});
+
+/**
+ *
+ */
+export default can.Component.extend({
+  tag: 'tree-item',
+  template,
+  viewModel,
+  events: {
+    inserted: function () {
+      this.viewModel.attr('$el', this.element.find('.tree-item-wrapper'));
+    },
+  },
+});

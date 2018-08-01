@@ -9,21 +9,30 @@ from ggrc import db
 from ggrc.access_control.roleable import Roleable
 from ggrc.fulltext.mixin import Indexed
 from ggrc.models import mixins
+from ggrc.models import proposal
 from ggrc.models.comment import Commentable
 from ggrc.models.deferred import deferred
-from ggrc.models.mixins import TestPlanned
-from ggrc.models.mixins import base
 from ggrc.models.object_document import PublicDocumentable
 from ggrc.models.object_person import Personable
-from ggrc.models import proposal
 from ggrc.models.relationship import Relatable
 from ggrc.models.track_object_state import HasObjectState
 
 
-class Risk(Roleable, HasObjectState, mixins.CustomAttributable, Relatable,
-           Personable, PublicDocumentable, Commentable, TestPlanned,
-           mixins.LastDeprecatedTimeboxed, base.ContextRBAC,
-           mixins.BusinessObject, Indexed, proposal.Proposalable, db.Model):
+class Risk(Roleable,
+           HasObjectState,
+           mixins.CustomAttributable,
+           Relatable,
+           Personable,
+           PublicDocumentable,
+           Commentable,
+           mixins.TestPlanned,
+           mixins.LastDeprecatedTimeboxed,
+           mixins.base.ContextRBAC,
+           mixins.BusinessObject,
+           proposal.Proposalable,
+           mixins.Folderable,
+           Indexed,
+           db.Model):
   """Basic Risk model."""
   __tablename__ = 'risks'
 

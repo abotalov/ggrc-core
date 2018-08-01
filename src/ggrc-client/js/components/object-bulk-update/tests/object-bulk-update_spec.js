@@ -8,7 +8,7 @@ import * as stateUtils from '../../../plugins/utils/state-utils';
 import tracker from '../../../tracker';
 import Mappings from '../../../models/mappers/mappings';
 
-describe('GGRC.Components.objectBulkUpdate', function () {
+describe('object-bulk-update component', function () {
   let events;
 
   beforeAll(function () {

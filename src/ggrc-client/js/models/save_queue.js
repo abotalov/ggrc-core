@@ -5,11 +5,12 @@
 
 import tracker from '../tracker';
 import {resolveDeferredBindings} from '../plugins/utils/models-utils';
+import BackgroundTask from '../models/service-models/background-task';
 
 (function (can, $) {
   /*  GGRC.SaveQueue
    *
-   *  SaveQueue is used by CMS.Models.Cacheable to prevent firing
+   *  SaveQueue is used by Cacheable to prevent firing
    *  multiple requests to the server at once. It makes sure the requests
    *  are grouped together (inside _queue) and then resolved in batches.
    *
@@ -19,7 +20,7 @@ import {resolveDeferredBindings} from '../plugins/utils/models-utils';
    *  bucket) that enqueues as a regular request but then greedily dispatches
    *  requests that arrived while it was in the queue.
    *
-   *  enqueue(obj: CMS.Models.Cacheable, save_args) -> null
+   *  enqueue(obj: Cacheable, save_args) -> null
    */
   can.Construct('GGRC.SaveQueue', {
 
@@ -63,7 +64,7 @@ import {resolveDeferredBindings} from '../plugins/utils/models-utils';
           }
           if ('background_task' in data) {
             stopFn(true);
-            return CMS.Models.BackgroundTask.findOne({
+            return BackgroundTask.findOne({
               id: data.background_task.id,
             }).then(function (task) {
               // Resolve all the dfds with the task

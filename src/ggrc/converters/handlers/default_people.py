@@ -25,6 +25,8 @@ class DefaultPersonColumnHandler(handlers.ColumnHandler):
       in all_models.AssessmentTemplate.DEFAULT_PEOPLE_LABELS.items()
   }
 
+  DEFAULT_EMPTY_VALUE = "--"
+
   def _parse_email_values(self):
     """Parse an email list of default assignees.
 
@@ -101,6 +103,9 @@ class DefaultPersonColumnHandler(handlers.ColumnHandler):
         self.KEY_MAP[self.key],
         "ERROR",
     )
+
+    if value is None:
+      return self.DEFAULT_EMPTY_VALUE
 
     assessment_template = self.row_converter.obj
     default_people_labels = assessment_template.DEFAULT_PEOPLE_LABELS

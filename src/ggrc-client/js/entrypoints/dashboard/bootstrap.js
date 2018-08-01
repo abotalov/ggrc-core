@@ -17,6 +17,7 @@ import {
 import {RouterConfig} from '../../router';
 import routes from './routes';
 import '../../plugins/utils/it-enable/issue-tracker-enable';
+import {gapiClient} from '../../plugins/ggrc-gapi-client';
 
 const $area = $('.area').first();
 const instance = getPageInstance();
@@ -29,6 +30,7 @@ let widgetList;
 let widgetModels;
 
 RouterConfig.setupRoutes(routes);
+gapiClient.loadGapiClient();
 
 extraPageOptions = {
   Program: {

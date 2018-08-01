@@ -5,17 +5,13 @@
 
 import template from './custom-attributes-actions.mustache';
 
-(function (can) {
-  'use strict';
-
-  GGRC.Components('localCustomAttributesActions', {
-    tag: 'custom-attributes-actions',
-    template: template,
-    viewModel: {
-      formEditMode: false,
-      edit: function () {
-        this.attr('formEditMode', true);
-      },
+export default can.Component.extend({
+  tag: 'custom-attributes-actions',
+  template,
+  viewModel: {
+    formEditMode: false,
+    edit: function () {
+      this.attr('formEditMode', true);
     },
-  });
-})(window.can);
+  },
+});

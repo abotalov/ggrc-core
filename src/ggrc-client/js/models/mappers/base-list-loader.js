@@ -135,7 +135,7 @@ import RefreshQueue from '../refresh_queue';
       });
 
       if (newInstanceResults.length > 0) {
-        binding.list.push.apply(binding.list, newInstanceResults);
+        binding.list.push(...newInstanceResults);
 
         //  TODO: Examine whether deferring this list insertion avoids
         //    causing client-side freezes

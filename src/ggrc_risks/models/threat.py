@@ -6,20 +6,28 @@
 from ggrc import db
 from ggrc.access_control.roleable import Roleable
 from ggrc.fulltext.mixin import Indexed
+from ggrc.models import mixins
 from ggrc.models.comment import Commentable
-from ggrc.models.mixins import base
-from ggrc.models.mixins import (CustomAttributable, BusinessObject,
-                                LastDeprecatedTimeboxed, TestPlanned)
 from ggrc.models.object_document import PublicDocumentable
 from ggrc.models.object_person import Personable
 from ggrc.models.relationship import Relatable
 from ggrc.models.track_object_state import HasObjectState
 
 
-class Threat(Roleable, HasObjectState, CustomAttributable, Personable,
-             Relatable, LastDeprecatedTimeboxed, PublicDocumentable,
-             Commentable, TestPlanned, base.ContextRBAC, BusinessObject,
-             Indexed, db.Model):
+class Threat(Roleable,
+             HasObjectState,
+             mixins.CustomAttributable,
+             Personable,
+             Relatable,
+             mixins.LastDeprecatedTimeboxed,
+             PublicDocumentable,
+             Commentable,
+             mixins.TestPlanned,
+             mixins.base.ContextRBAC,
+             mixins.BusinessObject,
+             mixins.Folderable,
+             Indexed,
+             db.Model):
   __tablename__ = 'threats'
 
   _aliases = {

@@ -5,22 +5,18 @@
 
 import template from './collapsible-panel-body.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  let tag = 'collapsible-panel-body';
-  /**
-   * Collapsible Panel component to add collapsing behavior
-   */
-  GGRC.Components('collapsiblePanelBody', {
-    tag: tag,
-    template: template,
-    scope: {
-      renderContent: function () {
-        return this.attr('softMode') || this.attr('expanded');
-      },
-      softMode: false,
-      expanded: null,
+const tag = 'collapsible-panel-body';
+/**
+ * Collapsible Panel component to add collapsing behavior
+ */
+export default can.Component.extend({
+  tag,
+  template,
+  viewModel: {
+    renderContent: function () {
+      return this.attr('softMode') || this.attr('expanded');
     },
-  });
-})(window.can, window.GGRC);
+    softMode: false,
+    expanded: null,
+  },
+});

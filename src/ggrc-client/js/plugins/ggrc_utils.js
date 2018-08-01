@@ -7,6 +7,7 @@ import RefreshQueue from '../models/refresh_queue';
 import Permission from '../permission';
 import {getRolesForType} from '../plugins/utils/acl-utils';
 import Mappings from '../models/mappers/mappings';
+import {notifier} from '../plugins/utils/notifiers-utils';
 
 /**
  * A module containing various utility functions.
@@ -136,7 +137,7 @@ function getPersonInfo(person) {
         dfd.resolve(personItem);
       })
       .fail(function () {
-        GGRC.Errors.notifier('error',
+        notifier('error',
           'Failed to fetch data for person ' + person.id + '.');
         dfd.reject();
       });
@@ -148,7 +149,7 @@ function getPersonInfo(person) {
 function getPickerElement(picker) {
   return _.find(_.values(picker), function (val) {
     if (val instanceof Node) {
-      return /picker\-dialog/.test(val.className);
+      return /picker-dialog/.test(val.className);
     }
     return false;
   });
@@ -420,7 +421,7 @@ function getPlainText(originalText) {
  * A function that returns the highest role in an array of strings of roles
  * or a comma-separated string of roles.
  *
- * @param {CMS.Models.Cacheable} obj - Assignable object with defined
+ * @param {Cacheable} obj - Assignable object with defined
  *   assignable_list class property holding assignable roles ordered in
  *   increasing importance.
  * Return highest assignee role from a list of roles

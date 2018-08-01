@@ -4,6 +4,7 @@
 */
 
 import './object-list-item/editable-document-object-list-item';
+import {notifierXHR} from '../plugins/utils/notifiers-utils';
 
 (function (can, $) {
   GGRC.Components('mappingTreeView', {
@@ -97,7 +98,7 @@ import './object-list-item/editable-document-object-list-item';
                 return mapping.documentable.reify();
               }
             })
-            .fail(GGRC.Errors.notifierXHR('error'));
+            .fail(notifierXHR('error'));
         });
       },
     },

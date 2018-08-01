@@ -3,14 +3,15 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {TEXT_FORM_FIELD_VM} from '../text-form-field';
+import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import Component from '../text-form-field';
 
-describe('GGRC.Components.textFormField', () => {
+describe('text-form-field component', () => {
   'use strict';
   let viewModel;
 
   beforeEach(() => {
-    viewModel = new (can.Map.extend(TEXT_FORM_FIELD_VM));
+    viewModel = getComponentVM(Component);
     spyOn(viewModel, 'dispatch');
     viewModel.attr('fieldId', 'id');
   });

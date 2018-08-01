@@ -244,18 +244,18 @@ export default can.Control({
     } else
     if (scrollTop > header.outerHeight()) {
       if (scrollTop > prevScrollTop) {
-        //scroll down
+        // scroll down
         if (header.hasClass('pane-header_visible')) {
           header.removeClass('pane-header_visible');
           header.addClass('pane-header_hidden');
         }
 
-        //hide menu when scrolling down
+        // hide menu when scrolling down
         let dropdownMenu = header.find('.details-wrap');
         dropdownMenu.removeClass('open');
 
       } else if (scrollTop < prevScrollTop) {
-        //scroll top
+        // scroll top
         header.removeClass('pane-header_hidden');
         header.addClass('pane-header_visible');
       }

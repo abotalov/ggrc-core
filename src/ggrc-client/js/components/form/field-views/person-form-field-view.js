@@ -6,15 +6,11 @@
 import '../../person/person-data';
 import template from './person-form-field-view.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  GGRC.Components('personFormFieldView', {
-    tag: 'person-form-field-view',
-    template: template,
-    viewModel: {
-      value: null,
-      disabled: false,
-    },
-  });
-})(window.can, window.GGRC);
+export default can.Component.extend({
+  tag: 'person-form-field-view',
+  template: template,
+  viewModel: {
+    value: null,
+    disabled: false,
+  },
+});

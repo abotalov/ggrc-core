@@ -137,6 +137,7 @@ describe('CreateDocumentButton component', () => {
         () => {
           let parentInstance = viewModel.attr('parentInstance');
           spyOn(parentInstance, 'dispatch');
+          spyOn(CMS.Models.Document.prototype, 'save').and.returnValue({});
 
           viewModel.createDocuments([{}]);
 

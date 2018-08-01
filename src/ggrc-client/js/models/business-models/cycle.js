@@ -3,7 +3,9 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
+import Cacheable from '../cacheable';
 import Permission from '../../permission';
+import '../mixins/is-overdue';
 
 function refreshAttr(instance, attr) {
   let result;
@@ -25,7 +27,7 @@ function refreshAttrWrap(attr) {
   };
 }
 
-export default can.Model.Cacheable('CMS.Models.Cycle', {
+export default Cacheable('CMS.Models.Cycle', {
   root_object: 'cycle',
   root_collection: 'cycles',
   category: 'workflow',

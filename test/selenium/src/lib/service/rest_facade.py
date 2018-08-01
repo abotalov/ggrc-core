@@ -139,6 +139,7 @@ def create_user_with_role(role_name):
   role = next(role for role in roles.global_roles()
               if role["name"] == role_name)
   rest_service.UserRolesService().create_obj(person=user.__dict__, role=role)
+  user.system_wide_role = role["name"]
   return user
 
 
@@ -174,17 +175,17 @@ def _create_obj_in_program_scope(obj_name, program, **attrs):
   return obj
 
 
-def _split_attrs(attrs, keys_not_for_factory=None):
+def _split_attrs(attrs, keys_for_template=None):
   """Split `attrs` dictionary into two parts:
-  * Dict with keys that are in `keys_for_factory`
-  * Remainder dict with keys not in `keys_for_factory`
+  * Dict with keys that are not in `keys_for_template`
+  * Remainder dict with keys in `keys_for_template`
   """
-  if keys_not_for_factory is None:
-    keys_not_for_factory = []
+  if keys_for_template is None:
+    keys_for_template = []
   attrs_remainder = {}
   factory_params = {}
   for key, value in attrs.items():
-    if key in keys_not_for_factory:
+    if key in keys_for_template:
       d = attrs_remainder
     else:
       d = factory_params

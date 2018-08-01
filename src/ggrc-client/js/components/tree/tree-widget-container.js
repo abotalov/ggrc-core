@@ -19,7 +19,6 @@ import './tree-filter-input';
 import './tree-status-filter';
 import './tree-item-status-for-workflow';
 import './tree-no-results';
-import './tree-assignee-field';
 import './tree-field';
 import './tree-people-with-role-list-field';
 import '../advanced-search/advanced-search-filter-container';
@@ -48,6 +47,10 @@ import Pagination from '../base-objects/pagination';
 import tracker from '../../tracker';
 import router from '../../router';
 import Permission from '../../permission';
+import {notifier} from '../../plugins/utils/notifiers-utils';
+import Cacheable from '../../models/cacheable';
+import Relationship from '../../models/join-models/relationship';
+import DisplayPrefs from '../../models/local-storage/display-prefs';
 
 let viewModel;
 
@@ -390,7 +393,7 @@ viewModel = can.Map.extend({
   _isRefreshNeeded(instance) {
     let needToRefresh = true;
 
-    if (instance instanceof CMS.Models.Relationship) {
+    if (instance instanceof Relationship) {
       needToRefresh = this._needToRefreshAfterRelRemove(instance);
     }
 
@@ -453,7 +456,7 @@ viewModel = can.Map.extend({
     }
 
     function _verifyRelationship(instance, shortName, parentInstance) {
-      if (!(instance instanceof CMS.Models.Relationship)) {
+      if (!(instance instanceof Relationship)) {
         return false;
       }
 
@@ -488,13 +491,13 @@ viewModel = can.Map.extend({
       self = this;
       if (needDestroy) {
         // Remove listeners for inactive tabs
-        can.Model.Cacheable.unbind('created', onCreated);
-        can.Model.Cacheable.unbind('destroyed', onDestroyed);
+        Cacheable.unbind('created', onCreated);
+        Cacheable.unbind('destroyed', onDestroyed);
       } else {
         // Add listeners on creations instance or mappings objects for current tab
         // and refresh page after that.
-        can.Model.Cacheable.bind('created', onCreated);
-        can.Model.Cacheable.bind('destroyed', onDestroyed);
+        Cacheable.bind('created', onCreated);
+        Cacheable.bind('destroyed', onDestroyed);
       }
     };
   })(),
@@ -619,7 +622,7 @@ export default can.Component.extend({
         (admin || !isAccepted) && (allowMapping || allowCreating));
     }
 
-    CMS.Models.DisplayPrefs.getSingleton().then(function (displayPrefs) {
+    DisplayPrefs.getSingleton().then(function (displayPrefs) {
       viewModel.attr('displayPrefs', displayPrefs);
 
       if (parentInstance && 'status' in parentInstance) {
@@ -725,7 +728,7 @@ export default can.Component.extend({
           this.viewModel.updateActiveItemIndicator(relativeIndex);
         }.bind(this))
         .fail(function () {
-          GGRC.Errors.notifier('error', 'Failed to fetch an object.');
+          notifier('error', 'Failed to fetch an object.');
         })
         .always(function () {
           pinControl.setLoadingIndicator(componentSelector, false);

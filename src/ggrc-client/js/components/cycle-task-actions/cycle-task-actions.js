@@ -11,6 +11,7 @@ import {
 import template from './cycle-task-actions.mustache';
 import {updateStatus} from '../../plugins/utils/workflow-utils';
 import Permission from '../../permission';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 (function (can, GGRC) {
   'use strict';
@@ -90,7 +91,7 @@ import Permission from '../../permission';
         await updateStatus(instance, status);
         return true;
       } catch (e) {
-        GGRC.Errors.notifier(
+        notifier(
           'error',
           "Task state wasn't updated due to server error. Please try again."
         );

@@ -5,71 +5,67 @@
 
 import template from './templates/tree-item-map.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  let viewModel = can.Map.extend({
-    define: {
-      title: {
-        type: String,
-        value: 'Map to this Object'
-      },
-      model: {
-        type: '*',
-        get: function () {
-          return this.attr('instance.model');
-        }
-      },
-      objectParams: {
-        type: String,
-        get: function () {
-          let instance = this.attr('instance');
-          let params = {
-            section: {
-              id: instance.id,
-              title: instance.title,
-              description: instance.description
-            }
-          };
-
-          return JSON.stringify(params);
-        }
-      }
+let viewModel = can.Map.extend({
+  define: {
+    title: {
+      type: String,
+      value: 'Map to this Object',
     },
-    instance: null,
-    cssClasses: null,
-    disableLink: false
-  });
+    model: {
+      type: '*',
+      get: function () {
+        return this.attr('instance.model');
+      },
+    },
+    objectParams: {
+      type: String,
+      get: function () {
+        let instance = this.attr('instance');
+        let params = {
+          section: {
+            id: instance.id,
+            title: instance.title,
+            description: instance.description,
+          },
+        };
 
-  GGRC.Components('treeItemMap', {
-    tag: 'tree-item-map',
-    template: template,
-    viewModel: viewModel,
-    events: {
-      'a click': function (el, ev) {
-        let viewModel = this.viewModel;
-        let instance = viewModel.attr('instance');
+        return JSON.stringify(params);
+      },
+    },
+  },
+  instance: null,
+  cssClasses: null,
+  disableLink: false,
+});
 
-        if (!viewModel.attr('disableLink')) {
-          if (instance.attr('type') === 'Assessment') {
-            el.data('type', instance.attr('assessment_type'));
-          }
-          import(/*webpackChunkName: "mapper"*/ '../../controllers/mapper/mapper')
-            .then(() => {
-              can.trigger(el, 'openMapper', ev);
-            });
+export default can.Component.extend({
+  tag: 'tree-item-map',
+  template,
+  viewModel,
+  events: {
+    'a click': function (el, ev) {
+      let viewModel = this.viewModel;
+      let instance = viewModel.attr('instance');
+
+      if (!viewModel.attr('disableLink')) {
+        if (instance.attr('type') === 'Assessment') {
+          el.data('type', instance.attr('assessment_type'));
         }
-
-        viewModel.attr('disableLink', true);
-
-        // prevent open of two mappers
-        setTimeout(function () {
-          viewModel.attr('disableLink', false);
-        }, 300);
-
-        ev.preventDefault();
-        return false;
+        import(/* webpackChunkName: "mapper" */ '../../controllers/mapper/mapper')
+          .then(() => {
+            can.trigger(el, 'openMapper', ev);
+          });
       }
-    }
-  });
-})(window.can, window.GGRC);
+
+      viewModel.attr('disableLink', true);
+
+      // prevent open of two mappers
+      setTimeout(function () {
+        viewModel.attr('disableLink', false);
+      }, 300);
+
+      ev.preventDefault();
+      return false;
+    },
+  },
+});

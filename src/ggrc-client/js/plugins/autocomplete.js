@@ -9,6 +9,7 @@ import {
 } from './utils/query-api-utils';
 import RefreshQueue from '../models/refresh_queue';
 import Mappings from '../models/mappers/mappings';
+import Search from '../models/service-models/search';
 
 (function ($) {
   'use strict';
@@ -114,7 +115,7 @@ import Mappings from '../models/mappers/mappings';
           return this.options.searchlist;
         }
 
-        return GGRC.Models.Search.search_for_types(
+        return Search.search_for_types(
           request.term || '',
           this.options.searchtypes,
           this.options.search_params
@@ -123,8 +124,7 @@ import Mappings from '../models/mappers/mappings';
           let objects = [];
 
           can.each(that.options.searchtypes, function (searchtype) {
-            objects.push.apply(objects,
-              searchResult.getResultsForType(searchtype));
+            objects.push(...searchResult.getResultsForType(searchtype));
           });
           return objects;
         });
@@ -198,7 +198,7 @@ import Mappings from '../models/mappers/mappings';
       let searchtypes;
       let typeNames;
 
-      this._super.apply(this, arguments);
+      this._super(...arguments);
       this.options.search_params = {
         extra_params: searchParams
       };
@@ -217,7 +217,7 @@ import Mappings from '../models/mappers/mappings';
           this,
           $.map(fromList.list, function (item) {
             let props = baseSearch.trim().split('.');
-            return item.instance.refresh_all.apply(item.instance, props);
+            return item.instance.refresh_all(...props);
           })
         );
       } else if (baseSearch) {
@@ -307,7 +307,7 @@ import Mappings from '../models/mappers/mappings';
             try {
               listItems = context.attr('items');
               context.attr('oldLen', listItems.length);
-              listItems.push.apply(listItems, can.map(items, function (item) {
+              listItems.push(...can.map(items, function (item) {
                 return item.item;
               }));
             } catch (error) {

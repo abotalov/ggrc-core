@@ -5,15 +5,11 @@
 
 import template from './rich-text-form-field-view.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  GGRC.Components('richTextFormFieldView', {
-    tag: 'rich-text-form-field-view',
-    template: template,
-    viewModel: {
-      value: null,
-      disabled: false,
-    },
-  });
-})(window.can, window.GGRC);
+export default can.Component.extend({
+  tag: 'rich-text-form-field-view',
+  template,
+  viewModel: {
+    value: null,
+    disabled: false,
+  },
+});

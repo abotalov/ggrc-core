@@ -4,6 +4,7 @@
  */
 import {getComponentVM} from '../../../../js_specs/spec_helpers';
 import Component from '../external-data-provider';
+import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 
 describe('external-data-provider component', ()=> {
   let viewModel;
@@ -89,13 +90,13 @@ describe('external-data-provider component', ()=> {
       });
 
       it('shows message if there was error', (done)=> {
-        spyOn(GGRC.Errors, 'notifier');
+        spyOn(NotifiersUtils, 'notifier');
         viewModel.attr('type', 'TestModel');
 
         viewModel.loadData();
 
         requestDfd.reject().always(()=> {
-          expect(GGRC.Errors.notifier)
+          expect(NotifiersUtils.notifier)
             .toHaveBeenCalledWith('error', 'Unable to load TestModels');
           done();
         });
@@ -103,7 +104,7 @@ describe('external-data-provider component', ()=> {
 
       describe('turns off "loading" flag', ()=> {
         beforeEach(()=> {
-          spyOn(GGRC.Errors, 'notifier');
+          spyOn(NotifiersUtils, 'notifier');
           viewModel.attr('loading', true);
           viewModel.loadData();
         });

@@ -5,20 +5,28 @@
 from ggrc import db
 from ggrc.access_control.roleable import Roleable
 from ggrc.fulltext.mixin import Indexed
+from ggrc.models import mixins
 from ggrc.models.comment import Commentable
-from ggrc.models.mixins import base
-from .mixins import (BusinessObject, LastDeprecatedTimeboxed,
-                     CustomAttributable, TestPlanned)
-from .object_document import PublicDocumentable
-from .object_person import Personable
-from .relationship import Relatable
-from .track_object_state import HasObjectState
+from ggrc.models.object_document import PublicDocumentable
+from ggrc.models.object_person import Personable
+from ggrc.models.relationship import Relatable
+from ggrc.models.track_object_state import HasObjectState
 
 
-class DataAsset(Roleable, HasObjectState, PublicDocumentable,
-                CustomAttributable, Personable, Relatable, Commentable,
-                TestPlanned, LastDeprecatedTimeboxed, base.ContextRBAC,
-                BusinessObject, Indexed, db.Model):
+class DataAsset(Roleable,
+                HasObjectState,
+                PublicDocumentable,
+                mixins.CustomAttributable,
+                Personable,
+                Relatable,
+                Commentable,
+                mixins.TestPlanned,
+                mixins.LastDeprecatedTimeboxed,
+                mixins.base.ContextRBAC,
+                mixins.Folderable,
+                mixins.BusinessObject,
+                Indexed,
+                db.Model):
   """Class representing DataAsset."""
 
   __tablename__ = 'data_assets'

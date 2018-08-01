@@ -19,7 +19,7 @@ export default can.Component.extend({
     openCloneModal(el) {
       let that = this;
       let $el = $(el);
-      import(/*webpackChunkName: "mapper"*/ '../../controllers/mapper/mapper')
+      import(/* webpackChunkName: "mapper" */ '../../controllers/mapper/mapper')
         .then(mapper => {
           mapper.AssessmentTemplateClone.launch($el, {
             object: that.attr('parentType'),

@@ -61,7 +61,7 @@ import Mappings from '../../models/mappers/mappings';
       let countQuery = buildCountParams(types, relevant);
       let dfds = countQuery.map(batchRequests);
 
-      return $.when.apply($, dfds).then(function () {
+      return $.when(...dfds).then(function () {
         let counts = Array.prototype.slice.call(arguments);
 
         let total = types.reduce(function (count, type, ind) {

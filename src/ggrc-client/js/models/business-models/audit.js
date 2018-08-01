@@ -3,9 +3,16 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import Cacheable from '../cacheable';
 import {getRole} from '../../plugins/utils/acl-utils';
+import '../mixins/access-control-list';
+import '../mixins/unique-title';
+import '../mixins/ca-update';
+import '../mixins/timeboxed';
+import '../mixins/mapping-limit';
+import '../mixins/issue-tracker.js';
 
-export default can.Model.Cacheable('CMS.Models.Audit', {
+export default Cacheable('CMS.Models.Audit', {
   root_object: 'audit',
   root_collection: 'audits',
   category: 'programs',

@@ -3,6 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {cacheCurrentUser} from '../plugins/utils/current-page-utils';
+import {cacheCurrentUser} from '../plugins/utils/user-utils';
 
 cacheCurrentUser();
+

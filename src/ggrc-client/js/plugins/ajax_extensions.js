@@ -2,6 +2,13 @@
   Copyright (C) 2018 Google Inc.
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
+
+import {
+  notifier,
+  notifierXHR,
+  messages,
+} from '../plugins/utils/notifiers-utils';
+
 $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
   // setup timezone offset header in each ajax request
   // it should be setup in minutes
@@ -140,14 +147,14 @@ $(document).ajaxError(function (event, jqxhr, settings, exception) {
     }
 
     let message = jqxhr.getResponseHeader('X-Flash-Error') ||
-      GGRC.Errors.messages[jqxhr.status] ||
+      messages[jqxhr.status] ||
       (response && response.message) ||
       exception.message || exception;
 
     if (message) {
-      GGRC.Errors.notifier('error', message);
+      notifier('error', message);
     } else {
-      GGRC.Errors.notifierXHR('error')(jqxhr);
+      notifierXHR('error')(jqxhr);
     }
   }
 });

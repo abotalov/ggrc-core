@@ -199,21 +199,19 @@
                       </custom-attributes>
                     </assessment-local-ca>
                     <!-- Modal Window to fix validation issues of CA fields -->
-                    {{#if modal.state}}
-                      <simple-modal {state}="modal.state"
-                                    {modal-title}="modal.modalTitle"
-                                    {instance}="instance"
-                                    {is-disabled}="isUpdatingFiles">
-                          <ca-object-modal-content {instance}="instance"
-                                                   {content}="modal.content"
-                                                   {state}="state"
-                                                   {evidences}="files"
-                                                   {is-updating-evidences}="isUpdatingFiles"
-                                                   (before-comment-created)="addItems(%event, 'comments')"
-                                                   (after-comment-created)="addRelatedItem(%event, 'comments')"
-                          ></ca-object-modal-content>
-                      </simple-modal>
-                    {{/if}}
+                    <simple-modal {state}="modal.state"
+                                  {modal-title}="modal.modalTitle"
+                                  {instance}="instance"
+                                  {is-disabled}="isUpdatingFiles">
+                        <ca-object-modal-content {instance}="instance"
+                                                 {content}="modal.content"
+                                                 {state}="state"
+                                                 {evidences}="files"
+                                                 {is-updating-evidences}="isUpdatingFiles"
+                                                 (before-comment-created)="addItems(%event, 'comments')"
+                                                 (after-comment-created)="addRelatedItem(%event, 'comments')"
+                        ></ca-object-modal-content>
+                    </simple-modal>
                     <!-- End of Modal Window -->
                     <assessment-controls-toolbar class="assessment-controls-toolbar"
                         {instance}="instance"

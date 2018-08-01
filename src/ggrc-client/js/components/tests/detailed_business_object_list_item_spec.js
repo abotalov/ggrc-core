@@ -3,13 +3,16 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-describe('GGRC.Components.detailedBusinessObjectListItem', function () {
+import {getComponentVM} from '../../../js_specs/spec_helpers';
+import Component from '../object-list-item/detailed-business-object-list-item';
+
+describe('detailed-business-object-list-item component', function () {
   'use strict';
 
-  let snapshotParentTitle = 'Control title #1';
-  let snapshotParentUrl = '/controls/55';
-  let vendorObjectTitle = 'Vendor title 123';
-  let vendorObjectLink = '/vendors/33';
+  const snapshotParentTitle = 'Control title #1';
+  const snapshotParentUrl = '/controls/55';
+  const vendorObjectTitle = 'Vendor title 123';
+  const vendorObjectLink = '/vendors/33';
 
   let snapshotObject = {
     selfLink: '/api/snapshots/123',
@@ -36,8 +39,7 @@ describe('GGRC.Components.detailedBusinessObjectListItem', function () {
     let viewModel;
 
     beforeEach(function () {
-      viewModel = GGRC.Components
-        .getViewModel('detailedBusinessObjectListItem');
+      viewModel = getComponentVM(Component);
     });
 
     it('check objectLink of Vendor object', function () {
@@ -55,8 +57,7 @@ describe('GGRC.Components.detailedBusinessObjectListItem', function () {
     let viewModel;
 
     beforeEach(function () {
-      viewModel = GGRC.Components
-        .getViewModel('detailedBusinessObjectListItem');
+      viewModel = getComponentVM(Component);
     });
 
     it('check objectTitle of Vendor object', function () {

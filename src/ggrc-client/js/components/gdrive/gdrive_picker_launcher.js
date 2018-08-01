@@ -10,6 +10,10 @@ import {
 } from '../../plugins/utils/gdrive-picker-utils.js';
 import {backendGdriveClient} from '../../plugins/ggrc-gapi-client';
 import tracker from '../../tracker';
+import {
+  notifier,
+  messages,
+} from '../../plugins/utils/notifiers-utils';
 
 (function (can, $, GGRC, CMS) {
   'use strict';
@@ -154,9 +158,9 @@ import tracker from '../../tracker';
 
                 stopFn(true);
                 if (error && error.code === 403) {
-                  GGRC.Errors.notifier('error', GGRC.Errors.messages[403]);
+                  notifier('error', messages[403]);
                 } else if ( error && error.type !== GDRIVE_PICKER_ERR_CANCEL ) {
-                  GGRC.Errors.notifier('error', error && error.message);
+                  notifier('error', error && error.message);
                 }
                 that.dispatch('finish');
                 that.attr('isUploading', false);
@@ -202,7 +206,7 @@ import tracker from '../../tracker';
             xhr.responseText;
 
           if (message) {
-            GGRC.Errors.notifier('error', message);
+            notifier('error', message);
           }
         });
       },

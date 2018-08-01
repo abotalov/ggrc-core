@@ -9,6 +9,7 @@ import re
 import tempfile
 import time
 
+import pytest
 from nerodia import browser
 from nerodia.wait.wait import TimeoutError
 
@@ -403,6 +404,9 @@ def test_create_program_and_first_class_objs():
   control_count = 2000
   objective_count = 2000
   audit_count = 8
+  product_count = 1000
+  process_count = 500
+  sys_count = 1000
 
   program_code = import_and_export(objects.PROGRAMS, 1)[0]
 
@@ -439,8 +443,13 @@ def test_create_program_and_first_class_objs():
     map_to_program[0],
     ("map:objective",
      split_with_repeat_iter(objective_codes, control_count))]
-  control_codes = import_and_export(
-      objects.CONTROLS, control_count, mappings)
+  import_and_export(objects.CONTROLS, control_count, mappings)
+
+  import_and_export(objects.PRODUCTS, product_count, map_to_program)
+
+  import_and_export(objects.PROCESSES, process_count, map_to_program)
+
+  import_and_export(objects.SYSTEMS, sys_count, map_to_program)
 
   mappings = [("Program", program_code)]
   audit_codes = import_and_export(objects.AUDITS, audit_count, mappings)
@@ -459,9 +468,8 @@ def test_generate_asmts():
     for controls_chunk in _split_into_chunks(controls, 100):
       snapshots = entity.Representation.convert_repr_to_snapshot(
           objs=controls_chunk, parent_obj=audit)
-      assessments = rest_service.AssessmentsFromTemplateService(
-          ).create_assessments(audit, asmt_template, snapshots)
-      a = 1
+      rest_service.AssessmentsFromTemplateService().create_assessments(
+          audit, asmt_template, snapshots)
 
 
 def _create_asmt_template(audit):

@@ -13,6 +13,7 @@ import {
 import {
   refreshCounts,
 } from '../../plugins/utils/current-page-utils';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 (function (GGRC, can, $) {
   'use strict';
@@ -78,7 +79,7 @@ import {
         let message =
           'Audit refresh is in progress. This may take several minutes.';
 
-        GGRC.Errors.notifier('progress', [message]);
+        notifier('progress', [message]);
       },
       _updateVisibleContainer: function () {
         let visibleContainer = $('tree-widget-container:visible');
@@ -93,7 +94,7 @@ import {
       _showSuccessMsg: function () {
         let message = 'Audit was refreshed successfully.';
         $('alert-progress').remove();
-        GGRC.Errors.notifier('success', [message]);
+        notifier('success', [message]);
       },
     },
   });

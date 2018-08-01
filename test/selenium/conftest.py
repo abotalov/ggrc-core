@@ -97,6 +97,12 @@ def pytest_addoption(parser):
 SELENIUM_LOGGER.setLevel(logging.INFO)
 
 
+@pytest.fixture(autouse=True)
+def reset_dict_executed_fixtures():
+  """Reset dict_executed_fixtures between tests"""
+  dynamic_fixtures.dict_executed_fixtures = {}
+
+
 @pytest.fixture(scope="session")
 def session_capabilities(session_capabilities):
   """Log browser (console log) and performance (request / response headers)

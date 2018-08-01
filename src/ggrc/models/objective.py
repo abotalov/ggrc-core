@@ -8,16 +8,13 @@ from ggrc.access_control.roleable import Roleable
 from ggrc.fulltext.mixin import Indexed
 from ggrc.models.comment import Commentable
 from ggrc.models import mixins
-from ggrc.models.mixins import base
-from .object_document import PublicDocumentable
-from .object_person import Personable
-from .track_object_state import HasObjectState
-from .relationship import Relatable
-from .mixins.with_last_assessment_date import WithLastAssessmentDate
-from .mixins.with_similarity_score import WithSimilarityScore
+from ggrc.models.object_document import PublicDocumentable
+from ggrc.models.object_person import Personable
+from ggrc.models.track_object_state import HasObjectState
+from ggrc.models.relationship import Relatable
 
 
-class Objective(WithLastAssessmentDate,
+class Objective(mixins.with_last_assessment_date.WithLastAssessmentDate,
                 Roleable,
                 HasObjectState,
                 mixins.CustomAttributable,
@@ -28,9 +25,10 @@ class Objective(WithLastAssessmentDate,
                 PublicDocumentable,
                 Commentable,
                 mixins.TestPlanned,
-                WithSimilarityScore,
-                base.ContextRBAC,
+                mixins.with_similarity_score.WithSimilarityScore,
+                mixins.base.ContextRBAC,
                 mixins.BusinessObject,
+                mixins.Folderable,
                 Indexed,
                 db.Model):
   """Class representing Objective."""

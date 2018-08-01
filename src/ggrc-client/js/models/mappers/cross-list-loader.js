@@ -137,7 +137,7 @@
             deferreds.push(deferred);
           });
 
-          return $.when.apply($, deferreds);
+          return $.when(...deferreds);
         })
         .then(function () {
           return binding.list;

@@ -3,31 +3,33 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-describe('GGRC.Errors module', function () {
-  let notifier;
+import {
+  notifier,
+  notifierXHR,
+  messages,
+} from './../../utils/notifiers-utils';
+
+describe('notifiers-utils module', function () {
   let trigger;
   let _originalMessages;
 
   beforeAll(function () {
-    _originalMessages = _.assign({}, GGRC.Errors.messages);
-
-    GGRC.Errors.messages = {
-      'default': 'Some error!',
-      '401': 'Mock auth invalid message',
+    _originalMessages = {
+      'default': messages['default'],
+      '401': messages['401'],
     };
+
+    messages['default'] = 'Some error!';
+    messages['401'] = 'Mock auth invalid message';
 
     trigger = spyOn($.prototype, 'trigger');
   });
 
   afterAll(function () {
-    GGRC.Errors.messages = _originalMessages;
+    Object.assign(messages, _originalMessages);
   });
 
   describe('notifier method', function () {
-    beforeAll(function () {
-      notifier = GGRC.Errors.notifier;
-    });
-
     describe('returns default message', function () {
       describe('and warning type', function () {
         it('if all parameters empty', function () {
@@ -49,14 +51,10 @@ describe('GGRC.Errors module', function () {
   });
 
   describe('notifierXHR method', function () {
-    beforeAll(function () {
-      notifier = GGRC.Errors.notifierXHR;
-    });
-
     describe('returns default message', function () {
       describe('and warning type', function () {
         it('for unknown errors', function () {
-          notifier()({status: 666});
+          notifierXHR()({status: 666});
 
           expect(trigger).toHaveBeenCalledWith('ajax:flash',
             {warning: 'Some error!'});
@@ -65,7 +63,7 @@ describe('GGRC.Errors module', function () {
 
       describe('and error type', function () {
         it('for unknown errors', function () {
-          notifier('error')({status: 666});
+          notifierXHR('error')({status: 666});
 
           expect(trigger).toHaveBeenCalledWith('ajax:flash',
             {error: 'Some error!'});
@@ -75,7 +73,7 @@ describe('GGRC.Errors module', function () {
 
     describe('returns standard message by error code', function () {
       it('for 401 status', function () {
-        notifier('error')({status: 401});
+        notifierXHR('error')({status: 401});
 
         expect(trigger).toHaveBeenCalledWith('ajax:flash',
           {error: 'Mock auth invalid message'});
@@ -84,7 +82,7 @@ describe('GGRC.Errors module', function () {
 
     describe('returns passed message', function () {
       it('for defined error statuses', function () {
-        notifier('error', 'Fake message')({status: 403});
+        notifierXHR('error', 'Fake message')({status: 403});
 
         expect(trigger).toHaveBeenCalledWith('ajax:flash',
           {error: 'Fake message'});

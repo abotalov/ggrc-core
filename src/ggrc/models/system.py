@@ -8,9 +8,7 @@ from ggrc.access_control.roleable import Roleable
 from ggrc.fulltext.mixin import Indexed
 from ggrc.models.comment import Commentable
 from ggrc.models.deferred import deferred
-from ggrc.models.mixins import base
-from ggrc.models.mixins import (BusinessObject, LastDeprecatedTimeboxed,
-                                CustomAttributable, TestPlanned)
+from ggrc.models import mixins
 from ggrc.models.object_document import PublicDocumentable
 from ggrc.models.object_person import Personable
 from ggrc.models.relationship import Relatable
@@ -28,8 +26,13 @@ from ggrc.models import reflection
 # (of course, if there is a nice way of overriding/customizing declared
 # attributes in subclasses, we might want to use that approach)
 class SystemOrProcess(track_object_state.HasObjectState,
-                      Commentable, TestPlanned, LastDeprecatedTimeboxed,
-                      base.ContextRBAC, BusinessObject, db.Model):
+                      Commentable,
+                      mixins.TestPlanned,
+                      mixins.LastDeprecatedTimeboxed,
+                      mixins.base.ContextRBAC,
+                      mixins.BusinessObject,
+                      mixins.Folderable,
+                      db.Model):
   # Override model_inflector
   _table_plural = 'systems_or_processes'
   __tablename__ = 'systems'
@@ -103,8 +106,13 @@ class SystemOrProcess(track_object_state.HasObjectState,
     )
 
 
-class System(CustomAttributable, Personable, Roleable,
-             Relatable, PublicDocumentable, SystemOrProcess, Indexed):
+class System(mixins.CustomAttributable,
+             Personable,
+             Roleable,
+             Relatable,
+             PublicDocumentable,
+             SystemOrProcess,
+             Indexed):
   __mapper_args__ = {
       'polymorphic_identity': False
   }
@@ -119,8 +127,13 @@ class System(CustomAttributable, Personable, Roleable,
     return False
 
 
-class Process(CustomAttributable, Personable, Roleable,
-              Relatable, PublicDocumentable, SystemOrProcess, Indexed):
+class Process(mixins.CustomAttributable,
+              Personable,
+              Roleable,
+              Relatable,
+              PublicDocumentable,
+              SystemOrProcess,
+              Indexed):
   __mapper_args__ = {
       'polymorphic_identity': True
   }

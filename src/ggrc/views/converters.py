@@ -328,7 +328,11 @@ def handle_start(ie_job, user_id):
     raise BadRequest("Wrong status")
   try:
     db.session.commit()
-    deferred.defer(run_import_phases, ie_job.id, user_id, get_url_root())
+    deferred.defer(run_import_phases,
+                   ie_job.id,
+                   user_id,
+                   get_url_root(),
+                   _queue="ggrcImport")
     return make_import_export_response(ie_job.log_json())
   except Exception as e:
     logger.exception("Import failed: %s", e.message)
@@ -456,7 +460,12 @@ def handle_export_post(**kwargs):
         job_type="Export",
         status="In Progress",
         title=filename)
-    deferred.defer(run_export, objects, ie.id, user.id, get_url_root())
+    deferred.defer(run_export,
+                   objects,
+                   ie.id,
+                   user.id,
+                   get_url_root(),
+                   _queue="ggrcImport")
     return make_import_export_response(ie.log_json())
   except Exception as e:
     logger.exception("Export failed due incorrect request data: %s",

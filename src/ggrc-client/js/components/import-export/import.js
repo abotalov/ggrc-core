@@ -29,6 +29,7 @@ import {
 } from '../../plugins/ggrc-gapi-client';
 import {getPickerElement} from '../../plugins/ggrc_utils';
 import errorTemplate from './templates/import-error.mustache';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 const messages = {
   INCORRECT_FORMAT: `The file is not in a recognized format. 
@@ -171,7 +172,7 @@ export default can.Component.extend({
         this.attr('message', messages.FAILED);
       },
       [jobStatuses.FINISHED]() {
-        GGRC.Errors.notifier('info', 'Import was completed successfully.');
+        notifier('info', 'Import was completed successfully.');
         this.resetFile();
         this.getImportHistory();
       },
@@ -201,9 +202,9 @@ export default can.Component.extend({
           this.attr('importStatus', 'error');
 
           if (error && error.responseJSON && error.responseJSON.message) {
-            GGRC.Errors.notifier('error', error.responseJSON.message);
+            notifier('error', error.responseJSON.message);
           } else {
-            GGRC.Errors.notifier('error', errorTemplate, true);
+            notifier('error', errorTemplate, true);
           }
         }).always(() => {
           this.attr('isLoading', false);
@@ -343,7 +344,7 @@ export default can.Component.extend({
           } else {
             that.attr('fileName', file.name);
             that.attr('importStatus', 'error');
-            GGRC.Errors.notifier('error', messages.INCORRECT_FORMAT);
+            notifier('error', messages.INCORRECT_FORMAT);
           }
         }
       }

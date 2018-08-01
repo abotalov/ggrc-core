@@ -3,7 +3,13 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import Cacheable from '../cacheable';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
+import '../mixins/mapping-limit';
+import '../mixins/in-scope-objects';
+import '../mixins/in-scope-objects-preload';
+import '../mixins/refetch-hash';
+import '../mixins/assessment-issue-tracker';
 
 /**
  * A model describing a template for the newly created Assessment objects.
@@ -12,7 +18,7 @@ import {getPageInstance} from '../../plugins/utils/current-page-utils';
  * AssessmentTemplate helps avoiding repeatedly defining the same set of
  * Assessment object properties for each new instance.
  */
-export default can.Model.Cacheable('CMS.Models.AssessmentTemplate', {
+export default Cacheable('CMS.Models.AssessmentTemplate', {
   root_object: 'assessment_template',
   root_collection: 'assessment_templates',
   model_singular: 'AssessmentTemplate',

@@ -318,7 +318,8 @@ class TestUserGenerator(TestCase):
   @freeze_time("2018-05-30 02:22:11")
   @ddt.data(('aturing@example.com', 'aturing@example.com'),
             ('', 'aturing@example.com'),
-            ('aturing@example.com', ''))
+            ('aturing@example.com', ''),
+            ('aturing@example.com', '--'))
   @ddt.unpack
   def test_verifier_import(self, assignee_email, verifier_email):
     """Test for verifiers import"""
@@ -347,7 +348,7 @@ class TestUserGenerator(TestCase):
         self._check_csv_response(response, {})
         self.assertEqual(
             len(assessment_template.default_people['assignees']), 1)
-        if verifier_email:
+        if verifier_email and verifier_email != '--':
           self.assertEqual(
               len(assessment_template.default_people['verifiers']), 1)
         else:
@@ -369,6 +370,51 @@ class TestUserGenerator(TestCase):
     emails = ["aturing@example.com", ]
     self.assert_person_profile_created(emails)
     self.assert_profiles_restrictions()
+
+  @mock.patch('ggrc.settings.INTEGRATION_SERVICE_URL', new='endpoint')
+  @mock.patch('ggrc.settings.AUTHORIZED_DOMAIN', new='example.com')
+  @freeze_time("2018-05-30 02:22:11")
+  @ddt.data('--', '')
+  def test_import_template_update(self, verifier_update_email):
+    """Test for template update via import."""
+    with mock.patch.multiple(
+        PersonClient,
+        _post=self._mock_post
+    ):
+      audit = factories.AuditFactory()
+      slug = 'AssessmentTemplate1'
+      response = self.import_data(OrderedDict([
+          ('object_type', 'Assessment_Template'),
+          ('Code*', slug),
+          ('Audit*', audit.slug),
+          ('Default Assignees', 'aturing@example.com'),
+          ('Default Verifiers', 'aturing@example.com'),
+          ('Title', 'Title'),
+          ('Object Under Assessment', 'Control'),
+      ]))
+      imported_template = AssessmentTemplate.query.filter(
+          AssessmentTemplate.slug == slug).first()
+      self._check_csv_response(response, {})
+      self.assertEqual(len(imported_template.default_people['verifiers']), 1)
+
+      response = self.import_data(OrderedDict([
+          ('object_type', 'Assessment_Template'),
+          ('Code*', slug),
+          ('Audit*', audit.slug),
+          ('Default Assignees', 'aturing2@example.com'),
+          ('Default Verifiers', verifier_update_email),
+          ('Title', 'Title'),
+          ('Object Under Assessment', 'Control'),
+      ]))
+      updated_template = AssessmentTemplate.query.filter(
+          AssessmentTemplate.slug == slug).first()
+      self._check_csv_response(response, {})
+      self.assertNotEqual(updated_template.default_people['assignees'],
+                          imported_template.default_people['assignees'])
+      if not verifier_update_email:
+        self.assertEqual(len(updated_template.default_people['verifiers']), 1)
+      if verifier_update_email == "--":
+        self.assertEqual(updated_template.default_people['verifiers'], None)
 
   @mock.patch('ggrc.settings.INTEGRATION_SERVICE_URL', new='endpoint')
   @mock.patch('ggrc.settings.AUTHORIZED_DOMAIN', new='example.com')

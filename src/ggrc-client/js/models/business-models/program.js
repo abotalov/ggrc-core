@@ -3,9 +3,15 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
+import Cacheable from '../cacheable';
 import {getRole} from '../../plugins/utils/acl-utils';
+import '../mixins/unique-title';
+import '../mixins/ca-update';
+import '../mixins/timeboxed';
+import '../mixins/access-control-list';
+import '../mixins/base-notifications';
 
-export default can.Model.Cacheable('CMS.Models.Program', {
+export default Cacheable('CMS.Models.Program', {
   root_object: 'program',
   root_collection: 'programs',
   category: 'programs',
@@ -39,7 +45,7 @@ export default can.Model.Cacheable('CMS.Models.Program', {
   orderOfRoles: ['Program Managers', 'Program Editors', 'Program Readers'],
   tree_view_options: {
     attr_view: GGRC.mustache_path + '/programs/tree-item-attr.mustache',
-    attr_list: can.Model.Cacheable.attr_list.concat([
+    attr_list: Cacheable.attr_list.concat([
       {attr_title: 'Reference URL', attr_name: 'reference_url'},
       {attr_title: 'Effective Date', attr_name: 'start_date'},
       {attr_title: 'Last Deprecated Date', attr_name: 'end_date'},

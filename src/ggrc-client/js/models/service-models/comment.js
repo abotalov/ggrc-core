@@ -4,10 +4,12 @@
  */
 
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
+import Cacheable from '../cacheable';
+
 /**
  * A model describing a comment to Assessment or Request objects.
  */
-export default can.Model.Cacheable('CMS.Models.Comment', {
+export default Cacheable('CMS.Models.Comment', {
   root_object: 'comment',
   root_collection: 'comments',
   findOne: 'GET /api/comments/{id}',
@@ -15,7 +17,6 @@ export default can.Model.Cacheable('CMS.Models.Comment', {
   update: 'PUT /api/comments/{id}',
   destroy: 'DELETE /api/comments/{id}',
   create: 'POST /api/comments',
-  mixins: [],
   init: function () {
     this.validatePresenceOf('description');
     if (this._super) {

@@ -3,20 +3,21 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-describe('GGRC.Components.multiselectDropdown', function () {
+import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import Component from '../multiselect-dropdown';
+
+describe('multiselect-dropdown component', function () {
   'use strict';
 
-  let Component;
   let events;
   let viewModel;
 
   beforeAll(function () {
-    Component = GGRC.Components.get('multiselectDropdown');
     events = Component.prototype.events;
   });
 
   beforeEach(function () {
-    viewModel = GGRC.Components.getViewModel('multiselectDropdown');
+    viewModel = getComponentVM(Component);
   });
 
   describe('openDropdown() method', function () {

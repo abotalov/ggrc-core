@@ -9,6 +9,13 @@ import {
 import '../../controllers/dashboard_controller';
 import {RouterConfig} from '../../router';
 import routes from './routes';
+import {gapiClient} from '../../plugins/ggrc-gapi-client';
+import Event from '../../models/service-models/event';
+import Role from '../../models/service-models/role';
+import CustomAttributable from '../../models/custom-attributes/custom-attributable';
+import CustomAttributeDefinition from '../../models/custom-attributes/custom-attribute-definition';
+import AccessControlRole from '../../models/custom-roles/access-control-role';
+import Roleable from '../../models/custom-roles/roleable';
 
 const path = GGRC.mustache_path || '/static/mustache';
 const HEADER_VIEW = `${path}/base_objects/page_header.mustache`;
@@ -31,6 +38,7 @@ const sortByNameEmail = list => {
 };
 
 RouterConfig.setupRoutes(routes);
+gapiClient.loadGapiClient();
 
 const adminListDescriptors = {
   people: {
@@ -38,7 +46,7 @@ const adminListDescriptors = {
     roles: new can.List(),
     init: function () {
       let self = this;
-      CMS.Models.Role
+      Role
         .findAll({scope__in: 'System,Admin'})
         .done(function (roles) {
           self.roles.replace(sortByNameEmail(roles));
@@ -54,7 +62,7 @@ const adminListDescriptors = {
     fetch_post_process: sortByNameEmail,
   },
   roles: {
-    model: CMS.Models.Role,
+    model: Role,
     extra_params: {scope__in: 'System,Admin,Private Program,Workflow'},
     object_category: 'governance',
     object_display: 'Roles',
@@ -62,14 +70,14 @@ const adminListDescriptors = {
     fetch_post_process: sortByNameEmail,
   },
   events: {
-    model: CMS.Models.Event,
+    model: Event,
     object_category: 'governance',
     object_display: 'Events',
     list_view: '/static/mustache/events/object_list.mustache',
   },
   custom_attributes: {
-    parent_instance: CMS.Models.CustomAttributable,
-    model: CMS.Models.CustomAttributable,
+    parent_instance: CustomAttributable,
+    model: CustomAttributable,
     header_view:
     GGRC.mustache_path +
     '/custom_attribute_definitions/tree_header.mustache',
@@ -77,11 +85,11 @@ const adminListDescriptors = {
     GGRC.mustache_path + '/custom_attribute_definitions/tree.mustache',
     sortable: false,
     list_loader: function () {
-      return CMS.Models.CustomAttributable.findAll();
+      return CustomAttributable.findAll();
     },
     draw_children: true,
     child_options: [{
-      model: CMS.Models.CustomAttributeDefinition,
+      model: CustomAttributeDefinition,
       mapping: 'custom_attribute_definitions',
       show_view:
       GGRC.mustache_path +
@@ -91,19 +99,19 @@ const adminListDescriptors = {
     }],
   },
   custom_roles: {
-    parent_instance: CMS.Models.Roleable,
-    model: CMS.Models.Roleable,
+    parent_instance: Roleable,
+    model: Roleable,
     header_view:
     GGRC.mustache_path + '/access_control_roles/tree_header.mustache',
     show_view:
     GGRC.mustache_path + '/access_control_roles/tree.mustache',
     sortable: false,
     list_loader: function () {
-      return CMS.Models.Roleable.findAll();
+      return Roleable.findAll();
     },
     draw_children: true,
     child_options: [{
-      model: CMS.Models.AccessControlRole,
+      model: AccessControlRole,
       mapping: 'access_control_roles',
       show_view:
       GGRC.mustache_path + '/access_control_roles/subtree.mustache',
@@ -130,7 +138,7 @@ new GGRC.WidgetList('ggrc_admin', {
       },
     },
     roles: {
-      model: CMS.Models.Role,
+      model: Role,
       content_controller: GGRC.Controllers.ListView,
       content_controller_options: adminListDescriptors.roles,
       widget_id: 'roles_list',
@@ -144,7 +152,7 @@ new GGRC.WidgetList('ggrc_admin', {
       },
     },
     events: {
-      model: CMS.Models.Event,
+      model: Event,
       content_controller: GGRC.Controllers.ListView,
       content_controller_options: adminListDescriptors.events,
       widget_id: 'events_list',
@@ -162,7 +170,7 @@ new GGRC.WidgetList('ggrc_admin', {
       widget_icon: 'workflow',
       content_controller: CMS.Controllers.TreeView,
       content_controller_selector: 'ul',
-      model: CMS.Models.CustomAttributable,
+      model: CustomAttributable,
       widget_initial_content:
       '<ul' +
       '  class="tree-structure new-tree colored-list"' +
@@ -177,7 +185,7 @@ new GGRC.WidgetList('ggrc_admin', {
       content_controller: CMS.Controllers.TreeView,
       content_controller_selector: 'ul',
       content_controller_options: adminListDescriptors.custom_roles,
-      model: CMS.Models.Roleable,
+      model: Roleable,
       widget_initial_content: [
         '<ul',
         '  class="tree-structure new-tree colored-list"',

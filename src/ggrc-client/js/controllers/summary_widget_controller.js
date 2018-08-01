@@ -17,6 +17,7 @@ import {loadScript} from '../plugins/ggrc_utils';
 import {
   inferObjectType,
 } from '../plugins/utils/models-utils';
+import Relationship from '../models/join-models/relationship';
 
 export default can.Control({
   defaults: {
@@ -87,7 +88,7 @@ export default can.Control({
     return 0;
   },
   onRelationshipChange: function (model, ev, instance) {
-    if (instance instanceof CMS.Models.Relationship &&
+    if (instance instanceof Relationship &&
     instance.attr('destination.type') === 'Evidence' &&
     instance.attr('source.type') === 'Assessment') {
       this.options.forceRefresh = true;

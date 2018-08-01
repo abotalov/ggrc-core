@@ -3,7 +3,10 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-describe('GGRC.Components.dropdown', function () {
+import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import Component from '../dropdown';
+
+describe('dropdown component', function () {
   'use strict';
 
   describe('rendering option list', function () {
@@ -141,7 +144,7 @@ describe('GGRC.Components.dropdown', function () {
     };
 
     beforeEach(function () {
-      viewModel = GGRC.Components.getViewModel('dropdown');
+      viewModel = getComponentVM(Component);
       viewModel.attr('noValue', false);
     });
 

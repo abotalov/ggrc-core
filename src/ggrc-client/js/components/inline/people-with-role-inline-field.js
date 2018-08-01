@@ -25,6 +25,6 @@ const viewModel = can.Map.extend({
 export default can.Component.extend('peopleWithRoleInlineField', {
   tag: 'people-with-role-inline-field',
   template: `<inline-aggregate-field {source}="peopleList"
-    {field}="\'email\'"/>`,
+    {field}="'email'"/>`,
   viewModel,
 });

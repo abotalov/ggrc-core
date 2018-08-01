@@ -55,7 +55,7 @@
         deferreds.push(sourceBinding.refresh_stubs());
       });
 
-      return $.when.apply($, deferreds);
+      return $.when(...deferreds);
     },
   });
 })(window.GGRC, window.can);

@@ -3,7 +3,10 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-describe('GGRC.Components.multiselectDropdown', function () {
+import {getComponentVM} from '../../../js_specs/spec_helpers';
+import Component from '../dropdown/multiselect-dropdown';
+
+describe('multiselect-dropdown component', function () {
   'use strict';
 
   describe('updateSelected() method', function () {
@@ -11,7 +14,7 @@ describe('GGRC.Components.multiselectDropdown', function () {
     let viewModel;
 
     beforeEach(function () {
-      viewModel = GGRC.Components.getViewModel('multiselectDropdown');
+      viewModel = getComponentVM(Component);
 
       options = [
         {
@@ -97,7 +100,7 @@ describe('GGRC.Components.multiselectDropdown', function () {
     let openItem;
 
     beforeEach(function () {
-      viewModel = GGRC.Components.getViewModel('multiselectDropdown');
+      viewModel = getComponentVM(Component);
 
       options = [
         {
@@ -161,7 +164,7 @@ describe('GGRC.Components.multiselectDropdown', function () {
     let viewModel;
 
     beforeEach(function () {
-      viewModel = GGRC.Components.getViewModel('multiselectDropdown');
+      viewModel = getComponentVM(Component);
       viewModel.attr('options', [{value: 'someOption'}]);
     });
 

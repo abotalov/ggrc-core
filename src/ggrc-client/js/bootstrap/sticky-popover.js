@@ -53,7 +53,7 @@
         if (this.displayState !== 'show') {
           this.$element.trigger($.Event('show'));
         } else {
-          //fix the opacity value as it currently stands to prevent show-hide-show after loading.
+          // fix the opacity value as it currently stands to prevent show-hide-show after loading.
           this.tip().css({opacity: window.getComputedStyle(this.tip()[0]).opacity});
         }
 
@@ -87,9 +87,9 @@
       }
     },
     trigger_load: function () {
-      let self = this,
-        href = this.$element.data('popover-href'),
-        loaded = this.$element.data('popover-loaded');
+      let self = this;
+      let href = this.$element.data('popover-href');
+      let loaded = this.$element.data('popover-loaded');
 
       if (!href) return;
 
@@ -131,9 +131,9 @@
 
   $.fn.sticky_popover = function (option) {
     return this.each(function () {
-      let $this = $(this),
-        data = $this.data('sticky_popover'),
-        options = typeof option == 'object' && option
+      let $this = $(this);
+      let data = $this.data('sticky_popover');
+      let options = typeof option == 'object' && option
       if (!data) {
         $this.data('sticky_popover', (data = new StickyPopover(this, options)));
         // Make instantiated popovers findable by $('[data-sticky_popover]');

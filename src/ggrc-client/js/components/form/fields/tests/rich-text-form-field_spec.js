@@ -3,13 +3,15 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-describe('GGRC.Components.richTextFormField', function () {
+import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import Component from '../rich-text-form-field';
+
+describe('rich-text-form-field', function () {
   'use strict';
   let viewModel;
 
   beforeEach(function () {
-    viewModel = GGRC.Components
-      .getViewModel('richTextFormField');
+    viewModel = getComponentVM(Component);
     spyOn(viewModel, 'dispatch');
     viewModel.attr('fieldId', 'id');
   });

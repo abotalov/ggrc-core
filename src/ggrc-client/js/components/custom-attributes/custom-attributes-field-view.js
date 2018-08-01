@@ -10,15 +10,11 @@ import '../form/field-views/rich-text-form-field-view';
 import '../form/field-views/text-form-field-view';
 import template from './custom-attributes-field-view.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  GGRC.Components('localCustomAttributesFieldView', {
-    tag: 'custom-attributes-field-view',
-    template: template,
-    viewModel: {
-      type: null,
-      value: null,
-    },
-  });
-})(window.can, window.GGRC);
+export default can.Component.extend({
+  tag: 'custom-attributes-field-view',
+  template,
+  viewModel: {
+    type: null,
+    value: null,
+  },
+});

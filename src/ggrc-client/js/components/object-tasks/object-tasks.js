@@ -9,56 +9,52 @@ import {
 } from '../../plugins/utils/query-api-utils';
 import template from './object-tasks.mustache';
 
-(function (can, GGRC) {
-  'use strict';
+const REQUIRED_TYPE = 'CycleTaskGroupObjectTask';
+const REQUIRED_FIELDS = Object.freeze([
+  'title',
+  'status',
+  'next_due_date',
+  'end_date',
+  'is_verification_needed',
+]);
 
-  let REQUIRED_TYPE = 'CycleTaskGroupObjectTask';
-  let REQUIRED_FIELDS = Object.freeze([
-    'title',
-    'status',
-    'next_due_date',
-    'end_date',
-    'is_verification_needed',
-  ]);
-
-  let viewModel = can.Map.extend({
-    instanceId: null,
-    instanceType: null,
-    tasks: [],
-    loadTasks: function () {
-      let id = this.attr('instanceId');
-      let type = this.attr('instanceType');
-      let params = buildParam(
-        REQUIRED_TYPE,
-        {},
-        {
-          type: type,
-          id: id,
-          operation: 'relevant',
-        },
-        REQUIRED_FIELDS);
-
-      return batchRequests(params)
-        .then(function (response) {
-          let tasks = [];
-
-          response[REQUIRED_TYPE].values.forEach(function (item) {
-            tasks.push(CMS.Models[REQUIRED_TYPE].model(item));
-          });
-
-          this.attr('tasks', tasks);
-        }.bind(this));
-    },
-  });
-
-  GGRC.Components('objectTasks', {
-    tag: 'object-tasks',
-    template: template,
-    viewModel: viewModel,
-    events: {
-      inserted: function () {
-        this.viewModel.addContent(this.viewModel.loadTasks());
+let viewModel = can.Map.extend({
+  instanceId: null,
+  instanceType: null,
+  tasks: [],
+  loadTasks: function () {
+    let id = this.attr('instanceId');
+    let type = this.attr('instanceType');
+    let params = buildParam(
+      REQUIRED_TYPE,
+      {},
+      {
+        type: type,
+        id: id,
+        operation: 'relevant',
       },
+      REQUIRED_FIELDS);
+
+    return batchRequests(params)
+      .then(function (response) {
+        let tasks = [];
+
+        response[REQUIRED_TYPE].values.forEach(function (item) {
+          tasks.push(CMS.Models[REQUIRED_TYPE].model(item));
+        });
+
+        this.attr('tasks', tasks);
+      }.bind(this));
+  },
+});
+
+export default can.Component.extend({
+  tag: 'object-tasks',
+  template,
+  viewModel,
+  events: {
+    inserted: function () {
+      this.viewModel.addContent(this.viewModel.loadTasks());
     },
-  });
-})(window.can, window.GGRC);
+  },
+});

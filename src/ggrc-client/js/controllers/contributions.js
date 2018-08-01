@@ -5,6 +5,7 @@
 
 import {makeModelInstance} from '../plugins/utils/models-utils';
 import {getPageInstance} from '../plugins/utils/current-page-utils';
+import Role from '../models/service-models/role';
 
 /* Role Assignment Modal Selector
   *
@@ -76,7 +77,7 @@ const userRolesModalSelector = can.Control.extend({
     // Extract parameters from data attributes
     let href = $trigger.attr('data-href') || $trigger.attr('href');
     let modalId =
-      'ajax-modal-' + href.replace(/[\/\?=\&#%]/g, '-').replace(/^-/, '');
+      'ajax-modal-' + href.replace(/[/?=&#%]/g, '-').replace(/^-/, '');
     let $target = $(
       '<div id="' + modalId + '" class="modal modal-selector hide"></div>'
     );
@@ -322,7 +323,7 @@ const userRolesModalSelector = can.Control.extend({
 
     // Create the new join (skipping "No Role" role, with id == 0)
     if (clickedOption.id > 0 && !alreadyExists) {
-      $.when.apply($, deleteDfds).then(function () {
+      $.when(...deleteDfds).then(function () {
         join = self.get_new_join(
           clickedOption.id,
           clickedOption.scope,
@@ -336,7 +337,7 @@ const userRolesModalSelector = can.Control.extend({
         });
       });
     } else {
-      $.when.apply($, deleteDfds).then(function () {
+      $.when(...deleteDfds).then(function () {
         $('body').trigger('treeupdate');
       });
     }
@@ -449,7 +450,7 @@ function getOptionSet(name, data) {
     related_title_plural: 'People',
 
     object_model: CMS.Models.Person,
-    option_model: CMS.Models.Role,
+    option_model: Role,
     join_model: CMS.Models.UserRole,
 
     object_query: objectQuery,

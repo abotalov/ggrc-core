@@ -6,19 +6,16 @@ from sqlalchemy.orm import validates
 
 from ggrc import db
 from ggrc.access_control.roleable import Roleable
+from ggrc.fulltext.mixin import Indexed
+from ggrc.models import reflection
 from ggrc.models.comment import Commentable
 from ggrc.models.deferred import deferred
-from ggrc.models.mixins import base
-from ggrc.models.mixins import (BusinessObject, LastDeprecatedTimeboxed,
-                                CustomAttributable, TestPlanned)
-from ggrc.models import reflection
-from ggrc.fulltext.mixin import Indexed
-from .object_document import PublicDocumentable
-from .object_person import Personable
-from .relationship import Relatable
-from .utils import validate_option
-
-from .track_object_state import HasObjectState
+from ggrc.models import mixins
+from ggrc.models.object_document import PublicDocumentable
+from ggrc.models.object_person import Personable
+from ggrc.models.relationship import Relatable
+from ggrc.models.track_object_state import HasObjectState
+from ggrc.models.utils import validate_option
 
 
 # NOTE: The PublicDocumentable mixin is not applied directly to the Directive
@@ -28,8 +25,13 @@ from .track_object_state import HasObjectState
 # to be run in the context of each particular subclass.
 # (of course, if there is a nice way of overriding/customizing declared
 # attributes in subclasses, we might want to use that approach)
-class Directive(HasObjectState, LastDeprecatedTimeboxed,
-                Commentable, TestPlanned, base.ContextRBAC, BusinessObject,
+class Directive(HasObjectState,
+                mixins.LastDeprecatedTimeboxed,
+                Commentable,
+                mixins.TestPlanned,
+                mixins.base.ContextRBAC,
+                mixins.BusinessObject,
+                mixins.Folderable,
                 db.Model):
   __tablename__ = 'directives'
 
@@ -147,8 +149,13 @@ class Directive(HasObjectState, LastDeprecatedTimeboxed,
 
 
 # FIXME: For subclasses, restrict kind
-class Policy(Roleable, CustomAttributable, Relatable,
-             Personable, PublicDocumentable, Directive, Indexed):
+class Policy(Roleable,
+             mixins.CustomAttributable,
+             Relatable,
+             Personable,
+             PublicDocumentable,
+             Directive,
+             Indexed):
   __mapper_args__ = {
       'polymorphic_identity': 'Policy'
   }
@@ -170,8 +177,13 @@ class Policy(Roleable, CustomAttributable, Relatable,
     return 'Policy'
 
 
-class Regulation(Roleable, CustomAttributable, Relatable,
-                 Personable, PublicDocumentable, Directive, Indexed):
+class Regulation(Roleable,
+                 mixins.CustomAttributable,
+                 Relatable,
+                 Personable,
+                 PublicDocumentable,
+                 Directive,
+                 Indexed):
   __mapper_args__ = {
       'polymorphic_identity': 'Regulation'
   }
@@ -191,8 +203,13 @@ class Regulation(Roleable, CustomAttributable, Relatable,
     return 'Regulation'
 
 
-class Standard(Roleable, CustomAttributable, Relatable,
-               Personable, PublicDocumentable, Directive, Indexed):
+class Standard(Roleable,
+               mixins.CustomAttributable,
+               Relatable,
+               Personable,
+               PublicDocumentable,
+               Directive,
+               Indexed):
   __mapper_args__ = {
       'polymorphic_identity': 'Standard'
   }
@@ -212,8 +229,13 @@ class Standard(Roleable, CustomAttributable, Relatable,
     return 'Standard'
 
 
-class Contract(Roleable, CustomAttributable, Relatable,
-               Personable, PublicDocumentable, Directive, Indexed):
+class Contract(Roleable,
+               mixins.CustomAttributable,
+               Relatable,
+               Personable,
+               PublicDocumentable,
+               Directive,
+               Indexed):
   __mapper_args__ = {
       'polymorphic_identity': 'Contract'
   }

@@ -101,6 +101,7 @@ class TestCustomAttributesDefinitions(TestCase):
         'Created Date',
         'Last Updated Date',
         'Last Updated By',
+        'Folder',
     }
     expected_names = element_names.union(mapping_names)
     self.assertEqual(expected_names, display_names)
@@ -493,6 +494,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         'Last Updated Date',
         'Last Updated By',
         'Ticket Tracker',
+        'Folder',
     }
     expected_fields = {
         "mandatory": {
@@ -531,6 +533,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         'Created Date',
         'Last Updated Date',
         'Last Updated By',
+        'Folder',
     }
     self._test_single_object(models.Policy, names, self.COMMON_EXPECTED)
 
@@ -553,10 +556,11 @@ class TestGetObjectColumnDefinitions(TestCase):
         "Recipients",
         "Send by default",
         "Comments",
-        'Created Date',
-        'Last Updated Date',
-        'Last Updated By',
+        "Created Date",
+        "Last Updated Date",
+        "Last Updated By",
         "Assessment Procedure",
+        "Folder",
     }
     self._test_single_object(models.Clause, names, self.COMMON_EXPECTED)
 
@@ -584,6 +588,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         "Assessment Procedure",
         "Last Deprecated Date",
         "Effective Date",
+        "Folder",
     }
     self._test_single_object(models.Requirement, names, self.COMMON_EXPECTED)
 
@@ -649,6 +654,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         "Last Updated By",
         "Last Deprecated Date",
         "Effective Date",
+        "Folder",
     }
     self._test_single_object(models.Objective, names, self.COMMON_EXPECTED)
 
@@ -697,6 +703,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         'Created Date',
         'Last Updated Date',
         'Last Updated By',
+        'Folder',
     }
     self._test_single_object(models.System, names, self.COMMON_EXPECTED)
 
@@ -724,6 +731,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         'Created Date',
         'Last Updated Date',
         'Last Updated By',
+        'Folder',
     }
     self._test_single_object(models.Process, names, self.COMMON_EXPECTED)
 
@@ -751,6 +759,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         'Created Date',
         'Last Updated Date',
         'Last Updated By',
+        'Folder',
     }
     self._test_single_object(models.Product, names, self.COMMON_EXPECTED)
 
@@ -777,6 +786,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         'Created Date',
         'Last Updated Date',
         'Last Updated By',
+        'Folder',
     }
     expected_fields = {
         "mandatory": {
@@ -827,6 +837,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         'Created Date',
         'Last Updated Date',
         'Last Updated By',
+        'Folder',
     }
     self._test_single_object(model, names, self.COMMON_EXPECTED)
 

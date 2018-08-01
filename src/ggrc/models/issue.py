@@ -12,10 +12,7 @@ from ggrc import builder
 from ggrc.access_control.roleable import Roleable
 from ggrc.models.comment import Commentable
 from ggrc.models.deferred import deferred
-from ggrc.models.mixins import base
-from ggrc.models.mixins import (
-    BusinessObject, LastDeprecatedTimeboxed, CustomAttributable, TestPlanned
-)
+from ggrc.models import mixins
 from ggrc.models.mixins import issue_tracker
 from ggrc.models.mixins.audit_relationship import AuditRelationship
 from ggrc.models.mixins.with_action import WithAction
@@ -29,18 +26,19 @@ from ggrc.fulltext.mixin import Indexed
 
 class Issue(Roleable,
             HasObjectState,
-            TestPlanned,
-            CustomAttributable,
+            mixins.TestPlanned,
+            mixins.CustomAttributable,
             PublicDocumentable,
             Personable,
-            LastDeprecatedTimeboxed,
+            mixins.LastDeprecatedTimeboxed,
             Relatable,
             Commentable,
             AuditRelationship,
             WithAction,
             issue_tracker.IssueTrackedWithUrl,
-            base.ContextRBAC,
-            BusinessObject,
+            mixins.base.ContextRBAC,
+            mixins.BusinessObject,
+            mixins.Folderable,
             Indexed,
             db.Model):
   """Issue Model."""
@@ -50,15 +48,22 @@ class Issue(Roleable,
   FIXED = "Fixed"
   FIXED_AND_VERIFIED = "Fixed and Verified"
 
-  VALID_STATES = BusinessObject.VALID_STATES + (FIXED, FIXED_AND_VERIFIED, )
+  VALID_STATES = mixins.BusinessObject.VALID_STATES + (
+      FIXED,
+      FIXED_AND_VERIFIED,
+  )
 
   # REST properties
   _api_attrs = reflection.ApiAttributes(
-      reflection.Attribute("audit", create=False, update=False),
-      reflection.Attribute("allow_map_to_audit", create=False, update=False),
+      reflection.Attribute("audit",
+                           create=False,
+                           update=False),
+      reflection.Attribute("allow_map_to_audit",
+                           create=False,
+                           update=False),
       reflection.Attribute("allow_unmap_from_audit",
-                           create=False, update=False),
-      reflection.Attribute('folder', create=False, update=False),
+                           create=False,
+                           update=False),
   )
 
   _aliases = {
@@ -82,10 +87,6 @@ class Issue(Roleable,
   audit_id = deferred(
       db.Column(db.Integer, db.ForeignKey('audits.id'), nullable=True),
       'Issue')
-
-  @builder.simple_property
-  def folder(self):
-    return self.audit.folder if self.audit else ""
 
   @builder.simple_property
   def allow_map_to_audit(self):

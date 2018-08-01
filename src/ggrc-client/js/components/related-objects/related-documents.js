@@ -16,6 +16,8 @@ import {
   DESTINATION_UNMAPPED,
 } from '../../events/eventTypes';
 import pubsub from '../../pub-sub';
+import Relationship from '../../models/join-models/relationship';
+import Context from '../../models/service-models/context';
 
 (function (can, $, _, GGRC) {
   'use strict';
@@ -122,8 +124,7 @@ import pubsub from '../../pub-sub';
       addDocuments: function (event) {
         let items = event.items;
         this.attr('isLoading', true);
-        return this.attr('documents').unshift
-          .apply(this.attr('documents'), items);
+        return this.attr('documents').unshift(...items);
       },
       createDocument: function (data) {
         let date = new Date();
@@ -132,7 +133,7 @@ import pubsub from '../../pub-sub';
           link: data,
           title: data,
           created_at: date.toISOString(),
-          context: this.instance.context || new CMS.Models.Context({
+          context: this.instance.context || new Context({
             id: null,
           }),
           kind: this.kind,
@@ -143,11 +144,11 @@ import pubsub from '../../pub-sub';
         return document.save();
       },
       createRelationship: function (document) {
-        let relationship = new CMS.Models.Relationship({
+        let relationship = new Relationship({
           source: this.instance,
           destination: document,
           context: this.instance.context ||
-            new CMS.Models.Context({id: null}),
+            new Context({id: null}),
         });
         return relationship.save();
       },
@@ -173,7 +174,7 @@ import pubsub from '../../pub-sub';
       removeRelatedDocument: async function (document) {
         let self = this;
         let documents;
-        let relationship = await CMS.Models.Relationship.findRelationship(
+        let relationship = await Relationship.findRelationship(
           document, this.instance);
         if (!relationship.id) {
           console.log('Unable to find relationship');

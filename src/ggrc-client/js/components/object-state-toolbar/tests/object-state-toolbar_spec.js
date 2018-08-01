@@ -3,11 +3,14 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-describe('GGRC.Components.objectStateToolbar', function () {
+import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import Component from '../object-state-toolbar';
+
+describe('object-state-toolbar component', function () {
   let vm;
 
   beforeEach(function () {
-    vm = GGRC.Components.getViewModel('objectStateToolbar');
+    vm = getComponentVM(Component);
   });
 
   describe('hasPreviousState() method', function () {

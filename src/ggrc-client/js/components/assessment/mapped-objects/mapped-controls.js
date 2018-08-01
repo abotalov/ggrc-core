@@ -20,6 +20,7 @@ import {
   transformQuery,
 } from '../../../plugins/utils/snapshot-utils';
 import template from './templates/mapped-controls.mustache';
+import {notifier} from '../../../plugins/utils/notifiers-utils';
 
 const tag = 'assessment-mapped-controls';
 
@@ -109,7 +110,7 @@ const viewModel = {
         this.attr(param.type, objects);
       });
     })).then(null, ()=> {
-      GGRC.Errors.notifier('error', 'Failed to fetch related objects.');
+      notifier('error', 'Failed to fetch related objects.');
     }).always(()=> this.attr('isLoading', false));
   },
   attributesToFormFields(snapshot) {

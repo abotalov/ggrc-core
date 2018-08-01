@@ -6,78 +6,74 @@
 import '../../rich_text/rich_text';
 import template from './rich-text-form-field.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  GGRC.Components('richTextFormField', {
-    tag: 'rich-text-form-field',
-    template: template,
-    viewModel: {
-      _value: '',
-      _oldValue: null,
-      placeholder: '',
-      editorHasFocus: false,
-      define: {
-        value: {
-          set(newValue) {
-            if (!_.isNull(newValue) && this.isAllowToSet(newValue)) {
-              this.attr('_oldValue', newValue);
-              this.attr('_value', newValue);
-            }
-          },
-          get() {
-            return this.attr('_value');
-          },
-        },
-        inputValue: {
-          set(newValue) {
-            let oldValue = this.attr('_oldValue');
-            if (newValue === oldValue ||
-                newValue.length && !can.trim(newValue).length) {
-              return;
-            }
-
+export default can.Component.extend({
+  tag: 'rich-text-form-field',
+  template,
+  viewModel: {
+    _value: '',
+    _oldValue: null,
+    placeholder: '',
+    editorHasFocus: false,
+    define: {
+      value: {
+        set(newValue) {
+          if (!_.isNull(newValue) && this.isAllowToSet(newValue)) {
+            this.attr('_oldValue', newValue);
             this.attr('_value', newValue);
-
-            setTimeout(function () {
-              this.checkValueChanged();
-            }.bind(this), 5000);
-          },
-          get() {
-            return this.attr('_value');
-          },
+          }
+        },
+        get() {
+          return this.attr('_value');
         },
       },
-      fieldId: null,
-      isAllowToSet() {
-        let isFocus = this.attr('editorHasFocus');
-        let isEqualValues = this.attr('_value') === this.attr('_oldValue');
+      inputValue: {
+        set(newValue) {
+          let oldValue = this.attr('_oldValue');
+          if (newValue === oldValue ||
+              newValue.length && !can.trim(newValue).length) {
+            return;
+          }
 
-        return !isFocus || isEqualValues;
-      },
-      checkValueChanged: function () {
-        let newValue = this.attr('_value');
-        let oldValue = this.attr('_oldValue');
-        if (newValue !== oldValue) {
-          this.attr('_oldValue', newValue);
-          this.valueChanged(newValue);
-        }
-      },
-      valueChanged: function (newValue) {
-        this.dispatch({
-          type: 'valueChanged',
-          fieldId: this.fieldId,
-          value: newValue,
-        });
-      },
-      onBlur: function () {
-        this.checkValueChanged();
+          this.attr('_value', newValue);
+
+          setTimeout(function () {
+            this.checkValueChanged();
+          }.bind(this), 5000);
+        },
+        get() {
+          return this.attr('_value');
+        },
       },
     },
-    events: {
-      '.ql-editor blur': function () {
-        this.viewModel.onBlur();
-      },
+    fieldId: null,
+    isAllowToSet() {
+      let isFocus = this.attr('editorHasFocus');
+      let isEqualValues = this.attr('_value') === this.attr('_oldValue');
+
+      return !isFocus || isEqualValues;
     },
-  });
-})(window.can, window.GGRC);
+    checkValueChanged: function () {
+      let newValue = this.attr('_value');
+      let oldValue = this.attr('_oldValue');
+      if (newValue !== oldValue) {
+        this.attr('_oldValue', newValue);
+        this.valueChanged(newValue);
+      }
+    },
+    valueChanged: function (newValue) {
+      this.dispatch({
+        type: 'valueChanged',
+        fieldId: this.fieldId,
+        value: newValue,
+      });
+    },
+    onBlur: function () {
+      this.checkValueChanged();
+    },
+  },
+  events: {
+    '.ql-editor blur': function () {
+      this.viewModel.onBlur();
+    },
+  },
+});

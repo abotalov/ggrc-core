@@ -227,9 +227,9 @@ class TestGlobalCustomAttributes(ProductTestCase):
   @ddt.data(
       (all_models.CustomAttributeDefinition.ValidTypes.TEXT, ""),
       (all_models.CustomAttributeDefinition.ValidTypes.RICH_TEXT, ""),
-      (all_models.CustomAttributeDefinition.ValidTypes.DROPDOWN, None),
+      (all_models.CustomAttributeDefinition.ValidTypes.DROPDOWN, ""),
       (all_models.CustomAttributeDefinition.ValidTypes.CHECKBOX, "0"),
-      (all_models.CustomAttributeDefinition.ValidTypes.DATE, None),
+      (all_models.CustomAttributeDefinition.ValidTypes.DATE, ""),
       ("Map:Person", None),
   )
   @ddt.unpack

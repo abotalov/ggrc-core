@@ -42,7 +42,12 @@ import {
   becameDeprecated,
 } from '../../plugins/utils/controllers';
 import {REFRESH_MAPPING} from '../../events/eventTypes';
-
+import {
+  notifier,
+  notifierXHR,
+} from '../../plugins/utils/notifiers-utils';
+import Relationship from '../../models/join-models/relationship';
+import DisplayPrefs from '../../models/local-storage/display-prefs';
 
 export default can.Control({
   pluginName: 'ggrc_controllers_modals',
@@ -117,7 +122,7 @@ export default can.Control({
     if (content) {
       this.element.html(content);
     }
-    CMS.Models.DisplayPrefs.getSingleton().then((displayPrefs) => {
+    DisplayPrefs.getSingleton().then((displayPrefs) => {
       if (this.wasDestroyed()) {
         return;
       }
@@ -1052,7 +1057,7 @@ export default can.Control({
         params = that.options.object_params;
         if (obj instanceof CMS.Models.Objective &&
           params && params.section) {
-          new CMS.Models.Relationship({
+          new Relationship({
             source: obj,
             destination: CMS.Models.Requirement
               .findInCacheById(params.section.id),
@@ -1082,10 +1087,10 @@ export default can.Control({
   save_error: function (_, error) {
     if (error) {
       if (error.status !== 409) {
-        GGRC.Errors.notifier('error', error.responseText);
+        notifier('error', error.responseText);
       } else {
         clearTimeout(error.warningId);
-        GGRC.Errors.notifierXHR('warning')(error);
+        notifierXHR('warning')(error);
       }
     }
     // enable ui after a fail

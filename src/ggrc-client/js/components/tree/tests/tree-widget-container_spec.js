@@ -10,6 +10,8 @@ import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
 import tracker from '../../../tracker';
 import {getComponentVM} from '../../../../js_specs/spec_helpers';
 import Component from '../tree-widget-container';
+import Relationship from '../../../models/join-models/relationship';
+import DisplayPrefs from '../../../models/local-storage/display-prefs';
 
 describe('tree-widget-container component', function () {
   'use strict';
@@ -562,7 +564,7 @@ describe('tree-widget-container component', function () {
       method = Component.prototype.init.bind({viewModel: vm});
       spyOn(vm, 'setSortingConfiguration');
       spyOn(vm, 'setColumnsConfiguration');
-      spyOn(CMS.Models.DisplayPrefs, 'getSingleton')
+      spyOn(DisplayPrefs, 'getSingleton')
         .and.returnValue(can.Deferred().resolve());
     });
 
@@ -694,7 +696,7 @@ describe('tree-widget-container component', function () {
       let instance;
 
       beforeEach(function () {
-        instance = makeFakeInstance({model: CMS.Models.Relationship})();
+        instance = makeFakeInstance({model: Relationship})();
       });
 
       it('returns result of the relationship check', function () {

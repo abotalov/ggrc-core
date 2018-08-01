@@ -4,13 +4,14 @@
  */
 
 import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import Relationship from '../relationship'
 
-describe('CMS.Models.Relationship ', function () {
+describe('Relationship model', function () {
   describe('unmap() method', function () {
     let instance;
 
     beforeEach(function () {
-      instance = makeFakeInstance({model: CMS.Models.Relationship})({
+      instance = makeFakeInstance({model: Relationship})({
         id: 'testId',
       });
     });

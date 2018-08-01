@@ -9,6 +9,8 @@ import InfoPin from './info_pin_controller';
 import {
   isAdmin,
 } from '../plugins/utils/current-page-utils';
+import DisplayPrefs from '../models/local-storage/display-prefs';
+import LocalStorage from '../models/local-storage/local-storage';
 
 const Dashboard = can.Control({
   pluginName: 'cms_controllers_dashboard',
@@ -17,7 +19,7 @@ const Dashboard = can.Control({
   },
 }, {
   init: function (el, options) {
-    CMS.Models.DisplayPrefs.getSingleton().then(function (prefs) {
+    DisplayPrefs.getSingleton().then(function (prefs) {
       this.display_prefs = prefs;
 
       this.init_tree_view_settings();
@@ -98,7 +100,7 @@ const Dashboard = can.Control({
   },
 
   '.nav-logout click': function (el, ev) {
-    can.Model.LocalStorage.clearAll();
+    LocalStorage.clearAll();
   },
 
   init_widget_descriptors: function () {

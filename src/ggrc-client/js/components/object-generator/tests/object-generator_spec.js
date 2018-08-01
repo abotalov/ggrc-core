@@ -4,17 +4,16 @@
 */
 
 import RefreshQueue from '../../../models/refresh_queue';
+import Component from '../object-generator';
 
-describe('GGRC.Components.objectGenerator', function () {
+describe('object-generator component', function () {
   'use strict';
 
-  let Component;
   let events;
   let viewModel;
   let handler;
 
   beforeAll(function () {
-    Component = GGRC.Components.get('objectGenerator');
     events = Component.prototype.events;
   });
 

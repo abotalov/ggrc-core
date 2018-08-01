@@ -4,8 +4,8 @@
 */
 
 describe('can.mustache.helper.get_permalink_for_object', function () {
-  let fakeOptions,
-    helper;
+  let fakeOptions;
+  let helper;
 
   beforeAll(function () {
     fakeOptions = {

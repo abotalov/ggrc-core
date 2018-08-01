@@ -151,9 +151,9 @@
             that.authorize(params.scopes, true)
               .then($.proxy(that.gapi_request_with_auth, that, params))
               .then(function () {
-                dfd.resolve.apply(dfd, arguments);
+                dfd.resolve(...arguments);
               }, function () {
-                dfd.reject.apply(dfd, arguments);
+                dfd.reject(...arguments);
               });
           } else {
             cb.apply(window, args);
@@ -169,7 +169,7 @@
     }
   }, {
     init: function () {
-      this._super.apply(this, arguments);
+      this._super(...arguments);
       if (!this.constructor.canonical_instance) {
         this.constructor.canonical_instance = this;
       }

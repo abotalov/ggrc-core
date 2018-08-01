@@ -10,6 +10,7 @@ import {
   jobStatuses,
 } from '../import-export-utils';
 import {backendGdriveClient} from '../../../plugins/ggrc-gapi-client';
+import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 
 describe('csv-import component', () => {
   let vm;
@@ -103,7 +104,7 @@ describe('csv-import component', () => {
           },
         }));
 
-      spyOn(GGRC.Errors, 'notifier');
+      spyOn(NotifiersUtils, 'notifier');
 
       vm.analyseSelectedFile({
         id: 42,
@@ -113,7 +114,7 @@ describe('csv-import component', () => {
         expect(vm.attr('fileName')).toEqual('file.csv');
         expect(vm.attr('state')).toEqual(jobStatuses.SELECT);
         expect(vm.attr('importStatus')).toEqual('error');
-        expect(GGRC.Errors.notifier)
+        expect(NotifiersUtils.notifier)
           .toHaveBeenCalledWith('error', 'GDrive error message');
 
         done();

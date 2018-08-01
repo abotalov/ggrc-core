@@ -3,7 +3,10 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
+import Cacheable from '../cacheable';
 import {getRole} from '../../plugins/utils/acl-utils';
+import '../mixins/access-control-list';
+import '../mixins/ca-update';
 
 const getAccessControlList = ()=> {
   let adminRole = getRole('Evidence', 'Admin');
@@ -14,7 +17,7 @@ const getAccessControlList = ()=> {
   }] : [];
 };
 
-export default can.Model.Cacheable('CMS.Models.Evidence', {
+export default Cacheable('CMS.Models.Evidence', {
   root_object: 'evidence',
   root_collection: 'evidence',
   title_singular: 'Evidence',

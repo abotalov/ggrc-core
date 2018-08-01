@@ -3,13 +3,16 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-describe('GGRC.Components.treeItem', function () {
+import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import Component from '../tree-item';
+
+describe('tree-item component', function () {
   'use strict';
 
   let vm;
 
   beforeEach(function () {
-    vm = GGRC.Components.getViewModel('treeItem');
+    vm = getComponentVM(Component);
   });
 
   describe('selectableSize property', function () {

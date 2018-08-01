@@ -4,8 +4,8 @@
 */
 
 describe('can.mustache.helper.debugger', function () {
-  let fakeOptions,
-    helper;
+  let fakeOptions;
+  let helper;
 
   beforeAll(function () {
     fakeOptions = {

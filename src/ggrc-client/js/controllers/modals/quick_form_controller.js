@@ -51,7 +51,7 @@ export default ModalsController({
   autocomplete_select: function (el, event, ui) {
     let self = this;
     let prop = el.attr('name').split('.').slice(0, -1).join('.');
-    if (this._super.apply(this, arguments) !== false) {
+    if (this._super(...arguments) !== false) {
       setTimeout(function () {
         self.options.instance.save().then(function () {
           let obj = self.options.instance.attr(prop);
@@ -69,7 +69,7 @@ export default ModalsController({
       return;
     }
     if (this._super) {
-      this._super.apply(this, arguments);
+      this._super(...arguments);
     }
     ev.stopPropagation();
   },

@@ -3,6 +3,8 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import {notifier} from './notifiers-utils';
+
 const issueTrackerStaticFields = {
   issue_tracker_enable_options: [
     {value: true, title: 'On'},
@@ -57,7 +59,7 @@ function checkWarnings(instance) {
 
   if (warnings && warnings.length) {
     let warningMessage = warnings.join('; ');
-    GGRC.Errors.notifier('warning', warningMessage);
+    notifier('warning', warningMessage);
   }
 }
 

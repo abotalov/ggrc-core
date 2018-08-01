@@ -5,6 +5,8 @@
 
 import Component from './release-notes-menu-item';
 import {getComponentVM} from '../../../js_specs/spec_helpers';
+import * as UserUtils from '../../plugins/utils/user-utils';
+import {getUtcDate} from '../../plugins/utils/date-util';
 
 describe('"release-notes-menu-item" component', () => {
   let vm;
@@ -32,58 +34,71 @@ describe('"release-notes-menu-item" component', () => {
     });
 
     describe('"inserted" handler', () => {
-      let displayPrefs;
+      const releaseDateObj = new Date(RELEASE_NOTES_DATE);
+      let profileDfd;
 
       beforeEach(() => {
         handler = events.inserted.bind({viewModel: vm});
-        displayPrefs = {
-          getReleaseNotesDate: jasmine.createSpy(),
-          setReleaseNotesDate: jasmine.createSpy(),
-        };
-        spyOn(CMS.Models.DisplayPrefs, 'getSingleton')
-          .and.returnValue(displayPrefs);
         spyOn(vm, 'open');
+
+        profileDfd = can.Deferred();
+        spyOn(UserUtils, 'loadUserProfile')
+          .and.returnValue(profileDfd);
+        spyOn(UserUtils, 'updateUserProfile')
+          .and.returnValue(profileDfd);
       });
 
       describe('if RELEASE_NOTES_DATE not equal to saved date', () => {
+        let dayBefore;
+        let profile;
+
         beforeEach(() => {
-          displayPrefs.getReleaseNotesDate = jasmine.createSpy()
-            .and.returnValue(new Date());
+          dayBefore = new Date(releaseDateObj)
+            .setDate(releaseDateObj.getDate() - 1);
+          profile = {
+            last_seen_whats_new: new Date(dayBefore).toISOString(),
+          };
+          profileDfd.resolve(profile);
         });
 
-        it('saves RELEASE_NOTES_DATE with display_prefs', async (done) => {
+        it('calls updateUserProfile with RELEASE_NOTES_DATE', async (done) => {
+          let updatedProfile = {
+            last_seen_whats_new: getUtcDate(releaseDateObj),
+          };
           await handler();
 
-          expect(displayPrefs.setReleaseNotesDate)
-            .toHaveBeenCalledWith(RELEASE_NOTES_DATE);
+          expect(UserUtils.updateUserProfile)
+            .toHaveBeenCalledWith(updatedProfile);
           done();
         });
 
         it('calls open() method', async (done) => {
           await handler();
-
           expect(vm.open).toHaveBeenCalled();
           done();
         });
       });
 
       describe('if RELEASE_NOTES_DATE equal to saved date', () => {
+        let profile;
+
         beforeEach(() => {
-          displayPrefs.getReleaseNotesDate = jasmine.createSpy()
-            .and.returnValue(RELEASE_NOTES_DATE);
+          profile = {
+            last_seen_whats_new: new Date(releaseDateObj).toISOString(),
+          };
+          profileDfd.resolve(profile);
         });
 
-        it('does not change date in display_prefs', async (done) => {
+        it('updateUserProfile() should not been called', async (done) => {
           await handler();
 
-          expect(displayPrefs.setReleaseNotesDate)
-            .not.toHaveBeenCalledWith(RELEASE_NOTES_DATE);
+          expect(UserUtils.updateUserProfile)
+            .not.toHaveBeenCalled();
           done();
         });
 
-        it('does not call open() method', async (done) => {
+        it('open() should not been called', async (done) => {
           await handler();
-
           expect(vm.open).not.toHaveBeenCalled();
           done();
         });

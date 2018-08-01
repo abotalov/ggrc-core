@@ -10,6 +10,7 @@ import template from './comment-add-form.mustache';
 import {COMMENT_CREATED} from '../../events/eventTypes';
 import tracker from '../../tracker';
 import {getAssigneeType} from '../../plugins/ggrc_utils';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 const tag = 'comment-add-form';
 
@@ -82,7 +83,7 @@ export default can.Component.extend({
           return self.afterCreation(comment, true);
         })
         .fail(function () {
-          GGRC.Errors.notifier('error', 'Saving has failed');
+          notifier('error', 'Saving has failed');
           self.afterCreation(comment, false);
         });
     },

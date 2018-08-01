@@ -582,13 +582,13 @@ class TestStatusApiPatch(TestCase):
                                         [self.DEPRECATED] * 3)
     self.assertEqual(self.DEPRECATED, self.group.status)
     self.assertEqual(self.DEPRECATED, self.cycle.status)
-    self.assertEqual(all_models.Workflow.ACTIVE, self.workflow.status)
+    self.assertEqual(all_models.Workflow.INACTIVE, self.workflow.status)
     self.assert_status_over_bulk_update(
         [self.ASSIGNED, self.VERIFIED, self.FINISHED],
         [self.DEPRECATED] * 3)
     self.assertEqual(self.DEPRECATED, self.group.status)
     self.assertEqual(self.DEPRECATED, self.cycle.status)
-    self.assertEqual(all_models.Workflow.ACTIVE, self.workflow.status)
+    self.assertEqual(all_models.Workflow.INACTIVE, self.workflow.status)
 
   @ddt.data({"to_state": FINISHED, "success": True},
             {"to_state": IN_PROGRESS, "success": False},

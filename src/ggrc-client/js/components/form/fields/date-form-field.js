@@ -6,48 +6,44 @@
 import '../../datepicker/datepicker';
 import template from './date-form-field.mustache';
 
-(function (can, GGRC) {
-  'use strict';
+export default can.Component.extend({
+  tag: 'date-form-field',
+  template,
+  viewModel: {
+    define: {
+      inputValue: {
+        set(newValue) {
+          let oldValue = this.attr('_value');
 
-  GGRC.Components('dateFormField', {
-    tag: 'date-form-field',
-    template: template,
-    viewModel: {
-      define: {
-        inputValue: {
-          set(newValue) {
-            let oldValue = this.attr('_value');
+          if (newValue === oldValue) {
+            return;
+          }
 
-            if (newValue === oldValue) {
-              return;
-            }
-
-            this.attr('_value', newValue);
-            this.valueChanged(newValue);
-          },
-          get() {
-            return this.attr('_value');
-          },
+          this.attr('_value', newValue);
+          this.valueChanged(newValue);
         },
-        value: {
-          set(newValue) {
-            this.attr('_value', newValue);
-          },
-          get() {
-            return this.attr('_value');
-          },
+        get() {
+          return this.attr('_value');
         },
       },
-      _value: null,
-      fieldId: null,
-      readonly: true,
-      valueChanged: function (newValue) {
-        this.dispatch({
-          type: 'valueChanged',
-          fieldId: this.fieldId,
-          value: newValue,
-        });
+      value: {
+        set(newValue) {
+          this.attr('_value', newValue);
+        },
+        get() {
+          return this.attr('_value');
+        },
       },
     },
-  });
-})(window.can, window.GGRC);
+    _value: null,
+    fieldId: null,
+    readonly: true,
+    valueChanged: function (newValue) {
+      this.dispatch({
+        type: 'valueChanged',
+        fieldId: this.fieldId,
+        value: newValue,
+      });
+    },
+  },
+});

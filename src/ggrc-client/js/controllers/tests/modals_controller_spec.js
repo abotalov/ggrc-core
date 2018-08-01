@@ -5,6 +5,7 @@
 
 import DisplayPrefs from '../../models/local-storage/display-prefs';
 import ModalsController from '../modals/modals_controller';
+import * as NotifiersUtils from '../../plugins/utils/notifiers-utils';
 
 describe('ModalsController', function () {
   let Ctrl; // the controller under test
@@ -105,26 +106,26 @@ describe('ModalsController', function () {
     beforeEach(function () {
       ctrlInst = jasmine.createSpyObj(['disableEnableContentUI']);
       foo = jasmine.createSpy();
-      spyOn(GGRC.Errors, 'notifier');
-      spyOn(GGRC.Errors, 'notifierXHR')
+      spyOn(NotifiersUtils, 'notifier');
+      spyOn(NotifiersUtils, 'notifierXHR')
         .and.returnValue(foo);
       spyOn(window, 'clearTimeout');
       method = Ctrl.prototype.save_error.bind(ctrlInst);
     });
-    it('calls GGRC.Errors.notifier with responseText' +
+    it('calls notifier with responseText' +
     ' if error status is not 409', function () {
       method({}, {status: 400, responseText: 'mockText'});
-      expect(GGRC.Errors.notifier).toHaveBeenCalledWith('error', 'mockText');
+      expect(NotifiersUtils.notifier).toHaveBeenCalledWith('error', 'mockText');
     });
     it('clears timeout of error warning if error status is 409', function () {
       method({}, {status: 409, warningId: 999});
       expect(clearTimeout).toHaveBeenCalledWith(999);
     });
-    it('calls GGRC.Errors.notifier with specified text' +
+    it('calls notifier with specified text' +
     ' if error status is 409', function () {
       let error = {status: 409};
       method({}, error);
-      expect(GGRC.Errors.notifierXHR)
+      expect(NotifiersUtils.notifierXHR)
         .toHaveBeenCalledWith('warning');
       expect(foo).toHaveBeenCalledWith(error);
     });

@@ -117,15 +117,14 @@ let ApprovalWorkflow = can.Observe({
       } else {
         ret = $.when(
           aws[0].instance.refresh(),
-          $.when.apply(
-            $,
-            can.map(aws[0].instance.task_groups.reify(), function (tg) {
+          $.when(...can.map(aws[0].instance.task_groups.reify(),
+            function (tg) {
               return tg.refresh();
             })
           ).then(function () {
-            return $.when.apply($, can.map(can.makeArray(arguments), function (tg) {
+            return $.when(...can.map(can.makeArray(arguments), function (tg) {
               return tg.attr('contact', that.contact).save().then(function (tg) {
-                return $.when.apply($, can.map(tg.task_group_tasks.reify(), function (tgt) {
+                return $.when(...can.map(tg.task_group_tasks.reify(), function (tgt) {
                   return tgt.refresh().then(function (tgt) {
 
                     return tgt.attr({
@@ -184,7 +183,7 @@ export default ModalsController({
 }, {
   init: function () {
     this.options.button_view = BUTTON_VIEW_SAVE_CANCEL;
-    this._super.apply(this, arguments);
+    this._super(...arguments);
   },
   'input[null-if-empty] change': function (el, ev) {
     if(el.val() === '') {

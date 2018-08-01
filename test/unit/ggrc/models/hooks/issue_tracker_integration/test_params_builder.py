@@ -218,8 +218,8 @@ class TestIssueQueryBuilder(unittest.TestCase):
     expected_result = {
         "comment": "Issue Description has been updated.\nnew description\n\n"
         "Issue Remediation Plan has been updated.\nnew test plan\n\n"
-        "GGRC object has been deleted. GGRC changes will "
-        "no longer be tracked within this bug."
+        "Changes to this GGRC object will no longer "
+        "be tracked within this bug."
     }
 
     # Perform action.

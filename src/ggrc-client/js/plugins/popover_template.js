@@ -76,8 +76,8 @@
 
   function Plugin(option) {
     return this.each(function () {
-      let $this = $(this),
-        data = $this.data('popover-template');
+      let $this = $(this);
+      let data = $this.data('popover-template');
 
       if (!data) {
         $this.data('popover-template', new Popover(this));

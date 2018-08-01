@@ -314,7 +314,7 @@ import {
           }
         });
 
-      return $.when.apply($, childTreeDfds);
+      return $.when(...childTreeDfds);
     },
 
     /**

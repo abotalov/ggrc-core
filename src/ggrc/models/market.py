@@ -5,19 +5,27 @@ from ggrc import db
 from ggrc.access_control.roleable import Roleable
 from ggrc.fulltext.mixin import Indexed
 from ggrc.models.comment import Commentable
-from ggrc.models.mixins import base
-from .mixins import (BusinessObject, LastDeprecatedTimeboxed,
-                     CustomAttributable, TestPlanned)
-from .object_document import PublicDocumentable
-from .object_person import Personable
-from .relationship import Relatable
-from .track_object_state import HasObjectState
+from ggrc.models import mixins
+from ggrc.models.object_document import PublicDocumentable
+from ggrc.models.object_person import Personable
+from ggrc.models.relationship import Relatable
+from ggrc.models.track_object_state import HasObjectState
 
 
-class Market(Roleable, HasObjectState, CustomAttributable, Personable,
-             Relatable, LastDeprecatedTimeboxed, PublicDocumentable,
-             Commentable, TestPlanned, base.ContextRBAC, BusinessObject,
-             Indexed, db.Model):
+class Market(Roleable,
+             HasObjectState,
+             mixins.CustomAttributable,
+             Personable,
+             Relatable,
+             mixins.LastDeprecatedTimeboxed,
+             PublicDocumentable,
+             Commentable,
+             mixins.TestPlanned,
+             mixins.base.ContextRBAC,
+             mixins.BusinessObject,
+             mixins.Folderable,
+             Indexed,
+             db.Model):
   __tablename__ = 'markets'
   _aliases = {
       "documents_file": None,

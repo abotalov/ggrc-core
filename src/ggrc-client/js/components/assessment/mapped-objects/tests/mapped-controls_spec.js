@@ -5,6 +5,7 @@
 
 import * as SnapshotUtils from '../../../../plugins/utils/snapshot-utils';
 import * as QueryAPI from '../../../../plugins/utils/query-api-utils';
+import * as NotifiersUtils from '../../../../plugins/utils/notifiers-utils';
 import Component from '../mapped-controls';
 
 describe('GGRC.Component.assessmentMappedControl', () => {
@@ -47,7 +48,7 @@ describe('GGRC.Component.assessmentMappedControl', () => {
     });
 
     it('turns off spinner when request fails', (done) => {
-      spyOn(GGRC.Errors, 'notifier');
+      spyOn(NotifiersUtils, 'notifier');
 
       viewModel.loadItems(1);
 
@@ -55,7 +56,7 @@ describe('GGRC.Component.assessmentMappedControl', () => {
 
       pendingRequest.reject().then(null, ()=> {
         expect(viewModel.attr('isLoading')).toBeFalsy();
-        expect(GGRC.Errors.notifier)
+        expect(NotifiersUtils.notifier)
           .toHaveBeenCalledWith('error', 'Failed to fetch related objects.');
         done();
       });

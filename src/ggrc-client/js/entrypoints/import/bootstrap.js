@@ -4,6 +4,9 @@
 */
 
 import {initWidgets} from '../../plugins/utils/current-page-utils';
+import {gapiClient} from '../../plugins/ggrc-gapi-client';
+
+gapiClient.loadGapiClient();
 
 $('#csv_import').html(can.view.mustache('<csv-import/>'));
 $('#page-header').html(can.view.mustache('<page-header/>'));

@@ -9,6 +9,8 @@ import {
   getInstanceView,
 } from '../../plugins/utils/object-history-utils';
 import RefreshQueue from '../../models/refresh_queue';
+import {notifier} from '../../plugins/utils/notifiers-utils';
+import Revision from '../../models/service-models/revision';
 
 export default can.Component.extend({
   tag: 'revisions-comparer',
@@ -160,7 +162,6 @@ export default can.Component.extend({
       return instance.type === 'Control';
     },
     getRevisions: function (currentRevisionID, newRevisionID) {
-      let Revision = CMS.Models.Revision;
       let notCached = [];
       let cached = [currentRevisionID, newRevisionID].map(function (id) {
         let cache = Revision.findInCacheById(id);
@@ -263,7 +264,7 @@ export default can.Component.extend({
         .then(function () {
           let message = instance.child_type +
         ' was refreshed successfully.';
-          GGRC.Errors.notifier('success', [message]);
+          notifier('success', [message]);
         });
     },
 

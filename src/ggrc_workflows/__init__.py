@@ -639,12 +639,29 @@ def handle_cycle_task_entry_post(sender, obj=None, src=None, service=None):
 # noqa pylint: disable=unused-argument
 @Signals.status_change.connect_via(models.Cycle)
 def handle_cycle_status_change(sender, objs=None):
+  """
+  Cycle will be current if his new status is not `Deprecated`, `Finished`
+  or `Verified`
+
+  We assume that status `Finished` or `Verified` of the cycle make him `done`
+  but `Deprecated` just change cycle status
+
+  Args:
+    sender: Cycle class instance
+    objs: signal object as well as new and old statuses
+  """
+
   objs = objs or []
   workflow_ids = set([])
   for obj in objs:
     if obj.old_status == obj.new_status:
       continue
-    obj.instance.is_current = not obj.instance.is_done
+
+    if obj.instance.is_done or obj.instance.status == obj.instance.DEPRECATED:
+      obj.instance.is_current = False
+    else:
+      obj.instance.is_current = True
+
     if obj.instance.workflow.id not in workflow_ids:
       update_workflow_state(obj.instance.workflow)
     workflow_ids.add(obj.instance.workflow.id)

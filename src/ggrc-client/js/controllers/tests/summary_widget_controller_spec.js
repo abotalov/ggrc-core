@@ -7,6 +7,7 @@ import Ctrl from '../summary_widget_controller';
 import * as CurrentPageUtils from '../../plugins/utils/current-page-utils';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import {makeFakeInstance} from '../../../js_specs/spec_helpers';
+import Relationship from '../../models/join-models/relationship';
 
 describe('SummaryWidgetController', function () {
   'use strict';
@@ -46,7 +47,7 @@ describe('SummaryWidgetController', function () {
 
     it('sets true to options.forceRefresh if destination type is Evidence' +
     'and source type is Assessment', function () {
-      let relationship = makeFakeInstance({model: CMS.Models.Relationship})({
+      let relationship = makeFakeInstance({model: Relationship})({
         destination: {
           type: 'Evidence',
           id: 1,
@@ -61,7 +62,7 @@ describe('SummaryWidgetController', function () {
 
     it('does not set true to options.forceRefresh' +
     ' if destination type is not Evidence', function () {
-      let relationship = makeFakeInstance({model: CMS.Models.Relationship})({
+      let relationship = makeFakeInstance({model: Relationship})({
         destination: {
           type: 'Control',
           id: 1,
@@ -76,7 +77,7 @@ describe('SummaryWidgetController', function () {
 
     it('does not set true to options.forceRefresh' +
     ' if source type is not Assessment', function () {
-      let relationship = makeFakeInstance({model: CMS.Models.Relationship})({
+      let relationship = makeFakeInstance({model: Relationship})({
         destination: {
           type: 'Evidence',
           id: 1,

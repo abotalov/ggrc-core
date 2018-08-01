@@ -156,7 +156,7 @@ function _setupWarning(confirm, settings) {
     }
   })
   .on('keyup', (e) => {
-    //handle pressing enter
+    // handle pressing enter
     if (e.keyCode === 13) {
       let confirmButton = confirm.find(buttonSelector);
       if (!confirmButton.attr('disabled')) {

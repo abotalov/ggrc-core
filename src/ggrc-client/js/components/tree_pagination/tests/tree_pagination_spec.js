@@ -7,11 +7,11 @@ import Pagination from '../../base-objects/pagination';
 import {getComponentVM} from '../../../../js_specs/spec_helpers';
 import Component from '../tree_pagination';
 
-describe('treePagination component', function () {
+describe('tree-pagination component', function () {
   let viewModel;
 
   beforeAll(function () {
-    viewModel = viewModel = getComponentVM(Component);
+    viewModel = getComponentVM(Component);
   });
 
   beforeEach(function () {

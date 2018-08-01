@@ -5,6 +5,7 @@
 
 import RefreshQueue from '../../models/refresh_queue';
 import template from './person-data.mustache';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 (function (can, GGRC, CMS) {
   'use strict';
@@ -49,7 +50,7 @@ import template from './person-data.mustache';
                 })
                 .fail(function () {
                   setVal({});
-                  GGRC.Errors.notifier('error',
+                  notifier('error',
                     'Failed to fetch data for person ' + newVal.id + '.');
                 });
             }

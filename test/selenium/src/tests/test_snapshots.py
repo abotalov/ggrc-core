@@ -121,7 +121,7 @@ class TestSnapshots(base.Test):
            "Audit contains snapshotable Control "
            "after deleting CAs for Controls"],
       indirect=["dynamic_create_audit_with_control"])
-  def test_audit_contains_snapshotable_control(
+  def test_destructive_audit_contains_snapshotable_control(
       self, new_cas_for_controls_rest, dynamic_create_audit_with_control,
       expected_control, is_openable, is_updateable, selenium
   ):
@@ -137,6 +137,10 @@ class TestSnapshots(base.Test):
     - 'create_audit_with_control_and_delete_control'.
     - 'create_audit_with_control_with_cas_and_update_control_with_cas'.
     - 'create_audit_with_control_with_cas_and_delete_cas_for_controls'.
+    This test is marked as destructive as deletion of GCA leads to
+    changing of modified_by and updated_at of all objects with this GCA.
+    Bug wasn't filed for this as deletion of GCA doesn't work currently
+    and considered not critical (see GGRC-4055).
     """
     audit_with_one_control = dynamic_create_audit_with_control
     audit = audit_with_one_control["new_audit_rest"][0]

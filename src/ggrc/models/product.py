@@ -10,9 +10,7 @@ from ggrc.access_control.roleable import Roleable
 from ggrc.fulltext.mixin import Indexed
 from ggrc.models.comment import Commentable
 from ggrc.models.deferred import deferred
-from ggrc.models.mixins import base
-from ggrc.models.mixins import (BusinessObject, LastDeprecatedTimeboxed,
-                                CustomAttributable, TestPlanned)
+from ggrc.models import mixins
 from ggrc.models.object_document import PublicDocumentable
 from ggrc.models.object_person import Personable
 from ggrc.models.option import Option
@@ -22,10 +20,20 @@ from ggrc.models.utils import validate_option
 from ggrc.models.track_object_state import HasObjectState
 
 
-class Product(Roleable, HasObjectState, CustomAttributable, Personable,
-              Relatable, LastDeprecatedTimeboxed, PublicDocumentable,
-              Commentable, TestPlanned, base.ContextRBAC, BusinessObject,
-              Indexed, db.Model):
+class Product(Roleable,
+              HasObjectState,
+              mixins.CustomAttributable,
+              Personable,
+              Relatable,
+              mixins.LastDeprecatedTimeboxed,
+              PublicDocumentable,
+              Commentable,
+              mixins.TestPlanned,
+              mixins.base.ContextRBAC,
+              mixins.BusinessObject,
+              mixins.Folderable,
+              Indexed,
+              db.Model):
   """Representation for Product model."""
   __tablename__ = 'products'
 

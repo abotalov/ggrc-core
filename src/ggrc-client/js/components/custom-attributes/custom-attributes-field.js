@@ -11,31 +11,27 @@ import '../form/fields/rich-text-form-field';
 import '../form/fields/text-form-field';
 import template from './custom-attributes-field.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  GGRC.Components('localCustomAttributesField', {
-    tag: 'custom-attributes-field',
-    template: template,
-    viewModel: {
-      define: {
-        disabled: {
-          type: 'htmlbool',
-        },
-      },
-      type: null,
-      value: null,
-      fieldId: null,
-      placeholder: '',
-      options: [],
-      fieldValueChanged: function (e, scope) {
-        this.dispatch({
-          type: 'valueChanged',
-          fieldId: e.fieldId,
-          value: e.value,
-          field: scope,
-        });
+export default can.Component.extend({
+  tag: 'custom-attributes-field',
+  template,
+  viewModel: {
+    define: {
+      disabled: {
+        type: 'htmlbool',
       },
     },
-  });
-})(window.can, window.GGRC);
+    type: null,
+    value: null,
+    fieldId: null,
+    placeholder: '',
+    options: [],
+    fieldValueChanged: function (e, scope) {
+      this.dispatch({
+        type: 'valueChanged',
+        fieldId: e.fieldId,
+        value: e.value,
+        field: scope,
+      });
+    },
+  },
+});

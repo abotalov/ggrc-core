@@ -3,7 +3,14 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-export default can.Model.Cacheable('CMS.Models.OrgGroup', {
+import Cacheable from '../cacheable';
+import '../mixins/unique-title';
+import '../mixins/ca-update';
+import '../mixins/timeboxed';
+import '../mixins/access-control-list';
+import '../mixins/base-notifications';
+
+export default Cacheable('CMS.Models.OrgGroup', {
   root_object: 'org_group',
   root_collection: 'org_groups',
   category: 'business',
@@ -34,7 +41,7 @@ export default can.Model.Cacheable('CMS.Models.OrgGroup', {
     attr_view: GGRC.mustache_path + '/base_objects/tree-item-attr.mustache',
     add_item_view:
     GGRC.mustache_path + '/base_objects/tree_add_item.mustache',
-    attr_list: can.Model.Cacheable.attr_list.concat([
+    attr_list: Cacheable.attr_list.concat([
       {attr_title: 'Reference URL', attr_name: 'reference_url'},
       {attr_title: 'Effective Date', attr_name: 'start_date'},
       {attr_title: 'Last Deprecated Date', attr_name: 'end_date'},

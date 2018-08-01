@@ -6,16 +6,12 @@
 import '../object-list-item/document-object-list-item';
 import template from './editable-document-object-list-item.mustache';
 
-(function (can, GGRC) {
-  'use strict';
+const tag = 'editable-document-object-list-item';
 
-  let tag = 'editable-document-object-list-item';
-
-  GGRC.Components('editableDocumentObjectListItem', {
-    tag: tag,
-    template: template,
-    viewModel: {
-      document: {},
-    },
-  });
-})(window.can, window.GGRC);
+export default can.Component.extend({
+  tag,
+  template,
+  viewModel: {
+    document: {},
+  },
+});

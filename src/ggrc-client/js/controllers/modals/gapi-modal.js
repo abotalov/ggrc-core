@@ -12,7 +12,7 @@ export default ModalsController({
     content_view: GGRC.mustache_path + '/gdrive/auth_button.mustache',
   },
   init: function () {
-    this._super.apply(this, arguments);
+    this._super(...arguments);
     this.defaults.button_view = can.view.mustache('');
   },
 }, {

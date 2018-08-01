@@ -7,49 +7,45 @@ import './related-objects';
 import '../add-issue-button/add-issue-button';
 import template from './related-issues.mustache';
 
-(function (can, GGRC) {
-  'use strict';
-
-  GGRC.Components('relatedIssues', {
-    tag: 'related-issues',
-    template: template,
-    viewModel: {
-      define: {
-        orderBy: {
-          type: 'string',
-          value: 'created_at',
-        },
-        allRelatedSnapshots: {
-          Value: can.List,
-        },
-        itemsType: {
-          type: 'string',
-          value: 'Issue',
-        },
-        relatedIssuesFilter: {
-          type: '*',
-          get: function () {
-            let id = this.attr('baseInstance.id');
-            let type = this.attr('baseInstance.type');
-            return {
-              expression: {
-                left: {
-                  object_name: type,
-                  op: {name: 'relevant'},
-                  ids: [id],
-                },
-                right: {
-                  object_name: type,
-                  op: {name: 'similar'},
-                  ids: [id],
-                },
-                op: {name: 'OR'},
+export default can.Component.extend({
+  tag: 'related-issues',
+  template,
+  viewModel: {
+    define: {
+      orderBy: {
+        type: 'string',
+        value: 'created_at',
+      },
+      allRelatedSnapshots: {
+        Value: can.List,
+      },
+      itemsType: {
+        type: 'string',
+        value: 'Issue',
+      },
+      relatedIssuesFilter: {
+        type: '*',
+        get: function () {
+          let id = this.attr('baseInstance.id');
+          let type = this.attr('baseInstance.type');
+          return {
+            expression: {
+              left: {
+                object_name: type,
+                op: {name: 'relevant'},
+                ids: [id],
               },
-            };
-          },
+              right: {
+                object_name: type,
+                op: {name: 'similar'},
+                ids: [id],
+              },
+              op: {name: 'OR'},
+            },
+          };
         },
       },
-      baseInstance: null,
     },
-  });
-})(window.can, window.GGRC);
+    baseInstance: null,
+  },
+});

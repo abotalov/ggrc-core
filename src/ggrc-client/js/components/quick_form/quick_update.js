@@ -28,13 +28,13 @@
         this.scope.attr('controller', this);
         this.scope.attr('model', this.scope.model || this.scope.instance.constructor);
         if(!this.scope.instance._transient) {
-          //only refresh if there's not currently an edit modal spawned.
+          // only refresh if there's not currently an edit modal spawned.
           this.scope.instance.refresh();
         }
       },
-      //currently we don't support proxy object updates in mappings, so for now a change
-      //  to a connected object (assuming we are operating on a proxy object) will trigger
-      //  a deletion of the proxy object and creation of a new one.
+      // currently we don't support proxy object updates in mappings, so for now a change
+      // to a connected object (assuming we are operating on a proxy object) will trigger
+      // a deletion of the proxy object and creation of a new one.
       autocomplete_select: function (el, event, ui) {
         let that = this;
         setTimeout(function () {
@@ -55,7 +55,7 @@
         });
       },
       // null-if-empty attributes are a pattern carried over from GGRC.Controllers.Modals
-      //  Useful for connected objects.
+      // Useful for connected objects.
       'input[null-if-empty] change': function (el) {
         if (!el.val()) {
           this.scope.instance.attr(el.attr('name'), null);

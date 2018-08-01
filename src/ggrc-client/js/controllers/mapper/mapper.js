@@ -16,6 +16,7 @@ import objectGeneratorTemplate from './object-generator-modal.mustache';
 import objectMapperTemplate from './object-mapper-modal.mustache';
 import objectSearchTemplate from './object-search-modal.mustache';
 import objectBulkUpdateTemplate from './object-bulk-update-modal.mustache';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 const DATA_CORRUPTION_MESSAGE = 'Some Data is corrupted! ' +
             'Missing Scope Object';
@@ -31,7 +32,7 @@ const ObjectMapper = can.Control.extend({
       $trigger.attr('data-href') || $trigger.attr('href') :
       '';
     let modalId = 'ajax-modal-' + (href || '')
-      .replace(/[\/\?=\&#%]/g, '-')
+      .replace(/[/?=&#%]/g, '-')
       .replace(/^-/, '');
     let $target =
       $('<div id="' + modalId +
@@ -119,7 +120,7 @@ const ObjectMapper = can.Control.extend({
         let scopeObject = inScopeObject.attr('audit');
 
         if (!scopeObject.id) {
-          GGRC.Errors.notifier('error', DATA_CORRUPTION_MESSAGE);
+          notifier('error', DATA_CORRUPTION_MESSAGE);
           setTimeout(function () {
             window.location.assign(location.origin + '/dashboard');
           }, 3000);

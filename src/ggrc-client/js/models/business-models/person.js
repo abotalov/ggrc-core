@@ -3,9 +3,11 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import Cacheable from '../cacheable';
 import tracker from '../../tracker';
+import '../mixins/ca-update';
 
-export default can.Model.Cacheable('CMS.Models.Person', {
+export default Cacheable('CMS.Models.Person', {
   root_object: 'person',
   root_collection: 'people',
   category: 'entities',
@@ -102,7 +104,7 @@ export default can.Model.Cacheable('CMS.Models.Person', {
   },
   init: function () {
     let rEmail =
-      /^[-!#$%&*+\\.\/0-9=?A-Z^_`{|}~]+@([-0-9A-Z]+\.)+([0-9A-Z]){2,4}$/i;
+      /^[-!#$%&*+\\./0-9=?A-Z^_`{|}~]+@([-0-9A-Z]+\.)+([0-9A-Z]){2,4}$/i;
     this._super(...arguments);
 
     this.validateNonBlank('email');

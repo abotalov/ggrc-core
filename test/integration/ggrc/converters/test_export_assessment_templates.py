@@ -47,3 +47,23 @@ class TestAssessmentTemplatesExport(TestCase):
     assessment_template = response["Assessment Template"][0]
     self.assertEqual(assessment_template["Default Assignees*"], title)
     self.assertEqual(assessment_template["Default Verifiers"], title)
+
+  def test_empty_people_export(self):
+    """Test for check people label export"""
+    default_people = {"assignees": "Auditors", "verifiers": None}
+    factories.AssessmentTemplateFactory(
+        title="Audit Lead",
+        default_people=default_people
+    )
+    data = [{
+        "object_name": "AssessmentTemplate",
+        "filters": {
+            "expression": {},
+        },
+        "fields": "all",
+    }]
+
+    response = self.export_parsed_csv(data)
+    assessment_template = response["Assessment Template"][0]
+    self.assertEqual(assessment_template["Default Assignees*"], "Auditors")
+    self.assertEqual(assessment_template["Default Verifiers"], "--")

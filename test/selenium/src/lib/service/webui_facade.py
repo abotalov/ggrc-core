@@ -30,7 +30,7 @@ def assert_can_view(selenium, obj):
   _get_ui_service(selenium, obj).get_obj_from_info_page(obj)
   actual_obj = _get_ui_service(selenium, obj).get_obj_from_info_page(obj)
   obj_copy = copy.deepcopy(obj)
-  # Code for working with custom attributes appeares to be buggy
+  # Code for working with custom attributes appears to be buggy
   base.Test.general_equal_assert(
       obj_copy.repr_ui(), actual_obj, "custom_attributes", "program")
 

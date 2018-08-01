@@ -3,13 +3,15 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-describe('GGRC.Components.checkboxFormField', function () {
+import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import Component from '../checkbox-form-field';
+
+describe('checkbox-form-field component', function () {
   'use strict';
   let viewModel;
 
   beforeEach(function () {
-    viewModel = GGRC.Components
-      .getViewModel('checkboxFormField');
+    viewModel = getComponentVM(Component);
     spyOn(viewModel, 'dispatch');
     viewModel.attr('fieldId', 'id');
   });

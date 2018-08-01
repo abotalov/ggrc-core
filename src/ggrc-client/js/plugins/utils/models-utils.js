@@ -3,6 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
+import {notifier} from './notifiers-utils';
 import RefreshQueue from '../../models/refresh_queue';
 
 const relatedAssessmentsTypes = Object.freeze(['Control', 'Objective']);
@@ -29,8 +30,7 @@ const getModelInstance = (id, type, requiredAttr) => {
           resolve(data);
         })
         .fail(function () {
-          GGRC.Errors
-            .notifier('error', `Failed to fetch data for ${type}: ${id}.`);
+          notifier('error', `Failed to fetch data for ${type}: ${id}.`);
           reject();
         });
     }

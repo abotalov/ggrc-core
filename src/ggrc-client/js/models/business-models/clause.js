@@ -3,7 +3,13 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-export default can.Model.Cacheable('CMS.Models.Clause', {
+import Cacheable from '../cacheable';
+import '../mixins/unique-title';
+import '../mixins/ca-update';
+import '../mixins/access-control-list';
+import '../mixins/base-notifications';
+
+export default Cacheable('CMS.Models.Clause', {
   root_object: 'clause',
   root_collection: 'clauses',
   model_plural: 'Clauses',
@@ -40,7 +46,7 @@ export default can.Model.Cacheable('CMS.Models.Clause', {
   },
   tree_view_options: {
     attr_view: '/static/mustache/requirements/tree-item-attr.mustache',
-    attr_list: can.Model.Cacheable.attr_list.concat([
+    attr_list: Cacheable.attr_list.concat([
       {attr_title: 'Reference URL', attr_name: 'reference_url'},
       {attr_title: 'Last Deprecated Date', attr_name: 'end_date'},
       {

@@ -3,10 +3,9 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-'use strict';
-let tag = 'form-validation-text';
+const tag = 'form-validation-text';
 
-let textMap = {
+const textMap = {
   input: 'This field is required.',
   checkbox: 'This checkbox is required.',
   dropdownNoInfo: 'Add required info by click on the link.',
@@ -15,8 +14,8 @@ let textMap = {
 /**
  * Form validation text component
  */
-GGRC.Components('formValidationText', {
-  tag: tag,
+export default can.Component.extend({
+  tag,
   template: '<p class="required">{{text}}</p>',
   viewModel: {
     define: {

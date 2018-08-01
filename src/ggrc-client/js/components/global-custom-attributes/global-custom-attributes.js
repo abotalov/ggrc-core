@@ -7,6 +7,7 @@ import {
   CUSTOM_ATTRIBUTE_TYPE,
 } from '../../plugins/utils/custom-attribute/custom-attribute-config';
 import Permission from '../../permission';
+import {notifierXHR} from '../../plugins/utils/notifiers-utils';
 
 (function (can, GGRC) {
   'use strict';
@@ -72,7 +73,7 @@ import Permission from '../../permission';
             instance.backup();
           })
           .fail(function (instance, xhr) {
-            GGRC.Errors.notifierXHR('error')(xhr);
+            notifierXHR('error')(xhr);
           })
           .always(function () {
             this.attr('isSaving', false);

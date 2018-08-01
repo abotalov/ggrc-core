@@ -125,9 +125,6 @@ Settings from ``settings.sh``
 +------------------------------------+---------------------------------------------------------------------------+
 | SCALING                            | ``app.yaml:*scaling`` section                                             |
 +------------------------------------+---------------------------------------------------------------------------+
-| STATIC_SERVING                     | Section of ``app.yaml:handlers`` to serve static files as static (doesn't |
-|                                    | work properly on some instances and not enabled by default)               |
-+------------------------------------+---------------------------------------------------------------------------+
 | INTEGRATION_SERVICE_URL            | Link to an external service providing Person info                         |
 +------------------------------------+---------------------------------------------------------------------------+
 | EXTERNAL_APP_USER                  | Name and email of the user that will be used for external applications    |

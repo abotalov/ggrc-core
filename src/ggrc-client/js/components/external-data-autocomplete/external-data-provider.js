@@ -3,6 +3,8 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import {notifier} from '../../plugins/utils/notifiers-utils';
+
 /**
  * The component is used to load data for autocomplete component from external sources.
  */
@@ -63,7 +65,7 @@ export default can.Component.extend({
       }).done(executeForLastRequest((response)=>{
         this.attr('values', response);
       })).fail(executeForLastRequest(()=> {
-        GGRC.Errors.notifier('error', `Unable to load ${type}s`);
+        notifier('error', `Unable to load ${type}s`);
       })).always(executeForLastRequest(()=> {
         this.attr('loading', false);
       })));

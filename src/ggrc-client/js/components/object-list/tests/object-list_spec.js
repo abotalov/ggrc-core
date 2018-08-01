@@ -3,14 +3,17 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-describe('GGRC.Components.objectList', function () {
+import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import Component from '../object-list';
+
+describe('object-list component', function () {
   'use strict';
 
   let viewModel;
 
   describe('should have some default values', function () {
     beforeEach(function () {
-      viewModel = GGRC.Components.getViewModel('objectList');
+      viewModel = getComponentVM(Component);
     });
 
     it('and they should be correct', function () {
@@ -43,7 +46,7 @@ describe('GGRC.Components.objectList', function () {
       },
     ]);
     beforeEach(function () {
-      viewModel = GGRC.Components.getViewModel('objectList');
+      viewModel = getComponentVM(Component);
       viewModel.attr('items', items);
     });
 
@@ -77,7 +80,7 @@ describe('GGRC.Components.objectList', function () {
         },
         isSelected: false,
       }]);
-      viewModel = GGRC.Components.getViewModel('objectList');
+      viewModel = getComponentVM(Component);
       viewModel.attr('items', items);
       // Set some not null default value selectedItem for each test execution
       viewModel.attr('selectedItem', {
@@ -128,7 +131,7 @@ describe('GGRC.Components.objectList', function () {
 
   describe('onOuterClick() method ', function () {
     beforeEach(function () {
-      viewModel = GGRC.Components.getViewModel('objectList');
+      viewModel = getComponentVM(Component);
       spyOn(viewModel, 'clearSelection');
     });
 

@@ -6,6 +6,7 @@
 
 import Permission from '../../permission';
 import template from './templates/related-urls.mustache';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 export default can.Component.extend({
   tag: 'related-urls',
@@ -103,7 +104,7 @@ export default can.Component.extend({
 
       // non-valid user input case - empty string
       if (!isValid) {
-        GGRC.Errors.notifier('error', 'Please enter a URL.');
+        notifier('error', 'Please enter a URL.');
         this.toggleFormVisibility(true);
         return false;
       }
@@ -112,7 +113,7 @@ export default can.Component.extend({
       existingUrls = _.map(this.attr('urls'), 'link');
 
       if (_.contains(existingUrls, trimmedUrl)) {
-        GGRC.Errors.notifier('error', 'URL already exists.');
+        notifier('error', 'URL already exists.');
         this.toggleFormVisibility(true, true);
         return false;
       }

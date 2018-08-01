@@ -5,6 +5,7 @@
 
 import ModalsController from './modals_controller';
 import pubsub from '../../pub-sub';
+import {notifier} from '../../plugins/utils/notifiers-utils';
 
 export default ModalsController({
   pluginName: 'ggrc_controllers_delete',
@@ -54,7 +55,7 @@ export default ModalsController({
           message = xhr.responseJSON.message;
         }
 
-        GGRC.Errors.notifier('error', message);
+        notifier('error', message);
       }), el.add(cancelButton).add(modalBackdrop));
   },
 });

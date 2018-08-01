@@ -4,6 +4,7 @@
  */
 
 import template from './people-list-info.mustache';
+import '../../models/service-models/role';
 
 (function (can, GGRC) {
   'use strict';

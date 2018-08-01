@@ -6,6 +6,7 @@
 import {
   getClosestWeekday,
   getDate,
+  getUtcDate,
 } from '../utils/date-util';
 
 describe('GGRC DateUtil', ()=> {
@@ -92,5 +93,38 @@ describe('GGRC DateUtil', ()=> {
 
         expect(actual).toEqual(expected);
       });
+  });
+
+  describe('getUtcDate() method', ()=> {
+    let date;
+    let result;
+    let expectedDefaultResult;
+
+    beforeEach(() => {
+      date = '2018-07-24';
+      expectedDefaultResult = '2018-07-24T00:00:00';
+    });
+
+    it('returns ISO_SHORT format when no format provided', () => {
+      result = getUtcDate(date);
+
+      expect(result).toEqual(expectedDefaultResult);
+    });
+
+    it('returns string when Date object passed', () => {
+      let dateObj = new Date(date);
+      result = getUtcDate(dateObj);
+
+      expect(result).toEqual(expectedDefaultResult);
+    });
+
+    it('returns string of specific format', () => {
+      let format = 'MM/DD/YYYY';
+      result = getUtcDate(date, format);
+
+      let expectedFormat = '07/24/2018';
+
+      expect(result).toEqual(expectedFormat);
+    });
   });
 });

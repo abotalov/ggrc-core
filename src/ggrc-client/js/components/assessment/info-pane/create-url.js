@@ -3,6 +3,9 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
+import {notifier} from '../../../plugins/utils/notifiers-utils';
+import Context from '../../../models/service-models/context';
+
 (function (GGRC, CMS, can) {
   'use strict';
 
@@ -18,14 +21,14 @@
         let attrs;
 
         if (!value || !value.length) {
-          GGRC.Errors.notifier('error', 'Please enter a URL.');
+          notifier('error', 'Please enter a URL.');
           return;
         }
 
         attrs = {
           link: value,
           title: value,
-          context: this.attr('context') || new CMS.Models.Context({id: null}),
+          context: this.attr('context') || new Context({id: null}),
           kind: 'URL',
           created_at: new Date(),
           isDraft: true,
@@ -36,7 +39,7 @@
         this.dispatch({type: 'beforeCreate', items: [evidence]});
         evidence.save()
           .fail(function () {
-            GGRC.Errors.notifier('error', 'Unable to create URL.');
+            notifier('error', 'Unable to create URL.');
           })
           .done(function (data) {
             self.dispatch({type: 'created', item: data});

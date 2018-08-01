@@ -156,6 +156,8 @@ class CustomAttributeDefinition(attributevalidator.AttributeValidator,
         CHECKBOX: "0",
         RICH_TEXT: "",
         TEXT: "",
+        DROPDOWN: "",
+        DATE: ""
     }
 
     DEFAULT_VALUE_MAPPING = {
