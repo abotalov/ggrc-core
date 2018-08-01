@@ -45,7 +45,9 @@ current_user = users._current_user = users.FakeSuperUser()
 br.goto(url.Urls().gae_login(current_user))
 users.set_current_logged_in_user(users.UI_USER, users.current_user())
 br.goto("{}import".format(environment.app_url))
-br.element(class_name="release-notes").button(text="Close").click()
+time.sleep(1)
+if br.element(class_name="release-notes").present:
+  br.element(class_name="release-notes").button(text="Close").click()
 
 
 class ImportPage(object):
@@ -96,7 +98,7 @@ class ImportPage(object):
     br.label(text=confirm_text).click()
     br.button(text="Proceed").click()
     # App sends AJAX checks frequently only during the few first dozen seconds
-    for i in xrange(0, 30):
+    for i in xrange(0, 1000):
       try:
         br.button(text="Choose file to import").wait_until_present(timeout=12)
       except TimeoutError:
@@ -400,6 +402,8 @@ def import_and_export(obj_name, obj_count, add_cols=None, **kwargs):
 
 @pytest.mark.parametrize('size_name,prg_counts', perf_counts.prg_sizes.items())
 def test_create_all_programs(size_name, prg_counts):
+  if prg_counts == 0:
+    pytest.skip("Skip creation {} of program.".format(size_name))
   import_obj(objects.PROGRAMS, prg_counts, size_name=size_name)
 
 @pytest.fixture()
@@ -412,51 +416,53 @@ def prg_codes():
 def test_create_program_and_first_class_objs(prg_codes, size_name):
   counts = perf_counts.Counts(size_name)
   program_code = prg_codes[size_name][0]
+  kw = {"size_name": size_name}
 
   map_to_program = [("map:program", program_code)]
   stnd_codes = import_and_export(objects.STANDARDS, counts.stnd,
-                                 map_to_program)
+                                 map_to_program, **kw)
 
   mappings = [
     map_to_program[0],
     ("map:standard", split_with_repeat_iter(stnd_codes, counts.req))]
   requirement_codes = import_and_export(
-      objects.REQUIREMENTS, counts.req, mappings)
+      objects.REQUIREMENTS, counts.req, mappings, **kw)
 
   mappings = [
     map_to_program[0],
     ("map:requirement",
      split_with_repeat_iter(requirement_codes, counts.clause))]
-  clause_codes = import_and_export(objects.CLAUSES, counts.clause, mappings)
+  clause_codes = import_and_export(objects.CLAUSES, counts.clause,
+                                   mappings, **kw)
 
   mappings = [
     map_to_program[0],
     ("map:clause",
      split_with_repeat_iter(clause_codes, counts.reg))]
   regulation_codes = import_and_export(
-      objects.REGULATIONS, counts.reg, mappings)
+      objects.REGULATIONS, counts.reg, mappings, **kw)
 
   mappings = [
     map_to_program[0],
     ("map:regulation",
      split_with_repeat_iter(regulation_codes, counts.objv))]
   objective_codes = import_and_export(
-      objects.OBJECTIVES, counts.objv, mappings)
+      objects.OBJECTIVES, counts.objv, mappings, **kw)
 
   mappings = [
     map_to_program[0],
     ("map:objective",
      split_with_repeat_iter(objective_codes, counts.ctrl))]
-  import_and_export(objects.CONTROLS, counts.ctrl, mappings)
+  import_and_export(objects.CONTROLS, counts.ctrl, mappings, **kw)
 
-  import_and_export(objects.PRODUCTS, counts.product, map_to_program)
+  import_and_export(objects.PRODUCTS, counts.product, map_to_program, **kw)
 
-  import_and_export(objects.PROCESSES, counts.proc, map_to_program)
+  import_and_export(objects.PROCESSES, counts.proc, map_to_program, **kw)
 
-  import_and_export(objects.SYSTEMS, counts.sys, map_to_program)
+  import_and_export(objects.SYSTEMS, counts.sys, map_to_program, **kw)
 
   mappings = [("Program", program_code)]
-  audit_codes = import_and_export(objects.AUDITS, counts.audit, mappings)
+  audit_codes = import_and_export(objects.AUDITS, counts.audit, mappings, **kw)
 
 
 def test_generate_asmts():
