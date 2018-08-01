@@ -44,7 +44,9 @@ current_user = users._current_user = users.FakeSuperUser()
 br.goto(url.Urls().gae_login(current_user))
 users.set_current_logged_in_user(users.UI_USER, users.current_user())
 br.goto("{}import".format(environment.app_url))
-br.element(class_name="release-notes").button(text="Close").click()
+time.sleep(1)
+if br.element(class_name="release-notes").present:
+  br.element(class_name="release-notes").button(text="Close").click()
 
 
 class ImportPage(object):
@@ -95,7 +97,7 @@ class ImportPage(object):
     br.label(text=confirm_text).click()
     br.button(text="Proceed").click()
     # App sends AJAX checks frequently only during the few first dozen seconds
-    for i in xrange(0, 30):
+    for i in xrange(0, 200):
       try:
         br.button(text="Choose file to import").wait_until_present(timeout=12)
       except TimeoutError:
