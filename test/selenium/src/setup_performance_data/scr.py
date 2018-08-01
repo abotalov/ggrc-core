@@ -6,6 +6,7 @@ import itertools
 import math
 import os
 import re
+import string
 import tempfile
 import time
 
@@ -263,7 +264,9 @@ def import_obj(obj_type, number, add_cols=None, **kwargs):
   """Method create import object and return part of name."""
   with tempfile.NamedTemporaryFile(mode="r+", suffix=".csv") as tmp_file:
     size_name = kwargs.pop("size_name", "")
-    part_of_name = size_name + string_utils.StringMethods.random_string()
+    # export by name doesn't work for some special characters (e.g. ~)
+    part_of_name = size_name + string_utils.StringMethods.random_string(
+        chars=string.letters)
     if objects.PROGRAMS == objects.transform_to("p", obj_type, False):
       ggrc_objs = prepare_programs(number, part_of_name)
     elif objects.AUDITS == objects.transform_to("p", obj_type, False):
