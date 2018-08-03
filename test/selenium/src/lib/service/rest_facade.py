@@ -12,6 +12,7 @@ from lib.constants.element import AdminWidgetCustomAttributes
 from lib.entities.entities_factory import CustomAttributeDefinitionsFactory
 from lib.entities.entity import Representation
 from lib.service import rest_service
+from lib.utils import help_utils
 from lib.utils.string_utils import StringMethods
 
 
@@ -149,10 +150,10 @@ def create_global_cad(**attrs):
       factory_params=attrs)
 
 
-def map_objs(src_obj, dest_obj):
+def map_objs(src_obj, dest_obj_or_objs):
   """Map two objects to each other"""
   rest_service.RelationshipsService().map_objs(
-      src_obj=src_obj, dest_objs=dest_obj)
+      src_obj=src_obj, dest_objs=help_utils.convert_to_list(dest_obj_or_objs))
 
 
 def get_snapshot(obj, parent_obj):

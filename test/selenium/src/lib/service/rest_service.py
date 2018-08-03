@@ -282,14 +282,13 @@ class RelationshipsService(HelpRestService):
   def __init__(self):
     super(RelationshipsService, self).__init__(url.RELATIONSHIPS)
 
-  def map_objs(self, src_obj, dest_objs, **attrs_for_template):
+  def map_objs(self, src_obj, dest_objs):
     """Create relationship from source to destination objects and
     return created.
     """
-    return [self.client.create_object(
-        type=objects.get_singular(self.endpoint), source=src_obj.__dict__,
-        destination=dest_obj.__dict__, **attrs_for_template) for
-        dest_obj in help_utils.convert_to_list(dest_objs)]
+    objs = [{"source": src_obj.__dict__, "destination": dest_obj.__dict__}
+      for dest_obj in help_utils.convert_to_list(dest_objs)]
+    return self.client.create_objects("relationship", objs)
 
 
 class AssessmentsFromTemplateService(HelpRestService):
@@ -332,6 +331,7 @@ class ObjectsInfoService(HelpRestService):
         BaseRestService.get_items_from_resp(self.client.create_object(
             type=self.endpoint,
             object_name=objects.get_obj_type(objects.SNAPSHOTS),
+            limit=[0, len(origin_objs)],
             filters=query.Query.expression_get_snapshoted_objs(
                 obj_type=origin_objs[0].type,
                 obj_ids=[obj.id for obj in origin_objs],

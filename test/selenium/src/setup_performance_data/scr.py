@@ -475,17 +475,28 @@ def test_generate_asmts():
   _create_global_cads_for_asmts()
   audit_ids = _ids_from_codes(export("Audits", program=program_name))
   control_ids = _ids_from_codes(export("Controls", program=program_name))
-  control_ids = control_ids[:asmt_count]
+  controls_iter = itertools.cycle(
+      entities_factory.ControlsFactory().create(id=control_id)
+      for control_id in control_ids)
   for audit_id in audit_ids:
     audit = entities_factory.AuditsFactory().create(id=audit_id)
     asmt_template = _create_asmt_template(audit)
-    controls = [entities_factory.ControlsFactory().create(id=control_id)
-                for control_id in control_ids]
-    for controls_chunk in _split_into_chunks(controls, 250):
+    it = itertools.islice(controls_iter, asmt_count)
+    for controls_chunk in _split_into_chunks(it, 150):
       snapshots = entity.Representation.convert_repr_to_snapshot(
           objs=controls_chunk, parent_obj=audit)
       rest_service.AssessmentsFromTemplateService().create_assessments(
           audit, asmt_template, snapshots)
+
+
+def test_map_controls_to_asmts():
+  related_asmt_count = 10
+  asmt_count = 1500
+  program_name = "PROGRAM-4"
+
+  control_ids = _ids_from_codes(export("Controls", program=program_name))
+  control_ids = control_ids[:asmt_count]
+
 
 
 def _create_global_cads_for_asmts():
@@ -514,6 +525,7 @@ def _ids_from_codes(codes):
   return [int(re.search('\d+', code).group()) for code in codes]
 
 
-def _split_into_chunks(list_to_split, chunk_size):
-  for i in xrange(0, len(list_to_split), chunk_size):
-    yield list_to_split[i:i+chunk_size]
+def _split_into_chunks(iterable, chunk_size):
+  it = iter(iterable)
+  for chunk in iter(lambda: list(itertools.islice(it, chunk_size)), []):
+    yield chunk
