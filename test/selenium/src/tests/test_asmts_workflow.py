@@ -8,6 +8,8 @@
 # pylint: disable=too-many-arguments
 # pylint: disable=redefined-outer-name
 
+import random
+
 import pytest
 
 from lib import base, factory, users
@@ -252,20 +254,19 @@ class TestAssessmentsWorkflow(base.Test):
     - Global Custom Attributes for Assessment created via REST API.
     - Assessments created via REST API.
     """
-    custom_attr_values = (
-        CustomAttributeDefinitionsFactory().generate_ca_values(
-            list_ca_def_objs=new_cas_for_assessments_rest))
-    checkbox_id = Representation.filter_objs_by_attrs(
-        objs=new_cas_for_assessments_rest,
-        attribute_type=element.AdminWidgetCustomAttributes.CHECKBOX).id
-    expected_asmt = new_assessments_rest[0]
-    asmts_rest_service = rest_service.AssessmentsService()
-    asmts_rest_service.update_obj(
-        obj=expected_asmt, custom_attributes=custom_attr_values)
-    asmts_rest_service.update_obj(
-        obj=new_assessments_rest[1],
-        custom_attributes={checkbox_id: not custom_attr_values[checkbox_id]})
-    self._check_assessments_filtration(expected_asmt, custom_attr_values,
+    unchecked_asmt = new_assessments_rest[0]
+    checked_asmt = new_assessments_rest[1]
+
+    checkbox_value = random.choice([True, False])
+    print "Checkbox value: {}".format(checkbox_value)
+    self._set_values_for_assessment(
+        unchecked_asmt, new_cas_for_assessments_rest,
+        only_checkbox=True, checkbox_value=checkbox_value)
+    cavs = self._set_values_for_assessment(
+        checked_asmt, new_cas_for_assessments_rest,
+        only_checkbox=False, checkbox_value=not checkbox_value)
+
+    self._check_assessments_filtration(checked_asmt, cavs,
                                        operator, new_audit_rest, selenium)
 
   @pytest.mark.smoke_tests
@@ -289,43 +290,55 @@ class TestAssessmentsWorkflow(base.Test):
     """
     def set_values_for_assessment(assessment, only_checkbox, checkbox_value):
       """Set LCA values for assessment"""
-      custom_attr_definitions = [
+      cads = [
           CustomAttributeDefinitionsFactory().create(**definition)
           for definition
           in assessment.cads_from_template()]
-      checkbox_id = Representation.filter_objs_by_attrs(
-          objs=custom_attr_definitions,
-          attribute_type=element.AdminWidgetCustomAttributes.CHECKBOX).id
-      if only_checkbox:
-        attr_values = {}
-      else:
-        attr_values = CustomAttributeDefinitionsFactory().generate_ca_values(
-            list_ca_def_objs=custom_attr_definitions)
-        attr_values[checkbox_id] = checkbox_value
-      rest_service.AssessmentsService().update_obj(
-          obj=assessment, custom_attributes=attr_values)
-      return attr_values
+      return self._set_values_for_assessment(
+          assessment, cads, only_checkbox, checkbox_value)
 
     unchecked_asmt = new_assessments_from_template_rest[0]
     checked_asmt = new_assessments_from_template_rest[1]
 
-    set_values_for_assessment(unchecked_asmt,
-                              only_checkbox=True,
-                              checkbox_value=False)
-    set_attr_values = set_values_for_assessment(checked_asmt,
-                                                only_checkbox=False,
-                                                checkbox_value=True)
+    checkbox_value = random.choice([True, False])
+    print "Checkbox value: {}".format(checkbox_value)
+    set_values_for_assessment(
+        unchecked_asmt, only_checkbox=True, checkbox_value=checkbox_value)
+    set_attr_values = set_values_for_assessment(
+        checked_asmt, only_checkbox=False, checkbox_value=not checkbox_value)
 
     self._check_assessments_filtration(checked_asmt,
                                        set_attr_values,
                                        operator, new_audit_rest, selenium)
 
   @staticmethod
-  def _check_assessments_filtration(assessment, attr_values, operator,
+  def _set_values_for_assessment(assessment, cads,
+                                 only_checkbox, checkbox_value):
+    """Set CA values for assessment"""
+    checkbox_cad = Representation.filter_objs_by_attrs(
+        objs=cads,
+        attribute_type=element.AdminWidgetCustomAttributes.CHECKBOX)
+    if only_checkbox:
+      cavs = [CustomAttributeDefinitionsFactory.generate_ca_value(
+          checkbox_cad, checkbox_value)]
+    else:
+      cavs = CustomAttributeDefinitionsFactory.generate_ca_values(cads)
+      for cav in cavs:
+        if cav.custom_attribute_id == checkbox_cad.id:
+          cav.attribute_value = checkbox_value
+    rest_service.AssessmentsService().update_obj(
+        obj=assessment,
+        custom_attribute_values=[cav.__dict__ for cav in cavs])
+    return cavs
+
+  @staticmethod
+  def _check_assessments_filtration(assessment, cavs, operator,
                                     audit, selenium):
     """Check that filtration of assessments works."""
-    filter_exprs = FilterUtils().get_filter_exprs_by_cas(
-        assessment.custom_attribute_definitions, attr_values, operator)
+    cads = [Representation.repr_dict_to_obj(cad)
+            for cad in assessment.custom_attribute_definitions]
+    filter_exprs = FilterUtils().get_filter_exprs_by_cavs(
+        cads, cavs, operator)
     assessment = Representation.extract_objs_wo_excluded_attrs(
         [assessment.repr_ui()],
         *(Representation.tree_view_attrs_to_exclude + (

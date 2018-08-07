@@ -69,10 +69,13 @@ def _new_objs_rest(obj_name, obj_count,  # noqa: ignore=C901
                 list_ca_definitions=extra_attrs[:len(_list_cas_types)]),
             audit=extra_attrs[len(_list_cas_types):][0].__dict__)
       else:
+        cavs = [cav.__dict__ for cav
+                in CustomAttributeDefinitionsFactory.generate_ca_values(
+                    cads=extra_attrs)]
         return factory.get_cls_rest_service(object_name=name)().create_objs(
             count=1, factory_params=factory_params,
-            custom_attributes=CustomAttributeDefinitionsFactory().
-            generate_ca_values(list_ca_def_objs=extra_attrs))
+            custom_attribute_definitions=[cad.__dict__ for cad in extra_attrs],
+            custom_attribute_values=cavs)
     else:
       return ([factory.get_cls_rest_service(object_name=name)().
               create_objs(count=1, factory_params=factory_params,
@@ -208,11 +211,15 @@ def generate_common_fixtures(*fixtures):  # noqa: ignore=C901
           fixture="new_{}_rest".format("cas_for_" + obj_name))
     if objs_to_update:
       if has_cas and parent_objs:
+        cavs = [cav.__dict__ for cav
+                in CustomAttributeDefinitionsFactory.generate_ca_values(
+                    cads=parent_objs)]
         updated_objs = (
             factory.get_cls_rest_service(object_name=obj_name)().update_objs(
                 objs=objs_to_update, factory_params=factory_params,
-                custom_attributes=CustomAttributeDefinitionsFactory().
-                generate_ca_values(list_ca_def_objs=parent_objs)))
+                custom_attribute_definitions=[cad.__dict__ for cad in
+                                              parent_objs],
+                custom_attribute_values=cavs))
       else:
         updated_objs = factory.get_cls_rest_service(
             object_name=obj_name)().update_objs(objs=objs_to_update,

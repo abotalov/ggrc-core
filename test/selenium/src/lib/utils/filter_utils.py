@@ -1,6 +1,7 @@
 # Copyright (C) 2018 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Utils for filter operations."""
+import itertools
 
 from dateutil import parser
 
@@ -59,36 +60,33 @@ class FilterUtils(object):
                                       operator=alias.EQUAL_OP,
                                       list_values=list_values)
 
-  def get_filter_exprs_by_ca(self, ca_title, ca_val, ca_type, operator):
+  def get_filter_exprs_by_ca(self, cad, cav, operator):
     """Return all possible filter expressions for CA according to CA type"""
+    ca_type = cad.attribute_type
     if ca_type == AdminWidgetCustomAttributes.CHECKBOX:
-      values_to_filter = (
-          StringMethods.get_list_of_all_cases(alias.YES_VAL) if
-          StringMethods.get_bool_value_from_arg(ca_val)
-          else StringMethods.get_list_of_all_cases(alias.NO_VAL))
+      value = alias.YES_VAL if StringMethods.get_bool_value_from_arg(
+          cav.attribute_value) else alias.NO_VAL
+      values_to_filter = StringMethods.get_list_of_all_cases(value)
     elif ca_type == AdminWidgetCustomAttributes.PERSON:
       from lib.service import rest_service
       person = rest_service.ObjectsInfoService().get_obj(
-          obj=Representation.repr_dict_to_obj(
-              dict(zip(["type", "id"], ca_val.split(":")))))
+          obj=Representation.repr_dict_to_obj(cav.attribute_object))
       values_to_filter = [person.name, person.email]
     elif ca_type == AdminWidgetCustomAttributes.DATE:
       date_formats = ["%m/%d/%Y", "%m/%Y", "%Y-%m-%d", "%Y-%m", "%Y"]
-      date = parser.parse(ca_val).date()
+      date = parser.parse(cav.attribute_value).date()
       values_to_filter = [date.strftime(_format) for _format in date_formats]
     else:
-      values_to_filter = [ca_val]
-    return [self.get_filter_exp(ca_title, operator, [val])
+      values_to_filter = [cav.attribute_value]
+    return [self.get_filter_exp(cad.title, operator, [val])
             for val in values_to_filter]
 
-  def get_filter_exprs_by_cas(self, cas_defs, cas_ids_with_val, operator):
+  def get_filter_exprs_by_cavs(self, cads, cavs, operator):
     """Return all possible filters expressions for passed Custom Attributes
     Definitions and CAs values.
     """
-    cas = [
-        (cas_def["title"], cas_val, cas_def["attribute_type"])
-        for cas_id, cas_val in cas_ids_with_val.iteritems()
-        for cas_def in cas_defs
-        if cas_def["id"] == cas_id]
-    return ([exprs for ca in cas
-             for exprs in self.get_filter_exprs_by_ca(*ca, operator=operator)])
+    return list(itertools.chain.from_iterable(
+        self.get_filter_exprs_by_ca(cad, cav, operator=operator)
+        for cad in cads
+        for cav in cavs
+        if cav.custom_attribute_id == cad.id))

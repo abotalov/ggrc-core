@@ -229,8 +229,9 @@ class Representation(object):
                                 isinstance(cas_val, list) else [None])
           _cas_val = [
               {k: v} for k, v in
-              CustomAttributeDefinitionsFactory.generate_ca_values(
-                  list_ca_def_objs=origin_obj.custom_attribute_definitions,
+              CustomAttributeDefinitionsFactory.generate_cas(
+                  [Representation.repr_dict_to_obj(cad)
+                   for cad in origin_obj.custom_attribute_definitions],
                   is_none_values=True).iteritems()
               if k not in cas_val_dicts_keys]
           cas_val = _cas_val if not cas_val else cas_val + _cas_val
@@ -681,6 +682,16 @@ class CustomAttributeDefinitionEntity(Representation):
 
   def __lt__(self, other):
     return self.title < other.title
+
+
+class CustomAttributeValueEntity(Representation):
+  """Class that represents model for Custom Attribute Value entity"""
+
+  def __init__(self, **attrs):
+    super(CustomAttributeValueEntity, self).__init__()
+    self.set_attrs(
+        "attribute_object", "attribute_object_id", "attribute_value",
+        "custom_attribute_id", **attrs)
 
 
 class ProgramEntity(Entity):

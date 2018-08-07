@@ -14,6 +14,7 @@ from lib.constants import (
     element, objects, roles, value_aliases, messages, object_states)
 from lib.constants.element import AdminWidgetCustomAttributes
 from lib.decorator import lazy_property
+from lib.entities import entity
 from lib.entities.entity import (
     PersonEntity, CustomAttributeDefinitionEntity, CommentEntity)
 from lib.utils import help_utils, string_utils
@@ -184,58 +185,60 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
         objects.CUSTOM_ATTRIBUTES)
 
   @classmethod
-  def generate_ca_values(cls, list_ca_def_objs, is_none_values=False,
-                         is_for_rest=True):
-    """Generate dictionary of CA random values from exist list CA definitions
-    objects according to CA 'id', 'attribute_type' and 'multi_choice_options'
-    for Dropdown. Return dictionary of CA items that ready to use via REST API:
-    If 'is_none_values' then generate None like CA values according to CA
-    definitions types.
+  def generate_ca_value(cls, cad, attr_value=None):
+    """Generate random CAV for CAD.
+    Optionally set `attribute_value` of CAV to `attr_value`."""
+    cad_type = cad.attribute_type
+    attr_object = None
+    attr_object_id = None
+    if attr_value is None:
+      if cad_type in (AdminWidgetCustomAttributes.TEXT,
+                      AdminWidgetCustomAttributes.RICH_TEXT):
+        attr_value = cls.generate_string(cad_type)
+      if cad_type == AdminWidgetCustomAttributes.DATE:
+        attr_value = unicode(cad.created_at[:10])
+      if cad_type == AdminWidgetCustomAttributes.CHECKBOX:
+        attr_value = random.choice((True, False))
+      if cad_type == AdminWidgetCustomAttributes.DROPDOWN:
+        attr_value = unicode(
+            random.choice(cad.multi_choice_options.split(",")))
+    if cad_type == AdminWidgetCustomAttributes.PERSON:
+      person_id = users.current_user().id
+      attr_object = {"id": person_id, "type": "Person"}
+      attr_object_id = person_id
+      attr_value = "Person"
+    return entity.CustomAttributeValueEntity(
+        attribute_object=attr_object,
+        attribute_object_id=attr_object_id,
+        attribute_value=attr_value,
+        custom_attribute_id=cad.id
+    )
+
+  @classmethod
+  def generate_ca_values(cls, cads):
+    """Generate random CAVs for CADs"""
+    return [cls.generate_ca_value(cad) for cad in cads]
+
+  @classmethod
+  def generate_cas(cls, cads, is_none_values=False):
+    """Generate dictionary of CAs from existing list of CAD objects.
     Example:
-    list_ca_objs = [{'attribute_type': 'Text', 'id': 1},
+    cads = [{'attribute_type': 'Text', 'id': 1},
     {'attribute_type': 'Dropdown', 'id': 2, 'multi_choice_options': 'a,b,c'}]
     :return {"1": "text_example", "2": "b"}
     """
-    def generate_ca_value(cls, ca, is_for_rest=True):
-      """Generate CA value according to CA 'id', 'attribute_type' and
-      'multi_choice_options' for Dropdown.
-      """
-      if not isinstance(ca, dict):
-        ca = ca.__dict__
-      ca_attr_type = ca.get("attribute_type")
-      ca_value = None
-      if ca_attr_type in AdminWidgetCustomAttributes.ALL_CA_TYPES:
-        if not is_none_values:
-          if ca_attr_type in (AdminWidgetCustomAttributes.TEXT,
-                              AdminWidgetCustomAttributes.RICH_TEXT):
-            ca_value = cls.generate_string(ca_attr_type)
-          if ca_attr_type == AdminWidgetCustomAttributes.DATE:
-            selected_date = (
-                ca["created_at"] if ca["created_at"]
-                else str(datetime.datetime.now())
-            )
-            ca_value = unicode(selected_date[:10])
-          if ca_attr_type == AdminWidgetCustomAttributes.CHECKBOX:
-            ca_value = random.choice((True, False))
-          if ca_attr_type == AdminWidgetCustomAttributes.DROPDOWN:
-            ca_value = unicode(
-                random.choice(ca["multi_choice_options"].split(",")))
-          if ca_attr_type == AdminWidgetCustomAttributes.PERSON:
-            user = users.current_user()
-            if is_for_rest:
-              ca_value = "Person:{}".format(user)
-            else:
-              ca_value = user.email
-
-        else:
-          ca_value = (
-              None if ca_attr_type != AdminWidgetCustomAttributes.CHECKBOX
-              else u"0")
-      return {ca["id"]: ca_value}
-    return {
-        k: v for _ in [generate_ca_value(cls, ca, is_for_rest)
-                       for ca in list_ca_def_objs]
-        for k, v in _.items()}
+    cas = {}
+    for cad in cads:
+      if is_none_values:
+        value = (
+            None if cad.attribute_type != AdminWidgetCustomAttributes.CHECKBOX
+            else u"0")
+      else:
+        value = cls.generate_ca_value(cad)
+        if cad.attribute_type == AdminWidgetCustomAttributes.PERSON:
+          value = "Person:{}".format(value.attribute_object_id)
+      cas[cad.id] = value
+    return cas
 
   @staticmethod
   def generate_ca_defenitions_for_asmt_tmpls(list_ca_definitions):
