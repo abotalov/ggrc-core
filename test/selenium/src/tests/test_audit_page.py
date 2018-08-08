@@ -280,19 +280,12 @@ class TestAuditPage(base.Test):
     # 'actual_asmt_tmpls': created_at, updated_at, custom_attributes,
     #                      modified_by, audit, assignees, verifiers,
     #                      template_object_type (None)
-    is_expect_ggrc_3423 = (expected_asmt_tmpl.status != ObjectStates.DRAFT)
     exclude_attrs = (
         Representation.tree_view_attrs_to_exclude +
         ("slug", "modified_by", "audit", "assignees", "verifiers",
          "template_object_type"))
     self.general_equal_assert(
-        expected_asmt_tmpl, actual_asmt_tmpls,
-        *(exclude_attrs if not is_expect_ggrc_3423 else
-          exclude_attrs + ("status", )))
-    if is_expect_ggrc_3423:
-      self.xfail_equal_assert(
-          expected_asmt_tmpl, actual_asmt_tmpls,
-          "Issue in app GGRC-3423", "status")
+        expected_asmt_tmpl, actual_asmt_tmpls, *exclude_attrs)
 
   @pytest.mark.smoke_tests
   @pytest.mark.cloning
