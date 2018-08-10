@@ -18,7 +18,8 @@ from lib.entities.entity import CustomAttributeDefinitionEntity
 from lib.page.modal import update_object
 from lib.page.modal.set_value_for_asmt_ca import SetValueForAsmtDropdown
 from lib.page.widget import page_tab
-from lib.page.widget.page_elements import CustomAttributeManager
+from lib.page.widget.page_elements import CustomAttributeManager, \
+    CustomAttributeScope
 from lib.page.widget.page_mixins import (WithAssignFolder, WithObjectReview,
                                          WithPageElements)
 from lib.utils import selenium_utils, string_utils, help_utils
@@ -225,9 +226,11 @@ class InfoWidget(page_tab.WithPageTab, WithPageElements, base.Widget):
     # pylint: disable=invalid-name
     # pylint: disable=too-many-branches
     selenium_utils.wait_for_js_to_load(self._driver)
-    cas_locator = (self._locators.CAS_HEADERS_AND_VALUES if is_gcas_not_lcas
-                   else self._locators.LCAS_HEADERS_AND_VALUES)
-    cas_headers_and_values = self.info_widget_elem.find_elements(*cas_locator)
+    # cas_locator = (self._locators.CAS_HEADERS_AND_VALUES if is_gcas_not_lcas
+    #                else self._locators.LCAS_HEADERS_AND_VALUES)
+    # cas_headers_and_values = self.info_widget_elem.find_elements(*cas_locator)
+    cas_headers_and_values = CustomAttributeScope(
+        self._browser).get_cas_scopes(is_gcas_not_lcas)
     dict_cas_scopes = {}
     # get all headers as list
     cas_headers = []
@@ -271,17 +274,18 @@ class InfoWidget(page_tab.WithPageTab, WithPageElements, base.Widget):
              AdminWidgetCustomAttributes.DROPDOWN: "custom-attribute-dropdown",
              AdminWidgetCustomAttributes.PERSON: "custom-attribute-person",
              }
-    for scope in scopes:
-      attr_title = scope.text.splitlines()[0]
-      cad = CustomAttributeDefinitionEntity(title=attr_title)
-      cad_list.append(cad)
-      if not is_gcas_not_lcas:
-        ca_type = scope.get_attribute("class")
-        for type, html_type in types.iteritems():
-          if html_type in ca_type:
-            cad.attribute_type = type
-      else:
-        scope.find_element(By.CSS_SELECTOR, ' readonly-inline-content')
+    if scopes.elements:
+      for scope in scopes.elements:
+        attr_title = scope.text.splitlines()[0]
+        cad = CustomAttributeDefinitionEntity(title=attr_title)
+        cad_list.append(cad)
+        if not is_gcas_not_lcas:
+          ca_type = scope.get_attribute("class")
+          for type, html_type in types.iteritems():
+            if html_type in ca_type:
+              cad.attribute_type = type
+        else:
+          scope.find_element(By.CSS_SELECTOR, ' readonly-inline-content')
     #         TBD
     return cad_list
 

@@ -111,6 +111,20 @@ class CustomAttributeManager(object):
     elem = self._all_types[self._type](self._browser, self._label)
     return elem
 
+class CustomAttributeScope(object):
+
+  def __init__(self, browser):
+    self.cas_scopes = browser.element(class_name=re.compile(
+          'ggrc-form-item')).elements(
+        tag_name='inline-edit-control')
+    self.lcas_scopes = browser.element(
+      class_name='custom-attributes').elements(
+          tag_name='div', class_name=re.compile("custom-attribute"))
+
+
+  def get_cas_scopes(self, is_lcas_not_gcas):
+    return self.lcas_scopes if is_lcas_not_gcas else self.cas_scopes
+
 
 class CustomAttribute(object):
   """Represents all customa attribute parent class,

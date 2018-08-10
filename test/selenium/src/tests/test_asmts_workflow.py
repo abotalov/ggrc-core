@@ -449,21 +449,28 @@ class TestAssessmentsWorkflow(base.Test):
     dropdown = CustomAttributeDefinitionsFactory().create(
         **expected_asmt.cads_from_template()[0])
     asmt_service = webui_service.AssessmentsService(selenium)
-
+    expected_asmt_comments = [entities_factory.CommentsFactory().create()]
     expected_asmt = asmt_service.choose_and_fill_dropdown_lca(
         expected_asmt, dropdown,
-        comment=attr_value.values()[0].description)
+        comment=expected_asmt_comments[0].description)
+    expected_asmt_comments = [expected_comment.update_attrs(
+        created_at=self.info_service().get_comment_obj(
+            paren_obj=expected_asmt,
+            comment_description=expected_comment.description).created_at
+    ).repr_ui() for expected_comment in expected_asmt_comments]
     expected_asmt.update_attrs(
         updated_at=self.info_service().get_obj(obj=expected_asmt).updated_at,
-        comments=[attr.description for attr in attr_value.values()],
+        comments=expected_asmt_comments,
         mapped_objects=[control_mapped_to_program.title],
         status=object_states.IN_PROGRESS).repr_ui()
     expected_asmt_comments_descr = [attr_value.values()[0].description]
     actual_asmt = asmt_service.get_obj_from_info_page(obj=expected_asmt)
-    actual_asmt_comments_descr = [
+    actual_asmt_comments_descriptions = [
         comment["description"] for comment in actual_asmt.comments]
     self.general_equal_assert(expected_asmt, actual_asmt, "audit", "comments")
-    assert expected_asmt_comments_descr == actual_asmt_comments_descr
+    assert expected_asmt_comments_descriptions \
+        == actual_asmt_comments_descriptions
+
 
   @pytest.mark.parametrize("attr_type",
                            [AdminWidgetCustomAttributes.PERSON,
@@ -528,7 +535,6 @@ class TestAssessmentsWorkflow(base.Test):
     act_asmt = self.info_service().get_obj(obj=new_assessment_rest)
     new_assessment_rest.update_attrs(
         updated_at=act_asmt.updated_at, status=act_asmt.status,
-        mapped_objects=[control_mapped_to_program],
         custom_attribute_definitions=new_cas_for_assessments_rest)
     _assert_asmt(asmts_ui_service, new_assessment_rest, True)
 
