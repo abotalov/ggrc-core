@@ -56,35 +56,16 @@ def create_asmt_template_w_dropdown(audit, dropdown_types_list):
       multi_choice_options=(
           StringMethods.random_list_strings(
               list_len=len(dropdown_types_list))))]
-  custom_attribute_definitions = (ca_definitions_factory.
-                                  generate_ca_defenitions_for_asmt_tmpls(
-                                      custom_attribute_definitions))
+  cads = (ca_definitions_factory.generate_cads_for_asmt_tmpls(
+      custom_attribute_definitions))
   return create_asmt_template(
-      audit, custom_attribute_definitions=custom_attribute_definitions)
-
-
-def create_asmt_from_template_rest(
-    audit, control, asmt_template
-):
-  """Create new Assessment based on Assessment Template via REST API.
-  Return: lib.entities.entity.AssessmentEntity
-  """
-  control_snapshots = [Representation.convert_repr_to_snapshot(
-      objs=control, parent_obj=audit)]
-  assessments_service = rest_service.AssessmentsFromTemplateService()
-  assessments = assessments_service.create_assessments(
-      audit=audit,
-      template=asmt_template,
-      control_snapshots=control_snapshots
-  )
-  return assessments[0]
+      audit, custom_attribute_definitions=cads)
 
 
 def create_asmt(audit, **attrs):
   """Create an assessment within an audit `audit`"""
   attrs["audit"] = audit.__dict__
-  return rest_service.AssessmentsService().create_objs(
-      count=1, **attrs)[0]
+  return rest_service.AssessmentsService().create_obj(**attrs)
 
 
 def create_asmt_template(audit, cad_type=None, **attrs):
@@ -93,10 +74,9 @@ def create_asmt_template(audit, cad_type=None, **attrs):
   cad = None
   if cad_type:
     attrs["cad_type"] = cad_type
-    cad = AsmtTemplateManager().generate_cas_definitions(**attrs)
+    cad = AsmtTemplateManager().generate_cads(**attrs)
     attrs["custom_attribute_definitions"] = cad
-  return rest_service.AssessmentTemplatesService().create_objs(
-      count=1, **attrs)[0]
+  return rest_service.AssessmentTemplatesService().create_obj(**attrs)
 
 
 def create_asmt_from_template(audit, asmt_template, control, **attrs):

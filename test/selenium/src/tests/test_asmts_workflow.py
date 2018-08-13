@@ -7,7 +7,6 @@
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 # pylint: disable=redefined-outer-name
-
 import random
 
 import pytest
@@ -37,15 +36,15 @@ def _create_mapped_asmt(audit, assessment_type, objs_to_map):
   return assessment
 
 
-def _create_asmt_template(audit, assessment_type, custom_attributes):
+def _create_asmt_template(audit, assessment_type, cads):
   """Create assessment with assessment type=`assessment_type` and
   map it to snapshots of `objs_to_map`"""
-  custom_attr_rest = (
+  cad_rest = (
       CustomAttributeDefinitionsFactory.
-      generate_ca_defenitions_for_asmt_tmpls(custom_attributes))
+      generate_cads_for_asmt_tmpls(cads))
   assessment_template = rest_facade.create_asmt_template(
       audit, assessment_type=assessment_type,
-      custom_attribute_definitions=custom_attr_rest)
+      custom_attribute_definitions=cad_rest)
   return assessment_template
 
 
@@ -207,7 +206,7 @@ class TestAssessmentsWorkflow(base.Test):
             obj=expected_asmt).updated_at).repr_ui()
     actual_asmt = asmts_ui_service.get_obj_from_info_page(expected_asmt)
     # 'actual_asmt': audit (None)
-    self.general_equal_assert(expected_asmt, actual_asmt, "audit")
+    self.general_equal_assert(expected_asmt, actual_asmt, "audit", "comments")
 
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize(
@@ -319,10 +318,10 @@ class TestAssessmentsWorkflow(base.Test):
         objs=cads,
         attribute_type=element.AdminWidgetCustomAttributes.CHECKBOX)
     if only_checkbox:
-      cavs = [CustomAttributeDefinitionsFactory.generate_ca_value(
+      cavs = [CustomAttributeDefinitionsFactory.generate_cav(
           checkbox_cad, checkbox_value)]
     else:
-      cavs = CustomAttributeDefinitionsFactory.generate_ca_values(cads)
+      cavs = CustomAttributeDefinitionsFactory.generate_cavs(cads)
       for cav in cavs:
         if cav.custom_attribute_id == checkbox_cad.id:
           cav.attribute_value = checkbox_value
@@ -342,7 +341,7 @@ class TestAssessmentsWorkflow(base.Test):
     assessment = Representation.extract_objs_wo_excluded_attrs(
         [assessment.repr_ui()],
         *(Representation.tree_view_attrs_to_exclude + (
-          "audit", "assessment_type", "modified_by"))
+            "audit", "assessment_type", "modified_by"))
     )[0]
     expected_results = [{"filter": filter_expr, "objs": [assessment]}
                         for filter_expr in filter_exprs]
@@ -350,8 +349,9 @@ class TestAssessmentsWorkflow(base.Test):
     for filter_expr in filter_exprs:
       result = {
           "filter": filter_expr,
-          "objs": webui_service.AssessmentsService(selenium)
-          .filter_and_get_list_objs_from_tree_view(audit, filter_expr)
+          "objs": webui_service.AssessmentsService(
+              selenium).filter_and_get_list_objs_from_tree_view(audit,
+                                                                filter_expr)
       }
       actual_results.append(result)
     error_message = messages.AssertionMessages.format_err_msg_equal(
@@ -432,7 +432,7 @@ class TestAssessmentsWorkflow(base.Test):
     expected_asmt = asmt_service.choose_and_fill_dropdown_lca(
         expected_asmt, dropdown, **attr_value)
     expected_asmt.update_attrs(updated_at=self.info_service().get_obj(
-        obj=expected_asmt).updated_at, vidence_urls=attr_value.values(),
+        obj=expected_asmt).updated_at, evidence_urls=attr_value.values(),
         mapped_objects=[control_mapped_to_program.title],
         status=object_states.IN_PROGRESS).repr_ui()
     actual_asmt = asmt_service.get_obj_from_info_page(obj=expected_asmt)
@@ -462,28 +462,19 @@ class TestAssessmentsWorkflow(base.Test):
     dropdown = CustomAttributeDefinitionsFactory().create(
         **expected_asmt.cads_from_template()[0])
     asmt_service = webui_service.AssessmentsService(selenium)
-    expected_asmt_comments = [entities_factory.CommentsFactory().create()]
     expected_asmt = asmt_service.choose_and_fill_dropdown_lca(
         expected_asmt, dropdown,
-        comment=expected_asmt_comments[0].description)
-    expected_asmt_comments = [expected_comment.update_attrs(
-        created_at=self.info_service().get_comment_obj(
-            paren_obj=expected_asmt,
-            comment_description=expected_comment.description).created_at
-    ).repr_ui() for expected_comment in expected_asmt_comments]
+        comment=attr_value.values()[0].description)
     expected_asmt.update_attrs(
         updated_at=self.info_service().get_obj(obj=expected_asmt).updated_at,
-        comments=expected_asmt_comments,
         mapped_objects=[control_mapped_to_program.title],
         status=object_states.IN_PROGRESS).repr_ui()
-    expected_asmt_comments_descr = [attr_value.values()[0].description]
     actual_asmt = asmt_service.get_obj_from_info_page(obj=expected_asmt)
-    actual_asmt_comments_descriptions = [
+    actual_asmt_comments_descr = [
         comment["description"] for comment in actual_asmt.comments]
     self.general_equal_assert(expected_asmt, actual_asmt, "audit", "comments")
-    assert expected_asmt_comments_descriptions \
-        == actual_asmt_comments_descriptions
-
+    assert (
+        [attr_value.values()[0].description] == actual_asmt_comments_descr)
 
   @pytest.mark.parametrize("attr_type",
                            [AdminWidgetCustomAttributes.PERSON,
@@ -508,21 +499,23 @@ class TestAssessmentsWorkflow(base.Test):
     """
     cad = CustomAttributeDefinitionsFactory().create(
         is_add_rest_attrs=True, attribute_type=attr_type)
-    custom_attr_values = (
-        CustomAttributeDefinitionsFactory().generate_ca_values(
-            list_ca_def_objs=[cad], is_for_rest=False))
+    cavs = (CustomAttributeDefinitionsFactory().generate_cav_ui(cads=[cad]))
     assessment_template = _create_asmt_template(
-        audit=audit, assessment_type="Control", custom_attributes=[cad])
+        audit=audit, assessment_type="Control", cads=[cad])
     exp_asmt = rest_facade.create_asmt_from_template(
         audit, assessment_template, control_mapped_to_program)
+    cad_created = None
+    for cad_cur in exp_asmt.custom_attribute_definitions:
+      if cad_cur["title"] == cad.title:
+        cad_created = cad_cur
     asmts_ui_service = webui_service.AssessmentsService(selenium)
-    asmts_ui_service.open_info_page_of_obj_fill_lca(exp_asmt,
-                                                    [cad], custom_attr_values)
-
+    asmts_ui_service.open_info_page_of_obj_fill_lca(exp_asmt, [cad], cavs)
     act_asmt = self.info_service().get_obj(obj=exp_asmt)
     exp_asmt.update_attrs(updated_at=act_asmt.updated_at,
                           status=act_asmt.status,
-                          mapped_objects=[control_mapped_to_program])
+                          mapped_objects=[control_mapped_to_program],
+                          custom_attributes=cavs,
+                          custom_attribute_definitions=[cad_created])
     _assert_asmt(asmts_ui_service, exp_asmt, True)
 
   @pytest.mark.smoke_tests
@@ -537,17 +530,18 @@ class TestAssessmentsWorkflow(base.Test):
     - Global Custom Attributes for Assessment created via REST API.
     - Assessments created via REST API.
     """
-    cas_values = CustomAttributeDefinitionsFactory().generate_ca_values(
-        list_ca_def_objs=new_cas_for_assessments_rest, is_for_rest=False)
+    cavs = CustomAttributeDefinitionsFactory().generate_cav_ui(
+        cads=new_cas_for_assessments_rest)
 
     asmts_ui_service = webui_service.AssessmentsService(selenium)
 
     asmts_ui_service.open_info_page_of_obj_fill_gca(
-        new_assessment_rest, new_cas_for_assessments_rest, cas_values)
+        new_assessment_rest, new_cas_for_assessments_rest, cavs)
 
     act_asmt = self.info_service().get_obj(obj=new_assessment_rest)
     new_assessment_rest.update_attrs(
         updated_at=act_asmt.updated_at, status=act_asmt.status,
+        custom_attributes=cavs,
         custom_attribute_definitions=new_cas_for_assessments_rest)
     _assert_asmt(asmts_ui_service, new_assessment_rest, True)
 

@@ -5,7 +5,6 @@
 import datetime
 import re
 
-from lib import users
 from lib.constants.element import AdminWidgetCustomAttributes
 
 import re
@@ -111,24 +110,29 @@ class CustomAttributeManager(object):
     elem = self._all_types[self._type](self._browser, self._label)
     return elem
 
+
 class CustomAttributeScope(object):
-
+  """CAS scope page element."""
   def __init__(self, browser):
-    self.cas_scopes = browser.element(class_name=re.compile(
-          'ggrc-form-item')).elements(
-        tag_name='inline-edit-control')
-    self.lcas_scopes = browser.element(
-      class_name='custom-attributes').elements(
-          tag_name='div', class_name=re.compile("custom-attribute"))
+    self.cas_scopes_popup = browser.element(
+        class_name='additional-fields')
+    self.gcas_scopes = self.cas_scopes_popup.elements(
+        class_name='ggrc-form-item ')
+    self.lcas_scopes = browser.elements(
+        tag_name='div', class_name=re.compile("custom-attribute"))
 
-
-  def get_cas_scopes(self, is_lcas_not_gcas):
-    return self.lcas_scopes if is_lcas_not_gcas else self.cas_scopes
+  def get_cas_scopes(self, is_gcas_not_lcas):
+    """Define scopes of CAS based on if global or local attribute needed."""
+    if is_gcas_not_lcas:
+      if self.cas_scopes_popup.exist:
+        return self.gcas_scopes
+    else:
+      return self.lcas_scopes
 
 
 class CustomAttribute(object):
   """Represents all customa attribute parent class,
-  which knows and controls root element for each custom element"""
+  which knows and controls root element for each custom element."""
 
   def __init__(self, browser, label):
     self._label_txt = label.encode('UTF-8')
@@ -147,7 +151,7 @@ class CustomAttribute(object):
     self._root = self.init_root()
 
   def init_root(self):
-    """Defines elements root based on current page"""
+    """Defines elements root based on current page."""
     if self._label_popup.exists:
       return self._root_gcas_popup
     elif self._label_inline.exists:
@@ -160,7 +164,7 @@ class CustomAttribute(object):
     else:
       raise NotImplementedError
 
-  def get_gcas_from_inline(self):
+  def get_gcas_from_popup(self):
     pass
 
   def set_lcas_from_inline(self, value):
@@ -174,12 +178,12 @@ class CustomAttribute(object):
 
 
 class DateCAElem(CustomAttribute):
-  """Representation for Date custom attribute"""
+  """Representation for Date custom attribute."""
 
   def __init__(self, browser, label):
     super(DateCAElem, self).__init__(browser, label)
     self._datepicker_field = self._root.element(
-        class_name="datepicker__input date ")
+        class_name=re.compile("datepicker__input date "))
     self._datepicker_opts = self._root.element(
         class_name="datepicker__calendar").elements(
         data_handler='selectDay')
@@ -188,8 +192,8 @@ class DateCAElem(CustomAttribute):
     self._input_existent_inline = self._root.element(
         class_name="inline-edit__text")
 
-  def get_gcas_from_inline(self):
-    """Retrieves global custom attribute from UI"""
+  def get_gcas_from_popup(self):
+    """Retrieves global custom attribute from UI."""
     return (
         None if self._input_blank_inline.exists
         else self._input_existent_inline.text
@@ -205,14 +209,14 @@ class DateCAElem(CustomAttribute):
     self._select_date(value)
 
   def _select_date(self, value):
-    """Select day in current month"""
+    """Select day in current month."""
     self._datepicker_field.click()
     self._datepicker_opts[
         datetime.datetime.strptime(value, "%Y-%m-%d").day - 1].click()
 
 
 class TextCAElem(CustomAttribute):
-  """Representation for Date custom attribute"""
+  """Representation for Date custom attribute."""
 
   def __init__(self, browser, label):
     super(TextCAElem, self).__init__(browser, label)
@@ -225,7 +229,7 @@ class TextCAElem(CustomAttribute):
     self._input_existent_lcas_inline = self._root.element(
         class_name=re.compile("rich-text__content"))
 
-  def get_gcas_from_inline(self):
+  def get_gcas_from_popup(self):
     return (
         None if self._input_blank_gcas_inline.exists
         else self._input_existent_gcas_inline.text
@@ -245,7 +249,7 @@ class TextCAElem(CustomAttribute):
 
 
 class InputFieldCAElem(CustomAttribute):
-  """Representation for Input field custom attribute"""
+  """Representation for Input field custom attribute."""
 
   def __init__(self, browser, label):
     super(InputFieldCAElem, self).__init__(browser, label)
@@ -256,7 +260,7 @@ class InputFieldCAElem(CustomAttribute):
     self._input_blank = self._root.text_field(
         class_name="text-field")
 
-  def get_gcas_from_inline(self):
+  def get_gcas_from_popup(self):
     return (
         None if self._input_blank_inline_gcas.exists
         else self._input_existent_inline_gcas.text
@@ -273,13 +277,13 @@ class InputFieldCAElem(CustomAttribute):
 
 
 class CheckboxCAElem(CustomAttribute):
-  """Representation for Checkbox custom attribute"""
+  """Representation for Checkbox custom attribute."""
 
   def __init__(self, browser, label):
     super(CheckboxCAElem, self).__init__(browser, label)
     self._input = self._root.checkbox(type='checkbox')
 
-  def get_gcas_from_inline(self):
+  def get_gcas_from_popup(self):
     return self._input.checked
 
   def set_lcas_from_inline(self, value):
@@ -295,13 +299,13 @@ class CheckboxCAElem(CustomAttribute):
 
 
 class DropdownCAElem(CustomAttribute):
-  """Representation for Dropown custom attribute"""
+  """Representation for Dropown custom attribute."""
 
   def __init__(self, browser, label):
     super(DropdownCAElem, self).__init__(browser, label)
     self._input = self._root.select(class_name="input-block-level")
 
-  def get_gcas_from_inline(self):
+  def get_gcas_from_popup(self):
     return self._input.value
 
   def set_lcas_from_inline(self, value):
@@ -315,7 +319,7 @@ class DropdownCAElem(CustomAttribute):
 
 
 class PersonCAElem(CustomAttribute):
-  """Representation for Person custom attribute"""
+  """Representation for Person custom attribute."""
 
   def __init__(self, browser, label):
     super(PersonCAElem, self).__init__(browser, label)
@@ -327,7 +331,7 @@ class PersonCAElem(CustomAttribute):
     self._input_exist_msg = self._root.element(
         class_name="person-name")
 
-  def get_gcas_from_inline(self):
+  def get_gcas_from_popup(self):
     return (
         None if self._input_empty_msg_gcas.exists
         else self._input_exist_msg.text

@@ -359,10 +359,6 @@ class WithBrowser(InstanceRepresentation):
     self._driver = driver
     self._browser = nerodia.browser.Browser(browser=self._driver)
 
-  def switch_browser_to_def_cont(self, driver):
-    driver.switch_to.default_content()
-    self._browser = nerodia.browser.Browser(browser=driver)
-
 
 class Component(WithBrowser):
   """Component class is container for elements."""

@@ -685,7 +685,7 @@ class CustomAttributeDefinitionEntity(Representation):
 
 
 class CustomAttributeValueEntity(Representation):
-  """Class that represents model for Custom Attribute Value entity"""
+  """Class that represents model for Custom Attribute Value entity."""
 
   def __init__(self, **attrs):
     super(CustomAttributeValueEntity, self).__init__()
