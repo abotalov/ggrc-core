@@ -772,10 +772,6 @@ class WidgetSnapshotsInfoPanel(WidgetInfoPanel):
   DATE_PICKER_LOCATOR = (By.XPATH, "//*[@name='end_date']")
   DATE_PICKER_FIELD = (By.XPATH, "//*[@data-handler='selectDay']")
   SUBMIT_REVIEW_BUTTON = (By.XPATH, "//*[text()='Submit']")
-  REVIEW_REJECTED_TXT = (
-      By.XPATH,
-      "//*[@class='ggrc_controllers_quick_form']/preceding-sibling::div")
-  REVIEW_APPROVED_TXT = (By.XPATH, "//*[@class='object-approved']")
 
 
 class WidgetInfoProgram(WidgetInfoPanel):
