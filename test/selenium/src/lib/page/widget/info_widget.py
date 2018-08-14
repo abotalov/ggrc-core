@@ -258,7 +258,8 @@ class InfoWidget(page_tab.WithPageTab, WithPageElements, base.Widget):
       dict_cas_scopes = dict(zip(cas_headers, cas_values))
     return dict_cas_scopes
 
-  def convert_scopes_to_cad(self, scopes, is_gcas_not_lcas):
+  @classmethod
+  def convert_scopes_to_cad(cls, scopes, is_gcas_not_lcas):
     """Method to convert HTML scope to CAD."""
     cad_list = []
     types = {AdminWidgetCustomAttributes.CHECKBOX: "custom-attribute-checkbox",
@@ -268,19 +269,17 @@ class InfoWidget(page_tab.WithPageTab, WithPageElements, base.Widget):
              AdminWidgetCustomAttributes.DROPDOWN: "custom-attribute-dropdown",
              AdminWidgetCustomAttributes.PERSON: "custom-attribute-person",
              }
-    if scopes and scopes.elements:
-      for scope in scopes.elements:
-        attr_title = scope.text.splitlines()[0]
-        cad = CustomAttributeDefinitionEntity(title=attr_title)
-        cad_list.append(cad)
-        if is_gcas_not_lcas:
-          ca_type = scope.find_element(
-              *self._locators.GCAS).get_attribute("class")
-        else:
-          ca_type = scope.get_attribute("class")
-        for attr_type, html_type in types.iteritems():
-          if html_type in ca_type:
-            cad.attribute_type = attr_type
+    for scope in scopes:
+      attr_title = scope.text.splitlines()[0]
+      cad = CustomAttributeDefinitionEntity(title=attr_title)
+      cad_list.append(cad)
+      if is_gcas_not_lcas:
+        ca_type = scope.element(tag_name='custom-attributes-field').class_name
+      else:
+        ca_type = scope.class_name
+      for attr_type, html_type in types.iteritems():
+        if html_type in ca_type:
+          cad.attribute_type = attr_type
     return cad_list
 
   def fill_cas_attr_values(self, attrs, values, is_lcas):
@@ -297,14 +296,7 @@ class InfoWidget(page_tab.WithPageTab, WithPageElements, base.Widget):
       else:
         elem_class.set_gcas_from_popup(values[unicode(attr.title)])
     if not is_lcas:
-      self.close_edit_popup()
-
-  def close_edit_popup(self):
-    """Close edit popup."""
-    base.Button(self._driver,
-                locator.ModalEditObject.BUTTON_SAVE_AND_CLOSE).click()
-    selenium_utils.get_when_invisible(
-        self._driver, locator.BaseModalCreateNew.MODAL_CSS)
+      self.edit_popup.close_and_save()
 
   def collect_cas_attr_name_value(self, attrs, is_gcas_not_lcas):
     """Collect all global attributes and its values."""
@@ -551,6 +543,7 @@ class Assessments(InfoWidget):
         [self.is_verified, self.creators_txt, self.assignees_txt,
          self.verifiers_txt, self.mapped_objects_titles_txt,
          self.comments_scopes_txt, self.asmt_type_txt])
+<<<<<<< HEAD
     self.cas_lbl_txt = self._elements.CAS.upper()
     self.cas_scope = None
 
@@ -565,6 +558,11 @@ class Assessments(InfoWidget):
     """Switch to tab with primary contacts and return a page element"""
     self.ensure_tab(self._other_attributes_tab_name)
     return self._related_people_list("Primary Contacts")
+=======
+    self._extend_list_all_scopes(["evidence_urls"],
+                                 [self.evidence_urls.get_urls()])
+    self.edit_popup = self._edit_popup()
+>>>>>>> Updates according to github comments
 
   def _get_mapped_objs_titles_txt(self):
     """Return lists of str for mapped snapshots titles text from current tab.
@@ -646,7 +644,7 @@ class Assessments(InfoWidget):
     self.open_info_3bbs().select_edit()
     self.cas_scope = self.get_headers_and_values_dict_from_cas_scopes()
     self._extend_list_all_scopes(self.cas_lbl_txt, self.cas_scope)
-    self.close_edit_popup()
+    self.edit_popup.close_popup()
 
   def edit_answers(self):
     """Click to Edit Answers and Confirm"""

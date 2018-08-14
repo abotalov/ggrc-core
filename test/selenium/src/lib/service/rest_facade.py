@@ -8,9 +8,8 @@ Reasons for a facade:
 from lib.entities.entities_factory import AsmtTemplateManager
 
 from lib import factory
-from lib.constants import roles
+from lib.constants import objects, roles
 from lib.constants.element import AdminWidgetCustomAttributes
-from lib.entities.entities_factory import CustomAttributeDefinitionsFactory
 from lib.entities.entity import Representation
 from lib.service import rest_service
 from lib.utils.string_utils import StringMethods
@@ -38,45 +37,25 @@ def create_audit(program, **attrs):
       factory_params=attrs)
 
 
-def create_asmt_template_w_dropdown(audit, dropdown_types_list):
-  """Create assessment template with dropdown custom attribute."""
-  multi_choice_mandatory = {"file": "2", "url": "4", "comment": "1",
-                            "file_url": "6", "url_comment": "5",
-                            "file_comment": "3", "file_url_comment": "7",
-                            "nothing": "0"}
-  ca_definitions_factory = CustomAttributeDefinitionsFactory()
-  custom_attribute_definitions = [ca_definitions_factory.create(
-      title=(ca_definitions_factory.generate_ca_title(
-          AdminWidgetCustomAttributes.DROPDOWN)),
-      attribute_type=AdminWidgetCustomAttributes.DROPDOWN,
-      definition_type=AdminWidgetCustomAttributes.DROPDOWN,
-      multi_choice_mandatory=(",".join(
-          multi_choice_mandatory[dropdown_type]
-          for dropdown_type in dropdown_types_list)),
-      multi_choice_options=(
-          StringMethods.random_list_strings(
-              list_len=len(dropdown_types_list))))]
-  cads = (ca_definitions_factory.generate_cads_for_asmt_tmpls(
-      custom_attribute_definitions))
-  return create_asmt_template(
-      audit, custom_attribute_definitions=cads)
-
-
 def create_asmt(audit, **attrs):
   """Create an assessment within an audit `audit`"""
   attrs["audit"] = audit.__dict__
-  return rest_service.AssessmentsService().create_obj(**attrs)
+  return rest_service.AssessmentsService().create_obj(factory_params=attrs)
 
 
-def create_asmt_template(audit, cad_type=None, **attrs):
+def create_asmt_template(audit, **attrs):
   """Create assessment template."""
-  attrs["audit"] = audit.__dict__
-  cad = None
-  if cad_type:
-    attrs["cad_type"] = cad_type
-    cad = AsmtTemplateManager().generate_cads(**attrs)
-    attrs["custom_attribute_definitions"] = cad
-  return rest_service.AssessmentTemplatesService().create_obj(**attrs)
+  factory_params, attrs_remainder = _split_attrs(
+      attrs, ['cad_type', 'dropdown_types_list'])
+  attrs_remainder["audit"] = audit.__dict__
+  cad = []
+  if "custom_attribute_definitions" in attrs.keys():
+    cad = attrs["custom_attribute_definitions"]
+  elif "cad_type" in attrs.keys():
+    cad = AsmtTemplateManager().generate_cads(**attrs_remainder)
+  factory_params["custom_attribute_definitions"] = cad
+  return rest_service.AssessmentTemplatesService().create_obj(
+      factory_params=factory_params, **attrs_remainder)
 
 
 def create_asmt_from_template(audit, asmt_template, control, **attrs):
@@ -87,6 +66,21 @@ def create_asmt_from_template(audit, asmt_template, control, **attrs):
   return rest_service.AssessmentsFromTemplateService().create_assessments(
       audit=audit, template=asmt_template, control_snapshots=control_snapshots,
       **attrs)[0]
+
+
+def create_gcads(obj, **attrs):
+  """Create global custom attribute definitions for all types"""
+  gcas = []
+  for gcas_type in AdminWidgetCustomAttributes.ALL_CA_TYPES:
+    attrs['attribute_type'] = unicode(gcas_type)
+    attrs['definition_type'] = unicode(objects.get_singular(obj))
+    attrs['multi_choice_options'] = (
+        StringMethods.random_list_strings()
+        if gcas_type == AdminWidgetCustomAttributes.DROPDOWN
+        else None)
+    gcas.append(rest_service.CustomAttributeDefinitionsService().create_obj(
+        obj_count=1, factory_params=attrs))
+  return gcas
 
 
 def create_issue(program=None):

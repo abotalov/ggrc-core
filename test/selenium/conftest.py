@@ -16,6 +16,7 @@ from selenium.webdriver.remote.remote_connection import (
     LOGGER as SELENIUM_LOGGER)
 
 from lib import dynamic_fixtures, environment, url, users
+from lib.constants import objects
 from lib.constants.test_runner import DESTRUCTIVE_TEST_METHOD_PREFIX
 from lib.custom_pytest_scheduling import CustomPytestScheduling
 from lib.entities import entities_factory
@@ -592,6 +593,18 @@ def audit(program):
 def audits(program):
   """Create 2 audits mapped to the program"""
   return [rest_facade.create_audit(program) for _ in xrange(2)]
+
+
+@pytest.fixture()
+def assessment(audit):
+  """Create an assessment within program"""
+  return rest_facade.create_asmt(audit)
+
+
+@pytest.fixture()
+def gcads_asmt():
+  """Create GCAS all types"""
+  return rest_facade.create_gcads(obj=objects.ASSESSMENTS)
 
 
 @pytest.fixture()

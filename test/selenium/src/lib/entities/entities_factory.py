@@ -549,6 +549,7 @@ class AsmtTemplateManager(object):
   """Assessment template manager, that conduct the way custom attribute
   definition is generated."""
 
+  # disable=no-else-return
   @classmethod
   def generate_cads(cls, **kwargs):
     """Factory defines template to be created based on its type."""

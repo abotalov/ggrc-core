@@ -494,7 +494,6 @@ class ModalEditObject(BaseModalCreateNew):
   """Locators for Edit object modals."""
   BUTTON_DELETE = (
       By.CSS_SELECTOR, '.deny-buttons [data-toggle="modal-ajax-deleteform"]')
-  BUTTON_SAVE_AND_CLOSE = (By.CSS_SELECTOR, '[data-toggle="modal-submit"]')
 
 
 class ModalCustomAttribute(object):
@@ -731,7 +730,6 @@ class CommonWidgetInfo(object):
   BUTTON_3BBS = (By.XPATH, BUTTON_3BBS_XPATH)
   # controllers
   TAB_CONTAINER_CSS = (By.CSS_SELECTOR, "tab-container")
-  GCAS = (By.XPATH, './/custom-attributes-field')
 
 
 class WidgetInfoPanel(CommonWidgetInfo):

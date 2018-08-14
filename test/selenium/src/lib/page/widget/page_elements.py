@@ -87,6 +87,24 @@ class CommentArea(object):
         class_name="comment-add-form__section")
 
 
+class EditPopup(object):
+  """Represents edit popup elements"""
+
+  def __init__(self, descendant_el):
+    self.browser = descendant_el
+    self.modal = descendant_el.element(class_name=re.compile('modal-wide'))
+
+  def close_popup(self):
+    self.modal.element(class_name=re.compile('modal-dismiss')).click()
+    if self.browser.alert.exists:
+      self.browser.alert.close()
+    self.modal.wait_until_not_present()
+
+  def close_and_save(self):
+    self.modal.element(data_toggle=re.compile('modal-submit')).click()
+    self.modal.wait_until_not_present()
+
+
 class CustomAttributeManager(object):
   """Represents manager class to define CAS element based on its type."""
 
@@ -126,8 +144,7 @@ class CustomAttributeScope(object):
     if is_gcas_not_lcas:
       if self.cas_scopes_popup.exist:
         return self.gcas_scopes
-    else:
-      return self.lcas_scopes
+    return self.lcas_scopes
 
 
 class CustomAttribute(object):
@@ -237,6 +254,7 @@ class TextCAElem(CustomAttribute):
 
   def set_lcas_from_inline(self, value):
     self._input_blank.send_keys(value)
+    self._label_inline.click()
 
   def get_lcas_from_inline(self):
     return(
@@ -268,6 +286,7 @@ class InputFieldCAElem(CustomAttribute):
 
   def set_lcas_from_inline(self, value):
     self._input_blank.send_keys(value)
+    self._label_inline.click()
 
   def get_lcas_from_inline(self):
     return self._input_blank.value
@@ -325,7 +344,6 @@ class PersonCAElem(CustomAttribute):
     super(PersonCAElem, self).__init__(browser, label)
     self._input = self._root.text_field(data_lookup='Person')
     self._input_existent = self._root.element(tag_name='person-data')
-    self._input_opts = self._root.element(class_name='ui-menu-item')
     self._input_empty_msg_gcas = self._root.element(
         class_name="empty-message")
     self._input_exist_msg = self._root.element(
@@ -338,8 +356,7 @@ class PersonCAElem(CustomAttribute):
     )
 
   def set_lcas_from_inline(self, value):
-    self._input.send_keys(value)
-    self._input_opts.click()
+    self.select_corresponding_email(value)
 
   def get_lcas_from_inline(self):
     return (
@@ -348,5 +365,9 @@ class PersonCAElem(CustomAttribute):
     )
 
   def set_gcas_from_popup(self, value):
+    self.select_corresponding_email(value)
+
+  def select_corresponding_email(self, value):
     self._input.send_keys(value)
-    self._input_opts.click()
+    self._root.element(class_name='ui-menu-item').element(
+        text=re.compile(value)).click()
