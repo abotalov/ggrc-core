@@ -767,8 +767,6 @@ class WidgetSnapshotsInfoPanel(WidgetInfoPanel):
   SAVE_AND_CLOSE_BTN = (
       By.XPATH,
       "//*[contains(@class,'confirm-buttons')]//*[contains(text(), 'Close')]")
-  ASSIGN_REVIEWER_EMPTY = (By.CSS_SELECTOR, ".people-autocomplete > input")
-  ASSIGN_REVIEWER_DROPDOWN = (By.XPATH, "//*[@id='ui-id-1']")
   DATE_PICKER_LOCATOR = (By.XPATH, "//*[@name='end_date']")
   DATE_PICKER_FIELD = (By.XPATH, "//*[@data-handler='selectDay']")
   SUBMIT_REVIEW_BUTTON = (By.XPATH, "//*[text()='Submit']")
