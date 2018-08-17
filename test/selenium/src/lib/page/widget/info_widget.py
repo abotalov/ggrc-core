@@ -543,9 +543,9 @@ class Assessments(InfoWidget):
         [self.is_verified, self.creators_txt, self.assignees_txt,
          self.verifiers_txt, self.mapped_objects_titles_txt,
          self.comments_scopes_txt, self.asmt_type_txt])
-<<<<<<< HEAD
     self.cas_lbl_txt = self._elements.CAS.upper()
     self.cas_scope = None
+    self.edit_popup = self._edit_popup()
 
   @property
   def evidence_urls(self):
@@ -558,11 +558,6 @@ class Assessments(InfoWidget):
     """Switch to tab with primary contacts and return a page element"""
     self.ensure_tab(self._other_attributes_tab_name)
     return self._related_people_list("Primary Contacts")
-=======
-    self._extend_list_all_scopes(["evidence_urls"],
-                                 [self.evidence_urls.get_urls()])
-    self.edit_popup = self._edit_popup()
->>>>>>> Updates according to github comments
 
   def _get_mapped_objs_titles_txt(self):
     """Return lists of str for mapped snapshots titles text from current tab.

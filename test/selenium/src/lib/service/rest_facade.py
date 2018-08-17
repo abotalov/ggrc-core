@@ -68,19 +68,16 @@ def create_asmt_from_template(audit, asmt_template, control, **attrs):
       **attrs)[0]
 
 
-def create_gcads(obj, **attrs):
+def create_gcad(obj, gcas_type, **attrs):
   """Create global custom attribute definitions for all types"""
-  gcas = []
-  for gcas_type in AdminWidgetCustomAttributes.ALL_CA_TYPES:
-    attrs['attribute_type'] = unicode(gcas_type)
-    attrs['definition_type'] = unicode(objects.get_singular(obj))
-    attrs['multi_choice_options'] = (
-        StringMethods.random_list_strings()
-        if gcas_type == AdminWidgetCustomAttributes.DROPDOWN
-        else None)
-    gcas.append(rest_service.CustomAttributeDefinitionsService().create_obj(
-        obj_count=1, factory_params=attrs))
-  return gcas
+  attrs['attribute_type'] = unicode(gcas_type)
+  attrs['definition_type'] = unicode(objects.get_singular(obj))
+  attrs['multi_choice_options'] = (
+      StringMethods.random_list_strings()
+      if gcas_type == AdminWidgetCustomAttributes.DROPDOWN
+      else None)
+  return rest_service.CustomAttributeDefinitionsService().create_obj(
+      obj_count=1, factory_params=attrs)
 
 
 def create_issue(program=None):

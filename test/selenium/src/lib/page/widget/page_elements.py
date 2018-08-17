@@ -95,6 +95,7 @@ class EditPopup(object):
     self.modal = descendant_el.element(class_name=re.compile('modal-wide'))
 
   def close_popup(self):
+    """Close edit popup with no save"""
     self.modal.element(class_name=re.compile('modal-dismiss')).click()
     if self.browser.alert.exists:
       self.browser.alert.close()
@@ -109,8 +110,6 @@ class CustomAttributeManager(object):
   """Represents manager class to define CAS element based on its type."""
 
   def __init__(self, browser):
-    self._label = None
-    self._type = None
     self._browser = browser
     self._all_types = {
         AdminWidgetCustomAttributes.TEXT: InputFieldCAElem,
@@ -120,31 +119,35 @@ class CustomAttributeManager(object):
         AdminWidgetCustomAttributes.DROPDOWN: DropdownCAElem,
         AdminWidgetCustomAttributes.PERSON: PersonCAElem
     }
+    self.types = {
+        AdminWidgetCustomAttributes.CHECKBOX: "custom-attribute-checkbox",
+        AdminWidgetCustomAttributes.DATE: "custom-attribute-date",
+        AdminWidgetCustomAttributes.RICH_TEXT: "custom-attribute-text",
+        AdminWidgetCustomAttributes.TEXT: "custom-attribute-input",
+        AdminWidgetCustomAttributes.DROPDOWN: "custom-attribute-dropdown",
+        AdminWidgetCustomAttributes.PERSON: "custom-attribute-person",
+    }
 
-  def get_attr_elem_class(self, attr):
+  def get_attr_elem_class(self, label, attr_type):
     """Returns custom attribute element class."""
-    self._label = attr.title
-    self._type = attr.attribute_type
-    elem = self._all_types[self._type](self._browser, self._label)
+    elem = self._all_types[attr_type](self._browser, label)
     return elem
 
-
-class CustomAttributeScope(object):
-  """CAS scope page element."""
-  def __init__(self, browser):
-    self.cas_scopes_popup = browser.element(
-        class_name='additional-fields')
-    self.gcas_scopes = self.cas_scopes_popup.elements(
-        class_name='ggrc-form-item ')
-    self.lcas_scopes = browser.elements(
-        tag_name='div', class_name=re.compile("custom-attribute"))
-
-  def get_cas_scopes(self, is_gcas_not_lcas):
-    """Define scopes of CAS based on if global or local attribute needed."""
+  def find_type_by_title(self, title, is_gcas_not_lcas):
+    """Method to convert HTML scope to CAD."""
+    elemt = CustomAttribute(self._browser, title)
     if is_gcas_not_lcas:
-      if self.cas_scopes_popup.exist:
-        return self.gcas_scopes
-    return self.lcas_scopes
+      ca_type = elemt.root.element(
+          tag_name='custom-attributes-field').class_name
+    else:
+      ca_type = elemt.root.class_name
+    for attr_type, html_type in self.types.iteritems():
+      if html_type in ca_type:
+        return attr_type
+
+  def find_cas_pe_by_title(self, title, is_gcas_not_lcas):
+    attr_type = self.find_type_by_title(title, is_gcas_not_lcas)
+    return self.get_attr_elem_class(title, attr_type)
 
 
 class CustomAttribute(object):
@@ -154,18 +157,19 @@ class CustomAttribute(object):
   def __init__(self, browser, label):
     self._label_txt = label.encode('UTF-8')
     self._label_popup = browser.element(
-        class_name=re.compile("label-text"), text=self._label_txt)
+        class_name=re.compile("label-text"),
+        text=re.compile(re.escape(self._label_txt), re.IGNORECASE))
     self._label_inline = browser.element(
         tag_name='div', class_name=re.compile(
             "title"), text=re.compile(
             re.escape(self._label_txt), re.IGNORECASE))
     self._root_gcas_popup = self._label_popup.parent(
-        class_name=re.compile('ggrc-form-item__row'))
+        class_name=re.compile('ggrc-form-item '))
     self._root_gcas_inline = self._label_inline.parent(
         class_name=re.compile("ggrc-form-item__"))
     self._root_lcas_inline = self._label_inline.parent(
-        class_name=re.compile("fields-wrapper"))
-    self._root = self.init_root()
+        class_name=re.compile("field-wrapper flex-size-1"))
+    self.root = self.init_root()
 
   def init_root(self):
     """Defines elements root based on current page."""
@@ -180,6 +184,25 @@ class CustomAttribute(object):
         raise NotImplementedError
     else:
       raise NotImplementedError
+
+  @staticmethod
+  def retrieve_all_ca_titles(browser, is_gcas_not_lcas):
+    """Get all custom attribute titles for local or global attributes"""
+    cas_scopes_popup = browser.element(
+        class_name='additional-fields')
+    gcas_scopes = cas_scopes_popup.elements(
+        class_name='ggrc-form-item ')
+    lcas_scopes = browser.elements(
+        tag_name='div', class_name=re.compile("custom-attribute"))
+    all_ca_titles = []
+    if is_gcas_not_lcas:
+      if cas_scopes_popup.exist:
+        for elem in gcas_scopes:
+          all_ca_titles.append(elem.text.splitlines()[0])
+    else:
+      for elem in lcas_scopes:
+        all_ca_titles.append(elem.text.splitlines()[0])
+    return all_ca_titles
 
   def get_gcas_from_popup(self):
     pass
@@ -199,22 +222,19 @@ class DateCAElem(CustomAttribute):
 
   def __init__(self, browser, label):
     super(DateCAElem, self).__init__(browser, label)
-    self._datepicker_field = self._root.element(
+    self._datepicker_field = self.root.element(
         class_name=re.compile("datepicker__input date "))
-    self._datepicker_opts = self._root.element(
+    self._datepicker_opts = self.root.element(
         class_name="datepicker__calendar").elements(
         data_handler='selectDay')
-    self._input_blank_inline = self._root.element(
+    self._input_blank_inline = self.root.element(
         class_name="empty-message")
-    self._input_existent_inline = self._root.element(
+    self._input_existent_inline = self.root.element(
         class_name="inline-edit__text")
 
   def get_gcas_from_popup(self):
     """Retrieves global custom attribute from UI."""
-    return (
-        None if self._input_blank_inline.exists
-        else self._input_existent_inline.text
-    )
+    return self._datepicker_field.value
 
   def set_lcas_from_inline(self, value):
     self._select_date(value)
@@ -237,19 +257,19 @@ class TextCAElem(CustomAttribute):
 
   def __init__(self, browser, label):
     super(TextCAElem, self).__init__(browser, label)
-    self._input_blank_gcas_inline = self._root.element(
+    self._input_blank_gcas_inline = self.root.element(
         class_name="empty-message")
-    self._input_existent_gcas_inline = self._root.element(
+    self._input_existent_gcas_inline = self.root.element(
         tag_name='div', class_name="read-more__body ellipsis-truncation-5")
-    self._input_blank = self._root.element(
+    self._input_blank = self.root.element(
         class_name="ql-editor ql-blank")
-    self._input_existent_lcas_inline = self._root.element(
+    self._input_existent_inline = self.root.element(
         class_name=re.compile("rich-text__content"))
 
   def get_gcas_from_popup(self):
     return (
-        None if self._input_blank_gcas_inline.exists
-        else self._input_existent_gcas_inline.text
+        None if self._input_blank.exists
+        else self._input_existent_inline.text
     )
 
   def set_lcas_from_inline(self, value):
@@ -259,7 +279,7 @@ class TextCAElem(CustomAttribute):
   def get_lcas_from_inline(self):
     return(
         None if self._input_blank.exists
-        else self._input_existent_lcas_inline.text
+        else self._input_existent_inline.text
     )
 
   def set_gcas_from_popup(self, value):
@@ -271,18 +291,11 @@ class InputFieldCAElem(CustomAttribute):
 
   def __init__(self, browser, label):
     super(InputFieldCAElem, self).__init__(browser, label)
-    self._input_blank_inline_gcas = self._root.element(
-        class_name="empty-message")
-    self._input_existent_inline_gcas = self._root.element(
-        class_name="read-more__body ellipsis-truncation-5").div()
-    self._input_blank = self._root.text_field(
+    self._input_blank = self.root.text_field(
         class_name="text-field")
 
   def get_gcas_from_popup(self):
-    return (
-        None if self._input_blank_inline_gcas.exists
-        else self._input_existent_inline_gcas.text
-    )
+    return self._input_blank.value
 
   def set_lcas_from_inline(self, value):
     self._input_blank.send_keys(value)
@@ -300,13 +313,16 @@ class CheckboxCAElem(CustomAttribute):
 
   def __init__(self, browser, label):
     super(CheckboxCAElem, self).__init__(browser, label)
-    self._input = self._root.checkbox(type='checkbox')
+    self._input = self.root.checkbox(type='checkbox')
 
   def get_gcas_from_popup(self):
     return self._input.checked
 
   def set_lcas_from_inline(self, value):
-    if value:
+    # in case no action performed, status will not be changed
+    # double click on checkbox equals to not checked
+    self._input.click()
+    if not value:
       self._input.click()
 
   def get_lcas_from_inline(self):
@@ -322,7 +338,7 @@ class DropdownCAElem(CustomAttribute):
 
   def __init__(self, browser, label):
     super(DropdownCAElem, self).__init__(browser, label)
-    self._input = self._root.select(class_name="input-block-level")
+    self._input = self.root.select(class_name="input-block-level")
 
   def get_gcas_from_popup(self):
     return self._input.value
@@ -342,16 +358,16 @@ class PersonCAElem(CustomAttribute):
 
   def __init__(self, browser, label):
     super(PersonCAElem, self).__init__(browser, label)
-    self._input = self._root.text_field(data_lookup='Person')
-    self._input_existent = self._root.element(tag_name='person-data')
-    self._input_empty_msg_gcas = self._root.element(
+    self._input = self.root.text_field(data_lookup='Person')
+    self._input_existent = self.root.element(tag_name='person-data')
+    self._input_empty_msg_gcas = self.root.element(
         class_name="empty-message")
-    self._input_exist_msg = self._root.element(
+    self._input_exist_msg = self.root.element(
         class_name="person-name")
 
   def get_gcas_from_popup(self):
     return (
-        None if self._input_empty_msg_gcas.exists
+        self._input.value if self._input.exists
         else self._input_exist_msg.text
     )
 
@@ -369,5 +385,5 @@ class PersonCAElem(CustomAttribute):
 
   def select_corresponding_email(self, value):
     self._input.send_keys(value)
-    self._root.element(class_name='ui-menu-item').element(
+    self.root.element(class_name='ui-menu-item').element(
         text=re.compile(value)).click()

@@ -6,7 +6,6 @@
 # pylint: disable=redefined-builtin
 
 import copy
-import datetime
 import random
 
 from lib import factory, users
@@ -221,19 +220,13 @@ class CustomAttributeDefinitionsFactory(EntitiesFactory):
     result_dict = {}
     for cad in cads:
       cad_type = cad.attribute_type
-      if cad_type in (AdminWidgetCustomAttributes.TEXT,
-                      AdminWidgetCustomAttributes.RICH_TEXT):
-        attr_value = cls.generate_string(cad_type)
-      if cad_type == AdminWidgetCustomAttributes.DATE:
-        attr_value = unicode(datetime.datetime.now().strftime("%Y-%m-%d"))
-      if cad_type == AdminWidgetCustomAttributes.CHECKBOX:
-        attr_value = random.choice((True, False))
-      if cad_type == AdminWidgetCustomAttributes.DROPDOWN:
-        attr_value = unicode(
-            random.choice(cad.multi_choice_options.split(",")))
+      cad_value = None
       if cad_type == AdminWidgetCustomAttributes.PERSON:
-        attr_value = users.current_user().email
-      result_dict[cad.title] = attr_value
+        cad_value = users.current_user().email
+      else:
+        cad_value = CustomAttributeDefinitionsFactory.generate_cav(
+            cad).attribute_value
+      result_dict[cad.title] = cad_value
     return result_dict
 
   @classmethod
@@ -503,7 +496,7 @@ class AssessmentTemplatesFactory(EntitiesFactory):
     return asmt_tmpl_obj
 
 
-class AsmtTemplateWithDropdown(AssessmentTemplatesFactory):
+class AsmtTemplateWithDropdownFactory(AssessmentTemplatesFactory):
   """Class for assesment template with Dropdown option"""
 
   @classmethod
@@ -517,7 +510,7 @@ class AsmtTemplateWithDropdown(AssessmentTemplatesFactory):
     cas_type = AdminWidgetCustomAttributes.DROPDOWN
     cad_factory = CustomAttributeDefinitionsFactory()
     cads = [cad_factory.create(
-        title=(cad_factory.generate_ca_title(cas_type)),
+        title=cad_factory.generate_ca_title(cas_type),
         attribute_type=cas_type,
         definition_type="",
         multi_choice_mandatory=(",".join(
@@ -526,21 +519,21 @@ class AsmtTemplateWithDropdown(AssessmentTemplatesFactory):
         multi_choice_options=(
             StringMethods.random_list_strings(
                 list_len=len(dropdown_types_list))))]
-    cad_asmt_templ = cad_factory.generate_cads_for_asmt_tmpls(cads)
-    return cad_asmt_templ
+    cads_for_asmt_tmpl = cad_factory.generate_cads_for_asmt_tmpls(cads)
+    return cads_for_asmt_tmpl
 
 
-class AsmtTemplateWithAttr(AssessmentTemplatesFactory):
+class AsmtTemplateWithAttrFactory(AssessmentTemplatesFactory):
   """Class for assesment template with text option."""
 
   @classmethod
-  def generate_cavs(cls, **kwargs):
+  def generate_cads(cls, **kwargs):
     """Generates custom attribute definition for known type."""
     cas_type = kwargs["cad_type"]
     cad_factory = CustomAttributeDefinitionsFactory()
     cads = [cad_factory.create(
-        title=(cad_factory.generate_ca_title(cas_type)),
-        attribute_type=cas_type, definition_type=cas_type)]
+        title=cad_factory.generate_ca_title(cas_type),
+        attribute_type=cas_type)]
     cads = cad_factory.generate_cads_for_asmt_tmpls(cads)
     return cads
 
@@ -549,14 +542,15 @@ class AsmtTemplateManager(object):
   """Assessment template manager, that conduct the way custom attribute
   definition is generated."""
 
-  # disable=no-else-return
   @classmethod
   def generate_cads(cls, **kwargs):
     """Factory defines template to be created based on its type."""
+    cads = None
     if kwargs["cad_type"] == AdminWidgetCustomAttributes.DROPDOWN:
-      return AsmtTemplateWithDropdown().generate_cads(**kwargs)
+      cads = AsmtTemplateWithDropdownFactory().generate_cads(**kwargs)
     else:
-      return AsmtTemplateWithAttr().generate_cads(**kwargs)
+      cads = AsmtTemplateWithAttrFactory().generate_cads(**kwargs)
+    return cads
 
 
 class AssessmentsFactory(EntitiesFactory):

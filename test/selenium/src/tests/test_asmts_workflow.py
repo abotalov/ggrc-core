@@ -39,11 +39,11 @@ def _create_mapped_asmt(audit, assessment_type, objs_to_map):
 def _create_asmt_template(audit, assessment_type, cads):
   """Create assessment with assessment type=`assessment_type` and
   map it to snapshots of `objs_to_map`"""
-  cad_rest = cads if cads else (
+  cads_rest = cads if cads else (
       CustomAttributeDefinitionsFactory.generate_cads_for_asmt_tmpls(cads))
   assessment_template = rest_facade.create_asmt_template(
       audit, assessment_type=assessment_type,
-      custom_attribute_definitions=cad_rest)
+      custom_attribute_definitions=cads_rest)
   return assessment_template
 
 
@@ -205,7 +205,7 @@ class TestAssessmentsWorkflow(base.Test):
             obj=expected_asmt).updated_at).repr_ui()
     actual_asmt = asmts_ui_service.get_obj_from_info_page(expected_asmt)
     # 'actual_asmt': audit (None)
-    self.general_equal_assert(expected_asmt, actual_asmt, "audit", "comments")
+    self.general_equal_assert(expected_asmt, actual_asmt, "audit")
 
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize(
@@ -333,6 +333,7 @@ class TestAssessmentsWorkflow(base.Test):
   def _check_assessments_filtration(assessment, cavs, operator,
                                     audit, selenium):
     """Check that filtration of assessments works."""
+    # pylint: disable=too-many-locals
     cads = [Representation.repr_dict_to_obj(cad)
             for cad in assessment.custom_attribute_definitions]
     filter_exprs = FilterUtils().get_filter_exprs_by_cavs(
@@ -502,7 +503,7 @@ class TestAssessmentsWorkflow(base.Test):
       if cad_cur["title"] == cad.title:
         cad_created = cad_cur
     asmts_ui_service = webui_service.AssessmentsService(selenium)
-    asmts_ui_service.open_info_page_of_obj_fill_lca(exp_asmt, [cad], cavs)
+    asmts_ui_service.open_info_page_of_obj_fill_lca(exp_asmt, cavs)
     act_asmt = self.info_service().get_obj(obj=exp_asmt)
     exp_asmt.update_attrs(updated_at=act_asmt.updated_at,
                           status=unicode(object_states.IN_PROGRESS),
@@ -525,8 +526,7 @@ class TestAssessmentsWorkflow(base.Test):
 
     asmts_ui_service = webui_service.AssessmentsService(selenium)
 
-    asmts_ui_service.open_info_page_of_obj_fill_gca(assessment,
-                                                    gcads_asmt, cavs)
+    asmts_ui_service.open_info_page_of_obj_fill_gca(assessment, cavs)
     act_asmt = self.info_service().get_obj(obj=assessment)
     assessment.update_attrs(
         updated_at=act_asmt.updated_at, status=act_asmt.status,

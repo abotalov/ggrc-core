@@ -17,6 +17,7 @@ from selenium.webdriver.remote.remote_connection import (
 
 from lib import dynamic_fixtures, environment, url, users
 from lib.constants import objects
+from lib.constants.element import AdminWidgetCustomAttributes
 from lib.constants.test_runner import DESTRUCTIVE_TEST_METHOD_PREFIX
 from lib.custom_pytest_scheduling import CustomPytestScheduling
 from lib.entities import entities_factory
@@ -604,7 +605,9 @@ def assessment(audit):
 @pytest.fixture()
 def gcads_asmt():
   """Create GCAS all types"""
-  return rest_facade.create_gcads(obj=objects.ASSESSMENTS)
+  return [rest_facade.create_gcad(
+      obj=objects.ASSESSMENTS,
+      gcas_type=c_type) for c_type in AdminWidgetCustomAttributes.ALL_CA_TYPES]
 
 
 @pytest.fixture()
