@@ -358,6 +358,7 @@ class WithBrowser(InstanceRepresentation):
     super(WithBrowser, self).__init__()
     self._driver = driver
     self._browser = nerodia.browser.Browser(browser=self._driver)
+    self._scope = self._browser
 
 
 class Component(WithBrowser):

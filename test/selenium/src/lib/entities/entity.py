@@ -93,7 +93,8 @@ class Representation(object):
         els.MODIFIED_BY: "modified_by", els.LAST_UPDATED_BY: "modified_by",
         els.UPDATED_AT: "updated_at", els.ASMT_TYPE: "assessment_type",
         els.LCAS: "custom_attribute_definitions",
-        "EVIDENCE_URLS": "evidence_urls"
+        "EVIDENCE_URLS": "evidence_urls",
+        "PRIMARY_CONTACTS": "primary_contacts"
     }
     csv_remap_items = {
         csv.REVISION_DATE: "updated_at"
@@ -159,9 +160,8 @@ class Representation(object):
         """
         if isinstance(attr_value, dict):
           converted_attr_value = attr_value
-          if attr_name in [
-              "managers", "assignees", "creators",
-              "verifiers", "created_by", "modified_by"
+          if attr_name in Representation.people_attrs_names + [
+              "created_by", "modified_by"
           ]:
             converted_attr_value = unicode(attr_value.get("email"))
           if attr_name in ["custom_attribute_definitions", "program", "audit",

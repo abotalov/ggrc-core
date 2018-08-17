@@ -514,6 +514,20 @@ class TestAssessmentsWorkflow(base.Test):
         evidence_urls=[url]).repr_ui()
     self.general_equal_assert(asmt, actual_asmt, "audit")
 
+  @pytest.mark.smoke_tests
+  def test_add_person_to_acl_list(self, program, audit, selenium):
+    """Test that an assessment assignee can add a person to ACL"""
+    assignee = rest_facade.create_user_with_role(roles.CREATOR)
+    primary_contact = rest_facade.create_user_with_role(roles.CREATOR)
+    asmt = rest_facade.create_assessment(audit, assignees=[assignee])
+    asmt_service = webui_service.AssessmentsService(selenium)
+    asmt_service.add_primary_contact(asmt, primary_contact)
+    actual_asmt = asmt_service.get_obj_from_info_page(asmt)
+    asmt.update_attrs(
+        updated_at=rest_facade.get_obj(asmt).updated_at,
+        primary_contacts=[primary_contact]).repr_ui()
+    self.general_equal_assert(asmt, actual_asmt, "audit")
+
 
 class TestRelatedAssessments(base.Test):
   """Tests for related assessments"""

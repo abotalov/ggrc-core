@@ -10,17 +10,21 @@ from lib.page.widget import page_elements
 class WithPageElements(base.WithBrowser):
   """A mixin for page elements"""
 
-  def _related_urls(self, label):
+  def related_people_list(self, label):
+    """Return RelatedPeopleList"""
+    return page_elements.RelatedPeopleList(self._scope, label)
+
+  def related_urls(self, label):
     """Return RelatedUrls page element with label `label`"""
-    return page_elements.RelatedUrls(self._browser, label)
+    return page_elements.RelatedUrls(self._scope, label)
 
-  def _assessment_evidence_urls(self):
+  def assessment_evidence_urls(self):
     """Return AssessmentEvidenceUrls page element"""
-    return page_elements.AssessmentEvidenceUrls(self._browser)
+    return page_elements.AssessmentEvidenceUrls(self._scope)
 
-  def _comment_area(self):
+  def comment_area(self):
     """Return CommentArea page element"""
-    return page_elements.CommentArea(self._browser)
+    return page_elements.CommentArea(self._scope)
 
 
 class WithAssignFolder(base.WithBrowser):

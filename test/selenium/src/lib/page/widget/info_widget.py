@@ -14,12 +14,13 @@ from lib.constants.locator import WidgetInfoAssessment, WidgetInfoControl
 from lib.element import widget_info, tab_containers, tables
 from lib.page.modal import update_object
 from lib.page.modal.set_value_for_asmt_ca import SetValueForAsmtDropdown
+from lib.page.widget import page_tab
 from lib.page.widget.page_mixins import (WithAssignFolder, WithObjectReview,
                                          WithPageElements)
 from lib.utils import selenium_utils, string_utils, help_utils
 
 
-class InfoWidget(WithPageElements, base.Widget):
+class InfoWidget(page_tab.WithPageTab, WithPageElements, base.Widget):
   """Abstract class of common info for Info pages and Info panels.
   For labels (headers) Will be used actual unicode elements from UI or pseudo
   string elements from 'lib.element' module in upper case.
@@ -103,7 +104,7 @@ class InfoWidget(WithPageElements, base.Widget):
     if not self.is_asmts_info_widget:
       self._extend_list_all_scopes_by_code()
       self._extend_list_all_scopes_by_cas()
-    self.comment_area = self._comment_area()
+    self.comment_area = self.comment_area()
 
   def wait_save(self):
     """Wait for object to be saved and page to be updated.
@@ -112,6 +113,50 @@ class InfoWidget(WithPageElements, base.Widget):
     in case of a race condition.
     """
     self._browser.element(class_name="spinner").wait_until_not_present()
+    # self._browser.execute_script("""
+    #   window.__events = [];
+    #   observer = new MutationObserver(function(mutations) {
+    #       mutations.forEach(function(mutation) {
+    #           window.__events.push(mutation.type);
+    #       });
+    #   })
+    #   observer.observe(document.body, {childList: true, subtree: true})
+    # """)
+    # t = datetime.datetime.now()
+    # a = self._driver.execute_async_script("""
+    #   var callback = arguments[arguments.length - 1];
+    #   var events = [];
+    #   observer = new MutationObserver(function(mutations) {
+    #       mutations.forEach(function(mutation) {
+    #           events.push(mutation.type);
+    #       });
+    #   })
+    #   observer.observe(document.body, {childList: true, subtree: true});
+    #   var prev_events = [];
+    #   var check = function(n) {
+    #       if (events.length - prev_events.length == 0) {
+    #           callback('good');
+    #       } else if (n < 1) {
+    #           callback('timeout');
+    #       } else {
+    #           prev_events = events.slice();
+    #           setTimeout(function() {check(n - 1);}, 500);
+    #       }
+    #   };
+    #   setTimeout(function() {check(10);}, 500);
+    #  """)
+    # t2 = datetime.datetime.now()
+    # time.sleep(2)  # wait for first DOM changes
+    # prev_records = [[]]
+    #
+    # def some_records():
+    #   new_records = self._browser.execute_script("return window.__events;")
+    #   if len(new_records) - len(prev_records[0]) > 0:
+    #     prev_records[0] = new_records
+    #     return False
+    #   else:
+    #     return True
+    # test_utils.wait_for(some_records, sleep_seconds=0.3)
 
   def get_state_txt(self):
     """Get object's state text from Info Widget."""
@@ -434,7 +479,7 @@ class Programs(WithObjectReview, InfoWidget):
         self.tab_container.active_tab_elem, self._locators.CODE_ENTERED)
     self.effective_date = base.Label(
         self.tab_container.active_tab_elem, self._locators.EFFECTIVE_DATE)
-    self.reference_urls = self._related_urls(self._reference_url_label)
+    self.reference_urls = self.related_urls(self._reference_url_label)
 
   @property
   def effective_date_entered(self):
@@ -486,7 +531,7 @@ class Audits(WithAssignFolder, InfoWidget):
     self._extend_list_all_scopes(
         [self.audit_captain_lbl_txt, self.auditor_lbl_txt],
         [self.audit_captain_txt, self.auditor_txt])
-    self.evidence_urls = self._related_urls(self._evidence_url_label)
+    self.evidence_urls = self.related_urls(self._evidence_url_label)
 
   def _extend_list_all_scopes_by_review_state(self):
     """Method overriding without action due to Audits don't have
@@ -498,6 +543,38 @@ class Audits(WithAssignFolder, InfoWidget):
     """Elements shown for user with edit permissions"""
     return [self.evidence_urls.add_button,
             self.assign_folder_button] + list(self.inline_edit_controls)
+
+
+# Tab is opened when any action method is invoked:
+# click(), text, present, etc.
+#
+# 1.
+# page.assessment_tab.evidence_urls.add_button.click()
+#
+# 2.
+# page.evidence_urls.add_button.click()
+#
+# self.evidence_urls = assessment_tab.evidence_urls()
+# self.evidence_urls = self.evidence_urls(assessment_tab)
+# self.evidence_urls = EvidenceUrls(assessment_tab)
+#
+# descendant_el.element1().element().parent().click()
+#
+# [x for x in descendant_el.element().elements()]
+
+# class PageTab(object):
+#   def __getattr__(self, attr):
+#     if container_method:
+#       pass  # invoke nerodia
+#     else:
+#       choose_tab()
+#       invoke_attr()
+#
+#
+# page_tab = PageTab()
+# page_tab.element().elements()
+
+
 
 
 class Assessments(InfoWidget):
@@ -519,7 +596,6 @@ class Assessments(InfoWidget):
     self.asmt_type_txt = objects.get_obj_type(self.asmt_type.text)
     self.mapped_objects_lbl_txt = self._elements.MAPPED_OBJECTS.upper()
     self.mapped_objects_titles_txt = self._get_mapped_objs_titles_txt()
-    self.evidence_urls = self._assessment_evidence_urls()
     self.lcas_scope_txt = self.get_headers_and_values_dict_from_cas_scopes(
         is_gcas_not_lcas=False)
     self.creators_lbl_txt, self.creators_txt = (
@@ -535,6 +611,11 @@ class Assessments(InfoWidget):
         self.info_widget_elem, self._locators.COMMENTS_CSS)
     self.comments_lbl_txt = self.comments_panel.header_lbl.text
     self.comments_scopes_txt = self.comments_panel.scopes
+    self._assessment_tab = self.page_tab("Assessment")
+    self._other_attributes_tab = self.page_tab("Other Attributes")
+    self.evidence_urls = self._assessment_tab.assessment_evidence_urls()
+    self.primary_contacts = self._other_attributes_tab.related_people_list(
+        "Primary Contacts")
     # todo: implement separate add lcas and gcas
     # todo: implement separate add mapped ctrls and mapped other objs
     self._extend_list_all_scopes(
@@ -545,8 +626,6 @@ class Assessments(InfoWidget):
         [self.is_verified, self.creators_txt, self.assignees_txt,
          self.verifiers_txt, self.mapped_objects_titles_txt,
          self.comments_scopes_txt, self.asmt_type_txt])
-    self._extend_list_all_scopes(["evidence_urls"],
-                                 [self.evidence_urls.get_urls()])
 
   def _get_mapped_objs_titles_txt(self):
     """Return lists of str for mapped snapshots titles text from current tab.
@@ -567,7 +646,12 @@ class Assessments(InfoWidget):
     self.mapped_objects_titles_txt += self._get_mapped_objs_titles_txt()
     self._extend_list_all_scopes_by_code()
     self._extend_list_all_scopes_by_cas()
-    return dict(zip(self.list_all_headers_txt, self.list_all_values_txt))
+    obj_scope = {
+      "evidence_urls": self.evidence_urls.get_urls(),
+      "primary_contacts": self.primary_contacts.get_people_emails()
+    }
+    obj_scope.update(zip(self.list_all_headers_txt, self.list_all_values_txt))
+    return obj_scope
 
   def _extend_list_all_scopes_by_cas(self):
     """Extend attributes related to 'local and global custom attributes' and
@@ -723,7 +807,7 @@ class Controls(WithAssignFolder, WithObjectReview, InfoWidget):
     self.primary_contact_text, self.primary_contact_entered_text = (
         self.get_header_and_value_txt_from_people_scopes(
             self._elements.PRIMARY_CONTACTS.upper()))
-    self.reference_urls = self._related_urls(self._reference_url_label)
+    self.reference_urls = self.related_urls(self._reference_url_label)
     self._extend_list_all_scopes(
         [self.admin_text, self.primary_contact_text],
         [self.admin_entered_text, self.primary_contact_entered_text])
