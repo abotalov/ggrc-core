@@ -10,14 +10,13 @@ import os
 import urlparse
 
 import pytest
-# Wokaround https://github.com/pytest-dev/pytest/issues/3775
+# Workaround https://github.com/pytest-dev/pytest/issues/3775
 from pytest_selenium import pytest_selenium as pt_selenium
 from selenium.webdriver.remote.remote_connection import (
     LOGGER as SELENIUM_LOGGER)
 
 from lib import dynamic_fixtures, environment, url, users
-from lib.constants import objects
-from lib.constants.element import AdminWidgetCustomAttributes
+from lib.constants import element
 from lib.constants.test_runner import DESTRUCTIVE_TEST_METHOD_PREFIX
 from lib.custom_pytest_scheduling import CustomPytestScheduling
 from lib.entities import entities_factory
@@ -603,11 +602,11 @@ def assessment(audit):
 
 
 @pytest.fixture()
-def gcads_asmt():
-  """Create GCAS all types"""
-  return [rest_facade.create_gcad(
-      obj=objects.ASSESSMENTS,
-      gcas_type=c_type) for c_type in AdminWidgetCustomAttributes.ALL_CA_TYPES]
+def gcads_for_asmt():
+  """Create GCADs of all types for Assessment"""
+  return [rest_facade.create_gcad(definition_type="assessment",
+                                  attribute_type=ca_type)
+          for ca_type in element.AdminWidgetCustomAttributes.ALL_CA_TYPES]
 
 
 @pytest.fixture()

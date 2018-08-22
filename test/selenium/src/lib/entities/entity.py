@@ -229,11 +229,10 @@ class Representation(object):
                                 isinstance(cas_val, list) else [None])
           _cas_val = [
               {k: v} for k, v in
-              CustomAttributeDefinitionsFactory.generate_cas(
+              CustomAttributeDefinitionsFactory.generate_ca_title_id(
                   [Representation.repr_dict_to_obj(cad)
-                   for cad in origin_obj.custom_attribute_definitions],
-                  is_none_values=True).iteritems()
-              if k not in cas_val_dicts_keys]
+                   for cad in origin_obj.custom_attribute_definitions]
+              ).iteritems() if k not in cas_val_dicts_keys]
           cas_val = _cas_val if not cas_val else cas_val + _cas_val
         cas_def_dict = (
             dict([_def.iteritems().next() for _def in cas_def]) if

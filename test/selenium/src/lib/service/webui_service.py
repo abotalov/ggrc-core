@@ -428,23 +428,23 @@ class BaseWebUiService(object):
     related_asmts_table = obj_page.show_related_assessments()
     return related_asmts_table.get_related_titles(asmt_type=obj.type)
 
-  def open_info_page_of_obj_fill_lca(self, obj, cavs):
+  def open_info_page_of_obj_fill_lca(self, obj, cas):
     """Open obj Info Page. Populate local custom attributes with random values.
     Only Date population implemented.
     """
-    self.open_info_page_of_obj(obj).fill_cas_attr_values(cavs, False)
-    updated_attrs = self.set_custom_attr_values(obj, cavs)
+    self.open_info_page_of_obj(obj).fill_cas_attr_values(cas, False)
+    updated_attrs = self.set_custom_attr_values(obj, cas)
     obj.update_attrs(custom_attribute_values=updated_attrs)
     return obj
 
-  def open_info_page_of_obj_fill_gca(self, obj, cavs):
+  def open_info_page_of_obj_fill_gca(self, obj, cas):
     """Open obj Info Page. Populate global custom attributes with random values.
     Only Date population implemented.
     """
     widget = self.open_info_page_of_obj(obj)
     widget.open_info_3bbs().select_edit()
-    widget.fill_cas_attr_values(cavs, True)
-    updated_attrs = self.set_custom_attr_values(obj, cavs)
+    widget.fill_cas_attr_values(cas, True)
+    updated_attrs = self.set_custom_attr_values(obj, cas)
     obj.update_attrs(custom_attribute_values=updated_attrs)
     return obj
 

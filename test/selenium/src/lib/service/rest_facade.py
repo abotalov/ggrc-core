@@ -8,11 +8,9 @@ Reasons for a facade:
 from lib.entities.entities_factory import AsmtTemplateManager
 
 from lib import factory
-from lib.constants import objects, roles
-from lib.constants.element import AdminWidgetCustomAttributes
+from lib.constants import roles
 from lib.entities.entity import Representation
 from lib.service import rest_service
-from lib.utils.string_utils import StringMethods
 
 
 def create_program(**attrs):
@@ -45,39 +43,29 @@ def create_asmt(audit, **attrs):
 
 def create_asmt_template(audit, **attrs):
   """Create assessment template."""
-  factory_params, attrs_remainder = _split_attrs(
-      attrs, ['cad_type', 'dropdown_types_list'])
-  attrs_remainder["audit"] = audit.__dict__
-  cad = []
-  if "custom_attribute_definitions" in attrs.keys():
-    cad = attrs["custom_attribute_definitions"]
-  elif "cad_type" in attrs.keys():
-    cad = AsmtTemplateManager().generate_cads(**attrs_remainder)
-  factory_params["custom_attribute_definitions"] = cad
+  obj_attrs, cad_manager_attrs = _split_attrs(
+      attrs, ["cad_type", "dropdown_types_list"])
+  if "cad_type" in cad_manager_attrs:
+    obj_attrs["custom_attribute_definitions"] = [AsmtTemplateManager(
+        ).generate_cad(**cad_manager_attrs)]
+  obj_attrs["audit"] = audit.__dict__
   return rest_service.AssessmentTemplatesService().create_obj(
-      factory_params=factory_params, **attrs_remainder)
+      factory_params=obj_attrs)
 
 
-def create_asmt_from_template(audit, asmt_template, control, **attrs):
-  """Create an assessment from template
-  :param control_snapshots: Should be list of control snapshots"""
+def create_asmt_from_template(audit, asmt_template, control):
+  """Create an assessment from template"""
   control_snapshots = [
       Representation.convert_repr_to_snapshot(objs=control, parent_obj=audit)]
   return rest_service.AssessmentsFromTemplateService().create_assessments(
-      audit=audit, template=asmt_template, control_snapshots=control_snapshots,
-      **attrs)[0]
+      audit=audit, template=asmt_template, control_snapshots=control_snapshots
+      )[0]
 
 
-def create_gcad(obj, gcas_type, **attrs):
-  """Create global custom attribute definitions for all types"""
-  attrs['attribute_type'] = unicode(gcas_type)
-  attrs['definition_type'] = unicode(objects.get_singular(obj))
-  attrs['multi_choice_options'] = (
-      StringMethods.random_list_strings()
-      if gcas_type == AdminWidgetCustomAttributes.DROPDOWN
-      else None)
+def create_gcad(**attrs):
+  """Create global CADs for all types"""
   return rest_service.CustomAttributeDefinitionsService().create_obj(
-      obj_count=1, factory_params=attrs)
+      factory_params=attrs)
 
 
 def create_issue(program=None):
@@ -140,19 +128,11 @@ def _create_obj_in_program_scope(obj_name, program, **attrs):
   return obj
 
 
-def _split_attrs(attrs, keys_for_template=None):
+def _split_attrs(attrs, second_part_keys=None):
   """Split `attrs` dictionary into two parts:
-  * Dict with keys that are not in `keys_for_template`
-  * Remainder dict with keys in `keys_for_template`
+  * Dict with keys that are not in `second_part_keys`
+  * Remainder dict with keys in `second_part_keys`
   """
-  if keys_for_template is None:
-    keys_for_template = []
-  attrs_remainder = {}
-  factory_params = {}
-  for key, value in attrs.items():
-    if key in keys_for_template:
-      d = attrs_remainder
-    else:
-      d = factory_params
-    d[key] = value
-  return factory_params, attrs_remainder
+  dict_1 = {k: v for k, v in attrs.iteritems() if k not in second_part_keys}
+  dict_2 = {k: v for k, v in attrs.iteritems() if k in second_part_keys}
+  return dict_1, dict_2

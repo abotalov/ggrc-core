@@ -4,11 +4,9 @@
 # pylint: disable=too-few-public-methods
 import datetime
 import re
+import time
 
 from lib.constants.element import AdminWidgetCustomAttributes
-
-import re
-import time
 
 
 class RelatedPeopleList(object):
@@ -88,29 +86,35 @@ class CommentArea(object):
 
 
 class EditPopup(object):
-  """Represents edit popup elements"""
+  """Represents edit popup"""
 
-  def __init__(self, descendant_el):
-    self.browser = descendant_el
-    self.modal = descendant_el.element(class_name=re.compile('modal-wide'))
+  def __init__(self, container):
+    self.modal = container.element(class_name="modal-wide")
+
+  @property
+  def present(self):
+    return self.modal.exists
+
+  def gca_labels(self):
+    return self.modal.element(tag_name="gca-controls").elements(
+        class_name="ggrc-form-item__label-text")
 
   def close_popup(self):
     """Close edit popup with no save"""
-    self.modal.element(class_name=re.compile('modal-dismiss')).click()
-    if self.browser.alert.exists:
-      self.browser.alert.close()
+    self.modal.element(class_name="modal-dismiss").click()
     self.modal.wait_until_not_present()
 
   def close_and_save(self):
-    self.modal.element(data_toggle=re.compile('modal-submit')).click()
+    """Save and close edit popup"""
+    self.modal.element(data_toggle="modal-submit").click()
     self.modal.wait_until_not_present()
 
 
 class CustomAttributeManager(object):
   """Represents manager class to define CAS element based on its type."""
 
-  def __init__(self, browser):
-    self._browser = browser
+  def __init__(self, container):
+    self._container = container
     self._all_types = {
         AdminWidgetCustomAttributes.TEXT: InputFieldCAElem,
         AdminWidgetCustomAttributes.RICH_TEXT: TextCAElem,
@@ -119,7 +123,7 @@ class CustomAttributeManager(object):
         AdminWidgetCustomAttributes.DROPDOWN: DropdownCAElem,
         AdminWidgetCustomAttributes.PERSON: PersonCAElem
     }
-    self.types = {
+    self._types = {
         AdminWidgetCustomAttributes.CHECKBOX: "custom-attribute-checkbox",
         AdminWidgetCustomAttributes.DATE: "custom-attribute-date",
         AdminWidgetCustomAttributes.RICH_TEXT: "custom-attribute-text",
@@ -130,18 +134,18 @@ class CustomAttributeManager(object):
 
   def get_attr_elem_class(self, label, attr_type):
     """Returns custom attribute element class."""
-    elem = self._all_types[attr_type](self._browser, label)
-    return elem
+    return self._all_types[attr_type](self._container, label)
 
   def find_type_by_title(self, title, is_gcas_not_lcas):
     """Method to convert HTML scope to CAD."""
-    elemt = CustomAttribute(self._browser, title)
+    elem = CustomAttribute(self._container, title)
+    # TODO: fixme
     if is_gcas_not_lcas:
-      ca_type = elemt.root.element(
-          tag_name='custom-attributes-field').class_name
+      ca_type = elem.root.element(
+          tag_name="custom-attributes-field").class_name
     else:
-      ca_type = elemt.root.class_name
-    for attr_type, html_type in self.types.iteritems():
+      ca_type = elem.root.class_name
+    for attr_type, html_type in self._types.iteritems():
       if html_type in ca_type:
         return attr_type
 
@@ -155,14 +159,13 @@ class CustomAttribute(object):
   which knows and controls root element for each custom element."""
 
   def __init__(self, browser, label):
-    self._label_txt = label.encode('UTF-8')
     self._label_popup = browser.element(
         class_name=re.compile("label-text"),
-        text=re.compile(re.escape(self._label_txt), re.IGNORECASE))
+        text=re.compile(re.escape(label), re.IGNORECASE))
     self._label_inline = browser.element(
         tag_name='div', class_name=re.compile(
             "title"), text=re.compile(
-            re.escape(self._label_txt), re.IGNORECASE))
+            re.escape(label), re.IGNORECASE))
     self._root_gcas_popup = self._label_popup.parent(
         class_name=re.compile('ggrc-form-item '))
     self._root_gcas_inline = self._label_inline.parent(
@@ -188,21 +191,14 @@ class CustomAttribute(object):
   @staticmethod
   def retrieve_all_ca_titles(browser, is_gcas_not_lcas):
     """Get all custom attribute titles for local or global attributes"""
-    cas_scopes_popup = browser.element(
-        class_name='additional-fields')
-    gcas_scopes = cas_scopes_popup.elements(
-        class_name='ggrc-form-item ')
-    lcas_scopes = browser.elements(
-        tag_name='div', class_name=re.compile("custom-attribute"))
-    all_ca_titles = []
-    if is_gcas_not_lcas:
-      if cas_scopes_popup.exist:
-        for elem in gcas_scopes:
-          all_ca_titles.append(elem.text.splitlines()[0])
+    edit_popup = EditPopup(browser)
+    lca_labels = browser.element(tag_name="custom-attributes").labels(
+        class_name="field__title-text")
+    if is_gcas_not_lcas and edit_popup.present:
+      labels = edit_popup.gca_labels()
     else:
-      for elem in lcas_scopes:
-        all_ca_titles.append(elem.text.splitlines()[0])
-    return all_ca_titles
+      labels = lca_labels
+    return [el.text for el in labels]
 
   def get_gcas_from_popup(self):
     pass
