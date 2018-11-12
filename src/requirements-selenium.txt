@@ -4,7 +4,7 @@
 attrs==18.2.0
 inflection==0.3.1
 holidays==0.3.1  # version should match version in requirements.txt
-nerodia==0.10.0
+nerodia==0.12.0
 pytest==3.6.4
 pytest-cov==2.5.1
 pytest-env==0.6.2
